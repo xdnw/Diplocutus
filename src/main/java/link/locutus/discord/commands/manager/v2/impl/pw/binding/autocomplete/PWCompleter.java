@@ -1,0 +1,509 @@
+package link.locutus.discord.commands.manager.v2.impl.pw.binding.autocomplete;
+
+import com.google.gson.reflect.TypeToken;
+import link.locutus.discord.Locutus;
+import link.locutus.discord.api.generated.ResourceType;
+import link.locutus.discord.api.generated.TreatyType;
+import link.locutus.discord.api.generated.WarType;
+import link.locutus.discord.api.types.*;
+import link.locutus.discord.commands.manager.v2.binding.*;
+import link.locutus.discord.commands.manager.v2.binding.annotation.*;
+import link.locutus.discord.commands.manager.v2.command.ArgumentStack;
+import link.locutus.discord.commands.manager.v2.command.CommandCallable;
+import link.locutus.discord.commands.manager.v2.command.ICommand;
+import link.locutus.discord.commands.manager.v2.command.ParametricCallable;
+import link.locutus.discord.commands.manager.v2.impl.discord.binding.annotation.GuildCoalition;
+import link.locutus.discord.commands.manager.v2.impl.discord.binding.annotation.NationDepositLimit;
+import link.locutus.discord.commands.manager.v2.impl.pw.binding.NationAttribute;
+import link.locutus.discord.commands.manager.v2.impl.pw.binding.NationAttributeDouble;
+import link.locutus.discord.commands.manager.v2.impl.pw.binding.PWBindings;
+import link.locutus.discord.commands.manager.v2.impl.pw.commands.UnsortedCommands;
+import link.locutus.discord.commands.manager.v2.impl.pw.filter.NationPlaceholders;
+import link.locutus.discord.commands.manager.v2.impl.pw.filter.PlaceholdersMap;
+import link.locutus.discord.db.GuildDB;
+import link.locutus.discord.db.ReportManager;
+import link.locutus.discord.db.conflict.Conflict;
+import link.locutus.discord.db.conflict.ConflictManager;
+import link.locutus.discord.db.entities.*;
+import link.locutus.discord.db.entities.DBAlliance;
+import link.locutus.discord.db.entities.metric.AllianceMetric;
+import link.locutus.discord.db.entities.metric.DnsMetric;
+import link.locutus.discord.db.guild.GuildSetting;
+import link.locutus.discord.db.guild.GuildKey;
+import link.locutus.discord.pnw.GuildOrAlliance;
+import link.locutus.discord.pnw.NationOrAlliance;
+import link.locutus.discord.pnw.NationOrAllianceOrGuild;
+import link.locutus.discord.user.Roles;
+import link.locutus.discord.util.AutoAuditType;
+import link.locutus.discord.util.StringMan;
+import link.locutus.discord.util.discord.DiscordUtil;
+import link.locutus.discord.util.task.ia.IACheckup;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+
+import java.awt.*;
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class PWCompleter extends BindingHelper {
+    @Autocomplete
+    @PlaceholderType
+    @Binding(types={Class.class})
+    public List<String> PlaceholderType(String input) {
+        PlaceholdersMap phMap = Locutus.cmd().getV2().getPlaceholders();
+        List<String> options = phMap.getTypes().stream().map(f -> PlaceholdersMap.getClassName(f)).collect(Collectors.toList());
+        return StringMan.getClosest(input, options, true);
+    }
+    @Autocomplete
+    @Binding(types={NationMeta.class})
+    public List<String> NationMeta(String input) {
+        return StringMan.completeEnum(input, NationMeta.class);
+    }
+    @Autocomplete
+    @Binding(types={Font.class})
+    public List<String> Font(String input) {
+        String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+        return StringMan.getClosest(input, Arrays.asList(fonts), true);
+    }
+    @Autocomplete
+    @Binding(types={Set.class, TreatyType.class}, multiple = true)
+    public List<Map.Entry<String, String>> TreatyType(String input) {
+        return StringMan.autocompleteCommaEnum(TreatyType.class, input, OptionData.MAX_CHOICES);
+    }
+    @Autocomplete
+    @Binding(types={Set.class, Conflict.class}, multiple = true)
+    public List<Map.Entry<String, String>> Conflict(ConflictManager manager, String input) {
+        List<Conflict> options = new ArrayList<>(manager.getConflictMap().values());
+        return StringMan.autocompleteComma(input, options,
+                f -> PWBindings.conflict(manager, f),
+                Conflict::getName,
+                f -> f.getId() + "",
+                OptionData.MAX_CHOICES);
+    }
+    @Autocomplete
+    @Binding(types={Set.class, ResourceType.class}, multiple = true)
+    public List<Map.Entry<String, String>> ResourceType(String input) {
+        return StringMan.autocompleteCommaEnum(ResourceType.class, input, OptionData.MAX_CHOICES);
+    }
+    @Autocomplete
+    @Binding(types={Set.class, GuildDB.class}, multiple = true)
+    public List<Map.Entry<String, String>> GuildDB(@Me User user, String input) {
+        List<GuildDB> options = user.getMutualGuilds().stream().map(Locutus.imp()::getGuildDB).toList();
+        Map<String, GuildDB> byMap = new HashMap<>();
+        for (GuildDB db : options) {
+            byMap.put(db.getGuild().getName().toLowerCase(), db);
+        }
+        return StringMan.autocompleteComma(input, options,
+                f -> f.isEmpty() ? null : byMap.get(f.split("/")[0].toLowerCase()),
+                GuildDB::getName,
+                f -> f.getGuild().getId(),
+                OptionData.MAX_CHOICES);
+    }
+    @Autocomplete
+    @Binding(types={Set.class, GuildSetting.class}, multiple = true)
+    public List<String> GuildSetting(String input) {
+        List<String> options = Arrays.stream(GuildKey.values()).map(GuildSetting::name).toList();
+        return StringMan.autocompleteComma(input, options, OptionData.MAX_CHOICES);
+    }
+    @Autocomplete
+    @Binding(types={Set.class, AllianceMetric.class}, multiple = true)
+    public List<Map.Entry<String, String>> AllianceMetrics(String input) {
+        return StringMan.autocompleteCommaEnum(AllianceMetric.class, input, OptionData.MAX_CHOICES);
+    }
+    @Autocomplete
+    @Binding(types={CommandCallable.class})
+    public List<String> command(String input) {
+        List<ParametricCallable> options = new ArrayList<>(Locutus.imp().getCommandManager().getV2().getCommands().getParametricCallables(f -> true));
+        List<String> optionsStr = options.stream().map(f -> f.getFullPath()).toList();
+        return StringMan.getClosest(input, optionsStr, f -> f, OptionData.MAX_CHOICES, true);
+    }
+
+    @Autocomplete
+    @Binding(types={ICommand.class})
+    public List<String> commandEndpoint(String input) {
+        return command(input);
+    }
+
+    @Autocomplete
+    @Binding(types={Coalition.class})
+    public List<String> Coalition(String input) {
+        return StringMan.completeEnum(input, Coalition.class);
+    }
+
+    @Autocomplete
+    @Binding(types={WarCostMode.class})
+    public List<String> WarCostMode(String input) {
+        return StringMan.completeEnum(input, WarCostMode.class);
+    }
+
+    @Autocomplete
+    @Binding(types={WarCostStat.class})
+    public List<String> WarCostStat(String input) {
+        return StringMan.completeEnum(input, WarCostStat.class);
+    }
+
+    @Autocomplete
+    @Binding(types={DepositType.DepositTypeInfo.class})
+    public List<String> DepositTypeInfo(String input) {
+        return StringMan.completeEnum(input, DepositType.class);
+    }
+
+    @Autocomplete
+    @GuildCoalition
+    @Binding(types={String.class})
+    public List<String> GuildCoalition(@Me GuildDB db, String input) {
+        List<String> options = new ArrayList<>();
+        for (Coalition coalition : Coalition.values()) {
+            options.add(coalition.name());
+        }
+        for (String coalition : db.getCoalitionNames()) {
+            if (Coalition.getOrNull(coalition) != null) continue;
+            options.add(coalition);
+        }
+        return StringMan.getClosest(input, options, f -> f, OptionData.MAX_CHOICES, true);
+    }
+
+    @Autocomplete
+    @ReportPerms
+    @Binding(types={ReportManager.Report.class})
+    public List<Map.Entry<String, String>> reports(ReportManager manager, @Me DBNation me, @Me User author, @Me GuildDB db, String input) {
+        return reports(manager, me, author, db, input, true, OptionData.MAX_CHOICES);
+    }
+
+    @Autocomplete
+    @Binding(types={ReportManager.Report.class})
+    public List<Map.Entry<String, String>> reportsAll(ReportManager manager, @Me DBNation me, @Me User author, @Me GuildDB db, String input) {
+        return reports(manager, me, author, db, input, false, OptionData.MAX_CHOICES);
+    }
+
+    public static List<Map.Entry<String, String>> reports(ReportManager manager, @Me DBNation me, @Me User author, @Me GuildDB db, String input, boolean checkPerms, int maxChoices) {
+        List<ReportManager.Report> options = manager.loadReports(null);
+        if (checkPerms) {
+            options.removeIf(f -> !f.hasPermission(me, author, db));
+        }
+
+        options = StringMan.getClosest(input, options, f -> "#" + f.reportId + " " + f.getTitle(), maxChoices, true, false);
+
+        return options.stream().map(f -> Map.entry("#" + f.reportId + " " + f.getTitle(), f.reportId + "")).collect(Collectors.toList());
+    }
+
+    @Autocomplete
+    @Binding(types={DBNation.class})
+    public List<Map.Entry<String, String>> DBNation(String input, @Me Guild guild) {
+        if (input.isEmpty()) return null;
+        if (input.charAt(0) == '@') {
+            return completeUser(guild, input, true);
+        }
+
+        List<DBNation> options = new ArrayList<>(Locutus.imp().getNationDB().getNations().values());
+        options = StringMan.getClosest(input, options, DBNation::getName, OptionData.MAX_CHOICES, true, true);
+
+        return options.stream().map(f -> Map.entry(f.getName(), f.getQualifiedId())).collect(Collectors.toList());
+    }
+
+    @Autocomplete
+    @Binding(types={DBAlliance.class})
+    public List<Map.Entry<String, String>> DBAlliance(String input) {
+        if (input.isEmpty()) return null;
+
+        List<DBAlliance> options = new ArrayList<>(Locutus.imp().getNationDB().getAlliances());
+        options = StringMan.getClosest(input, options, DBAlliance::getName, OptionData.MAX_CHOICES, true, true);
+
+        return options.stream().map(f -> Map.entry(f.getName(), f.getTypePrefix() + ":" + f.getId())).collect(Collectors.toList());
+    }
+
+    @Autocomplete
+    @Binding(types={NationOrAlliance.class})
+    public List<Map.Entry<String, String>> NationOrAlliance(String input, @Me Guild guild) {
+        if (input.isEmpty()) return null;
+        if (input.charAt(0) == '@') {
+            return completeUser(guild, input, true);
+        }
+        List<NationOrAlliance> options = new ArrayList<>(Locutus.imp().getNationDB().getNations().values());
+        options.addAll(Locutus.imp().getNationDB().getAlliances());
+
+        options = StringMan.getClosest(input, options, NationOrAlliance::getName, OptionData.MAX_CHOICES, true, true);
+
+        return options.stream().map(f -> Map.entry(f.getName(), f.getTypePrefix() + ":" + f.getId())).collect(Collectors.toList());
+    }
+
+    @Autocomplete
+    @Binding(types={GuildOrAlliance.class})
+    public List<Map.Entry<String, String>> GuildOrAlliance(String input, @Me User user, @Me Guild guild) {
+        if (input.isEmpty()) return null;
+        List<GuildOrAlliance> options = new ArrayList<>();
+        options.addAll(Locutus.imp().getNationDB().getAlliances());
+        if (user != null) {
+            for (Guild other : user.getMutualGuilds()) {
+                GuildDB db = Locutus.imp().getGuildDB(other);
+                if (db != null) {
+                    options.add(db);
+                }
+            }
+        }
+        options = StringMan.getClosest(input, options, GuildOrAlliance::getName, OptionData.MAX_CHOICES, true, true);
+        return options.stream().map(f -> Map.entry((f.isGuild() ? "guild:" : "") + f.getName(), f.getTypePrefix() + ":" + f.getIdLong())).collect(Collectors.toList());
+    }
+
+    @Autocomplete
+    @Binding(types={NationOrAllianceOrGuild.class})
+    public List<Map.Entry<String, String>> NationOrAllianceOrGuild(String input, @Me User user, @Me Guild guild) {
+        if (input.isEmpty()) return null;
+        if (input.charAt(0) == '@') {
+            return completeUser(guild, input, true);
+        }
+        List<NationOrAllianceOrGuild> options = new ArrayList<>(Locutus.imp().getNationDB().getNations().values());
+        options.addAll(Locutus.imp().getNationDB().getAlliances());
+        if (user != null) {
+            for (Guild other : user.getMutualGuilds()) {
+                GuildDB db = Locutus.imp().getGuildDB(other);
+                if (db != null) {
+                    options.add(db);
+                }
+            }
+        }
+        options = StringMan.getClosest(input, options, NationOrAllianceOrGuild::getName, OptionData.MAX_CHOICES, true, true);
+        return options.stream().map(f -> Map.entry((f.isGuild() ? "guild:" : "") + f.getName(), f.getTypePrefix() + ":" + f.getIdLong())).collect(Collectors.toList());
+    }
+
+    private List<Map.Entry<String, String>> completeUser(@Me Guild guild, String input, boolean removeTag) {
+        if (removeTag) input = input.substring(1);
+        List<Member> options = guild.getMembers();
+        Function<Member, String> getName = new Function<Member, String>() {
+            @Override
+            public String apply(Member member) {
+                String nick = member.getNickname();
+                String user = DiscordUtil.getFullUsername(member.getUser());
+                if (nick != null && !nick.equalsIgnoreCase(user)) {
+                    return nick + " " + user;
+                }
+                return user;
+            }
+        };
+        options = StringMan.getClosest(input, options, getName, OptionData.MAX_CHOICES, true, false);
+        return options.stream().map(f -> Map.entry(f.getEffectiveName(), f.getAsMention())).collect(Collectors.toList());
+    }
+
+    @Autocomplete
+    @Binding(types={AllianceMetric.class})
+    public List<String> AllianceMetric(String input) {
+        return StringMan.completeEnum(input, AllianceMetric.class);
+    }
+
+    @Autocomplete
+    @Binding(types={AutoAuditType.class})
+    public List<String> AutoAuditType(String input) {
+        return StringMan.completeEnum(input, AutoAuditType.class);
+    }
+
+    @Autocomplete
+    @Binding(types={Project.class})
+    public List<String> Project(String input) {
+        List<Project> options = Arrays.asList(Project.values());;
+        options = StringMan.getClosest(input, options, Project::name, OptionData.MAX_CHOICES, true);
+        return options.stream().map(Project::name).collect(Collectors.toList());
+    }
+
+    @Autocomplete
+    @Binding(types={GuildSetting.class})
+    public List<String> setting(String input) {
+        List<String> options = Arrays.asList(GuildKey.values()).stream().map(f -> f.name()).collect(Collectors.toList());
+        return StringMan.getClosest(input, options, f -> f, OptionData.MAX_CHOICES, true);
+    }
+
+    @Autocomplete
+    @Binding(types={NationAttributeDouble.class})
+    public List<String> NationPlaceholder(ArgumentStack stack, String input) {
+        NationPlaceholders placeholders = Locutus.imp().getCommandManager().getV2().getNationPlaceholders();
+        List<String> options = placeholders.getMetricsDouble(stack.getStore())
+                .stream().map(NationAttribute::getName).collect(Collectors.toList());
+        return StringMan.getClosest(input, options, f -> f, OptionData.MAX_CHOICES, true);
+    }
+
+    @Autocomplete
+    @Binding(types={Parser.class})
+    public List<String> Parser(ValueStore store, String input) {
+        Map<Key, Parser> parsers = store.getParsers();
+        List<String> options = parsers.entrySet().stream().filter(f -> f.getValue().isConsumer(store)).map(f -> f.getKey().toSimpleString()).collect(Collectors.toList());
+        return StringMan.getClosest(input, options, f -> f, OptionData.MAX_CHOICES, true);
+    }
+
+    @Autocomplete
+    @NationAttributeCallable
+    @Binding(types={ParametricCallable.class})
+    public List<String> NationPlaceholderCommand(NationPlaceholders placeholders, String input) {
+        List<String> options = placeholders.getParametricCallables()
+                .stream().map(CommandCallable::getFullPath).collect(Collectors.toList());
+        return StringMan.getClosest(input, options, f -> f, OptionData.MAX_CHOICES, true);
+    }
+
+    @Autocomplete
+    @Binding(types={UnsortedCommands.ClearRolesEnum.class})
+    public List<String> ClearRolesEnum(String input) {
+        return StringMan.completeEnum(input, UnsortedCommands.ClearRolesEnum.class);
+    }
+
+    @Autocomplete
+    @Binding(types={FlowType.class})
+    public List<String> FlowType(String input) {
+        return StringMan.completeEnum(input, FlowType.class);
+    }
+
+    {
+        {
+            Key key = Key.of(TypeToken.getParameterized(Set.class, Category.class).getType(), Autocomplete.class);
+            addBinding(store -> {
+                store.addParser(key, new FunctionConsumerParser(key, (BiFunction<ValueStore, Object, Object>) (valueStore, input) -> {
+                    Guild guild = (Guild) valueStore.getProvided(Key.of(Guild.class, Me.class));
+                    if (guild == null) return null;
+                    return StringMan.autocompleteComma(input.toString(),
+                            guild.getCategories(),
+                            guild::getCategoryById,
+                            Channel::getName,
+                            ISnowflake::getId,
+                            OptionData.MAX_CHOICES);
+                }));
+            });
+        }
+
+        {
+            Key key = Key.of(TypeToken.getParameterized(Set.class, DBAlliance.class).getType(), Autocomplete.class);
+            addBinding(store -> {
+                store.addParser(key, new FunctionConsumerParser(key, (BiFunction<ValueStore, Object, Object>) (valueStore, input) -> {
+                    List<DBAlliance> options = new ArrayList<>(Locutus.imp().getNationDB().getAlliances());
+                    String inputStr = input.toString();
+                    return StringMan.autocompleteComma(inputStr, options, f -> DBAlliance.parse(f, false), DBAlliance::getName, f -> f.getId() + "", OptionData.MAX_CHOICES);
+                }));
+            });
+        }
+
+        {
+            Key key = Key.of(TypeToken.getParameterized(Set.class, Project.class).getType(), Autocomplete.class);
+            addBinding(store -> {
+                store.addParser(key, new FunctionConsumerParser(key, (BiFunction<ValueStore, Object, Object>) (valueStore, input) -> {
+                    List<Project> options = Arrays.asList(Project.values());
+                    String inputStr = input.toString();
+                    return StringMan.autocompleteComma(inputStr, options, Project::parse, Project::name, Project::name, OptionData.MAX_CHOICES);
+                }));
+            });
+        }
+
+        {
+            Key key = Key.of(TypeToken.getParameterized(Set.class, Building.class).getType(), Autocomplete.class);
+            addBinding(store -> {
+                store.addParser(key, new FunctionConsumerParser(key, (BiFunction<ValueStore, Object, Object>) (valueStore, input) -> {
+                    List<Building> options = Arrays.asList(Building.values());
+                    String inputStr = input.toString();
+                    return StringMan.autocompleteComma(inputStr, options, Building::parse, Building::name, Building::name, OptionData.MAX_CHOICES);
+                }));
+            });
+        }
+
+        {
+            Key key = Key.of(TypeToken.getParameterized(Set.class, Roles.class).getType(), Autocomplete.class);
+            addBinding(store -> {
+                store.addParser(key, new FunctionConsumerParser(key, (BiFunction<ValueStore, Object, Object>) (valueStore, input) -> {
+                    return StringMan.autocompleteCommaEnum(Roles.class, input.toString(), OptionData.MAX_CHOICES);
+                }));
+            });
+        }
+        {
+            Key key = Key.of(TypeToken.getParameterized(Set.class, AutoAuditType.class).getType(), Autocomplete.class);
+            addBinding(store -> {
+                store.addParser(key, new FunctionConsumerParser(key, (BiFunction<ValueStore, Object, Object>) (valueStore, input) -> {
+                    return StringMan.autocompleteCommaEnum(AutoAuditType.class, input.toString(), OptionData.MAX_CHOICES);
+                }));
+            });
+        }
+        {
+            Key key = Key.of(TypeToken.getParameterized(Set.class, IACheckup.AuditType.class).getType(), Autocomplete.class);
+            addBinding(store -> {
+                store.addParser(key, new FunctionConsumerParser(key, (BiFunction<ValueStore, Object, Object>) (valueStore, input) -> {
+                    return StringMan.autocompleteCommaEnum(IACheckup.AuditType.class, input.toString(), OptionData.MAX_CHOICES);
+                }));
+            });
+        }
+        {
+            Key key = Key.of(TypeToken.getParameterized(Set.class, IACheckup.AuditType.class).getType(), Autocomplete.class);
+            addBinding(store -> {
+                store.addParser(key, new FunctionConsumerParser(key, (BiFunction<ValueStore, Object, Object>) (valueStore, input) -> {
+                    return StringMan.autocompleteCommaEnum(IACheckup.AuditType.class, input.toString(), OptionData.MAX_CHOICES);
+                }));
+            });
+        }
+        {
+            Key key = Key.of(TypeToken.getParameterized(Set.class, WarStatus.class).getType(), Autocomplete.class);
+            addBinding(store -> {
+                store.addParser(key, new FunctionConsumerParser(key, (BiFunction<ValueStore, Object, Object>) (valueStore, input) -> {
+                    return StringMan.autocompleteCommaEnum(WarStatus.class, input.toString(), OptionData.MAX_CHOICES);
+                }));
+            });
+        }
+        {
+            Key key = Key.of(TypeToken.getParameterized(Set.class, WarType.class).getType(), Autocomplete.class);
+            addBinding(store -> {
+                store.addParser(key, new FunctionConsumerParser(key, (BiFunction<ValueStore, Object, Object>) (valueStore, input) -> {
+                    return StringMan.autocompleteCommaEnum(WarType.class, input.toString(), OptionData.MAX_CHOICES);
+                }));
+            });
+        }
+        {
+            Key key = Key.of(TypeToken.getParameterized(Set.class, MilitaryUnit.class).getType(), Autocomplete.class);
+            addBinding(store -> {
+                store.addParser(key, new FunctionConsumerParser(key, (BiFunction<ValueStore, Object, Object>) (valueStore, input) -> {
+                    return StringMan.autocompleteCommaEnum(MilitaryUnit.class, input.toString(), OptionData.MAX_CHOICES);
+                }));
+            });
+        }
+        {
+            Key key = Key.of(TypeToken.getParameterized(Set.class, DnsMetric.class).getType(), Autocomplete.class);
+            addBinding(store -> {
+                store.addParser(key, new FunctionConsumerParser(key, (BiFunction<ValueStore, Object, Object>) (valueStore, input) -> {
+                    return StringMan.autocompleteCommaEnum(DnsMetric.class, input.toString(), OptionData.MAX_CHOICES);
+                }));
+            });
+        }
+        {
+            Key key = Key.of(TypeToken.getParameterized(List.class, ResourceType.class).getType(), Autocomplete.class);
+            addBinding(store -> {
+                store.addParser(key, new FunctionConsumerParser(key, (BiFunction<ValueStore, Object, Object>) (valueStore, input) -> {
+                    List<ResourceType> options = new ArrayList<>(ResourceType.valuesList);
+                    return StringMan.autocompleteComma(input.toString(), options, ResourceType::valueOf, ResourceType::getName, ResourceType::getName, OptionData.MAX_CHOICES);
+                }));
+            });
+        }
+        {
+            Key key = Key.of(TypeToken.getParameterized(Map.class, MilitaryUnit.class, Long.class).getType(), Autocomplete.class);
+            addBinding(store -> {
+                store.addParser(key, new FunctionConsumerParser(key, (BiFunction<ValueStore, Object, Object>) (valueStore, input) -> {
+                    List<String> options = Arrays.asList(MilitaryUnit.values).stream().map(Enum::name).collect(Collectors.toList());
+                    return StringMan.completeMap(options, null, input.toString());
+                }));
+            });
+        }
+        {
+            Type type = TypeToken.getParameterized(Map.class, ResourceType.class, Double.class).getType();
+            Consumer<ValueStore<?>> binding = store -> {
+                Key key = Key.of(type, Autocomplete.class);
+                FunctionConsumerParser parser = new FunctionConsumerParser(key, (BiFunction<ValueStore, Object, Object>) (valueStore, input) -> {
+                    List<String> options = ResourceType.valuesList.stream().map(Enum::name).collect(Collectors.toList());
+                    return StringMan.completeMap(options, null, input.toString());
+                });
+                store.addParser(key, parser);
+                store.addParser(Key.of(type, Autocomplete.class, AllianceDepositLimit.class), parser);
+                store.addParser(Key.of(type, Autocomplete.class, NationDepositLimit.class), parser);
+            };
+            addBinding(binding);
+        }
+    }
+}
