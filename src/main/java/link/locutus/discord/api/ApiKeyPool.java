@@ -71,6 +71,7 @@ public class ApiKeyPool {
         public ApiKey(int nationId, String key) {
             this.nationId = nationId;
             this.key = key;
+            this.valid = true;
         }
 
         public boolean isValid() {

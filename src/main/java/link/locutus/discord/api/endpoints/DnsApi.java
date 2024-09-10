@@ -2,8 +2,10 @@ package link.locutus.discord.api.endpoints;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import link.locutus.discord.api.ApiKeyPool;
 import link.locutus.discord.api.generated.*;
+import link.locutus.discord.api.types.MilitaryUnit;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import java.text.SimpleDateFormat;
@@ -20,6 +22,20 @@ public class DnsApi {
                 .featuresToEnable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
                 .build();
         MAPPER.setDateFormat(new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
+
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(MilitaryUnit.class, new UpperCaseEnumDeserializer<>(MilitaryUnit.class));
+        module.addDeserializer(BankType.class, new UpperCaseEnumDeserializer<>(BankType.class));
+        module.addDeserializer(InterestType.class, new UpperCaseEnumDeserializer<>(InterestType.class));
+        module.addDeserializer(InventoryType.class, new UpperCaseEnumDeserializer<>(InventoryType.class));
+        module.addDeserializer(LoanStatus.class, new UpperCaseEnumDeserializer<>(LoanStatus.class));
+        module.addDeserializer(LoanType.class, new UpperCaseEnumDeserializer<>(LoanType.class));
+        module.addDeserializer(PaymentDurationType.class, new UpperCaseEnumDeserializer<>(PaymentDurationType.class));
+        module.addDeserializer(ResourceType.class, new UpperCaseEnumDeserializer<>(ResourceType.class));
+        module.addDeserializer(TreatyType.class, new UpperCaseEnumDeserializer<>(TreatyType.class));
+        module.addDeserializer(WarType.class, new UpperCaseEnumDeserializer<>(WarType.class));
+
+        MAPPER.registerModule(module);
     }
 
     private final ApiKeyPool apiKeyPool;

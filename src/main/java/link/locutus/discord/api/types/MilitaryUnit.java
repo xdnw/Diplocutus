@@ -4,6 +4,7 @@ import link.locutus.discord.api.generated.AllianceMilitary;
 import link.locutus.discord.commands.manager.v2.binding.annotation.Command;
 
 import java.util.EnumMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -58,6 +59,22 @@ public enum MilitaryUnit {
         this.attackPerCapacity = attackPerCapacity;
         this.getAmount = getAmount;
         this.getQuality = getQuality;
+    }
+
+    public static MilitaryUnit parse(String input) {
+        String capitalized = input.toUpperCase(Locale.ROOT).replace(" ", "_");
+        try {
+            return valueOf(capitalized);
+        } catch (IllegalArgumentException e) {}
+        return switch (capitalized) {
+            case "INFANTRY_EQUIPMENT" -> INFANTRY;
+            case "SUPPORT_VEHICLES" -> SUPPORT_EQUIPMENT;
+//            case "CRUISE_MISSILES" -> null; // Add appropriate enum value if exists
+//            case "NUCLEAR_MISSILES" -> null; // Add appropriate enum value if exists
+            default -> {
+                throw new IllegalArgumentException("Invalid military unit: " + input);
+            }
+        };
     }
 
     public static int[] getBuffer() {

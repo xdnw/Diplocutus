@@ -94,23 +94,23 @@ public class DnsQuery<T> {
     }
 
     public List<T> call() {
-        if (true) {
-            // testing
-            String filePathInResources = "mock/" + endpoint + ".json";
-            try {
-                System.out.println("Fetch API (mock) " + filePathInResources);
-                URL url = Resources.getResource(filePathInResources);
-                String text = Resources.toString(url, StandardCharsets.UTF_8);
-                if (text == null) {
-                    throw new RuntimeException("Failed to read file: " + filePathInResources);
-                }
-                System.out.println("Read file: " + filePathInResources);
-                return mapper.readerForListOf(clazz).readValue(text);
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-        }
+//        if (true) {
+//            // testing
+//            String filePathInResources = "mock/" + endpoint + ".json";
+//            try {
+//                System.out.println("Fetch API (mock) " + filePathInResources);
+//                URL url = Resources.getResource(filePathInResources);
+//                String text = Resources.toString(url, StandardCharsets.UTF_8);
+//                if (text == null) {
+//                    throw new RuntimeException("Failed to read file: " + filePathInResources);
+//                }
+//                System.out.println("Read file: " + filePathInResources);
+//                return mapper.readerForListOf(clazz).readValue(text);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                throw new RuntimeException(e);
+//            }
+//        }
         ApiKeyPool.ApiKey next = pool.getNextApiKey();
         String url = getUrl(next.getKey());
         try {

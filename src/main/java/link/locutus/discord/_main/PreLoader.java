@@ -112,6 +112,9 @@ public class PreLoader implements ILoader {
         this.apiV3 = add("PW-API V3", () -> {
             ApiKeyPool.SimpleBuilder builder = ApiKeyPool.builder();
             Settings.INSTANCE.API_KEY_POOL.forEach(builder::addKey);
+            if (builder.isEmpty()) {
+                throw new IllegalArgumentException("No API keys found in the config.yaml");
+            }
             ApiKeyPool v3Pool = builder.build();
             return new DnsApi(v3Pool);
         });
