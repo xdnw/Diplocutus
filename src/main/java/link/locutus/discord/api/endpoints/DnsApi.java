@@ -22,8 +22,10 @@ public class DnsApi {
                 .featuresToEnable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
                 .build();
         MAPPER.setDateFormat(new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
-
         SimpleModule module = new SimpleModule();
+
+        module.addDeserializer(Date.class, new DateDeserializer());
+
         module.addDeserializer(MilitaryUnit.class, new UpperCaseEnumDeserializer<>(MilitaryUnit.class));
         module.addDeserializer(BankType.class, new UpperCaseEnumDeserializer<>(BankType.class));
         module.addDeserializer(InterestType.class, new UpperCaseEnumDeserializer<>(InterestType.class));
