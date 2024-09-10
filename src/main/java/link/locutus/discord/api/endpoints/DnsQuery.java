@@ -96,7 +96,7 @@ public class DnsQuery<T> {
     public List<T> call() {
         if (true) {
             // testing
-            String filePathInResources = "dummy/" + endpoint + ".json";
+            String filePathInResources = "mock/" + endpoint + ".json";
             try {
                 System.out.println("Fetch API (mock) " + filePathInResources);
                 URL url = Resources.getResource(filePathInResources);
