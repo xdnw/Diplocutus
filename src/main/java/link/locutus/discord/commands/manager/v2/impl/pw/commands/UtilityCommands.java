@@ -869,7 +869,7 @@ public class UtilityCommands {
 
             for (DBNation nation : sorted) {
                 StringBuilder entry = new StringBuilder();
-                entry.append("<" + Settings.INSTANCE.DNS_URL() + "/nation/id=" + nation.getNation_id() + ">")
+                entry.append("<" + Settings.INSTANCE.DNS_URL() + "/nation/" + nation.getNation_id() + ">")
                         .append(" | " + String.format("%16s", nation.getNation()))
                         .append(" | " + String.format("%16s", nation.getAllianceName()))
                         .append("\n```")

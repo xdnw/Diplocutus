@@ -507,8 +507,7 @@ public class ReportManager {
                 body.append("Image: <" + StringMan.join(imageUrls, "> <") + ">\n");
             }
             if (forumUrl != null && !forumUrl.isEmpty()) {
-                // https://forum.politicsandwar.com/index.php?/topic
-                String urlStub = forumUrl.replace("https://forum.politicsandwar.com/index.php?/topic/", "");
+                String urlStub = forumUrl.replace("https://forum.diplomacyandstrife.com/index.php?/topic/", "");
                 String idAndName = urlStub.split("/")[0];
                 body.append("Forum: " + MarkupUtil.markdownUrl(idAndName, forumUrl) + "\n");
             }

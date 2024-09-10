@@ -274,7 +274,7 @@ public class PWBindings extends BindingHelper {
         return new DepositType.DepositTypeInfo(type, value, ignore);
     }
 
-    @Binding(value = "nation id, name or url", examples = {"Borg", "<@664156861033086987>", "Danzek", "189573", "https://politicsandwar.com/nation/id=189573"})
+    @Binding(value = "nation id, name or url", examples = {"Borg", "<@664156861033086987>", "Danzek", "189573", "https://diplomacyandstrife.com/nation/2163"})
     public static DBNation nation(@Default @Me User selfUser, String input) {
         DBNation nation = DiscordUtil.parseNation(input);
         if (nation == null) {
@@ -306,7 +306,7 @@ public class PWBindings extends BindingHelper {
         return nationOrAlliance(input, null);
     }
 
-    @Binding(value = "A nation or alliance name, url or id. Prefix with `AA:` or `nation:` to avoid ambiguity if there exists both by the same name or id", examples = {"Borg", "https://politicsandwar.com/alliance/id=1234", "aa:1234"})
+    @Binding(value = "A nation or alliance name, url or id. Prefix with `AA:` or `nation:` to avoid ambiguity if there exists both by the same name or id", examples = {"Borg", "https://diplomacyandstrife.com/alliance/1234", "aa:1234"})
     public static NationOrAlliance nationOrAlliance(String input, @Default ParameterData data) {
         return nationOrAlliance(data, input, false);
     }
@@ -316,7 +316,7 @@ public class PWBindings extends BindingHelper {
         if (lower.startsWith("aa:") || lower.startsWith("alliance:")) {
             return alliance(data, input.split(":", 2)[1]);
         }
-        if (lower.contains("alliance/id=")) {
+        if (lower.contains("alliance/")) {
             return alliance(data, input);
         }
         DBNation nation = DiscordUtil.parseNation(input, forceAllowDeleted || (data != null && data.getAnnotation(AllowDeleted.class) != null));
@@ -332,7 +332,7 @@ public class PWBindings extends BindingHelper {
         if (lower.startsWith("aa:") || lower.startsWith("alliance:")) {
             return alliance(data, input.split(":", 2)[1]);
         }
-        if (lower.contains("alliance/id=")) {
+        if (lower.contains("alliance/")) {
             return alliance(data, input);
         }
         if (lower.startsWith("guild:")) {
@@ -359,7 +359,7 @@ public class PWBindings extends BindingHelper {
         return Locutus.imp().getCommandManager().getV2().getAlliancePlaceholders();
     }
 
-    @Binding(examples = {"Borg", "alliance/id=7452", "647252780817448972"}, value = "A nation or alliance name, url or id, or a guild id")
+    @Binding(examples = {"Borg", "alliance/1411", "647252780817448972"}, value = "A nation or alliance name, url or id, or a guild id")
     public static NationOrAllianceOrGuild nationOrAllianceOrGuild(String input, @Default ParameterData data, @Default @Me GuildDB selfDb) {
         if (data != null && input.equals("*")) {
             if (data.getAnnotation(StarIsGuild.class) != null && selfDb != null) {
@@ -410,7 +410,7 @@ public class PWBindings extends BindingHelper {
         return alliance(null, input);
     }
 
-    @Binding(examples = {"'Error 404'", "7413", "https://politicsandwar.com/alliance/id=7413"}, value = "An alliance name id or url")
+    @Binding(examples = {"'Error 404'", "7413", "https://diplomacyandstrife.com/alliance/1411"}, value = "An alliance name id or url")
     public static DBAlliance alliance(ParameterData data, String input) {
         Integer aaId = DNS.parseAllianceId(input);
         if (aaId == null) throw new IllegalArgumentException("Invalid alliance: " + input);
@@ -960,7 +960,7 @@ public class PWBindings extends BindingHelper {
         return warChannel;
     }
 
-    @Binding(value = "A project name. Replace spaces with `_`. See: <https://politicsandwar.com/nation/projects/>", examples = "ACTIVITY_CENTER")
+    @Binding(value = "A project name. Replace spaces with `_`. See: <https://diplomacy-strife.fandom.com/wiki/Projects>", examples = "ACTIVITY_CENTER")
     public static Project project(String input) {
         Project project = Project.parse(input);
         if (project == null) throw new IllegalArgumentException("Invalid project: `"  + input + "`. Options: " + StringMan.getString(Project.values));

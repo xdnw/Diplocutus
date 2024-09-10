@@ -387,8 +387,8 @@ public final class DNS {
         if (arg.equalsIgnoreCase("none")) {
             return 0;
         }
-        if (arg.startsWith(Settings.INSTANCE.DNS_URL() + "/alliance/id=") || arg.startsWith(Settings.INSTANCE.DNS_URL() + "//alliance/id=") || arg.startsWith("" + Settings.INSTANCE.DNS_URL() + "/alliance/id=")) {
-            String[] split = arg.split("=");
+        if (arg.startsWith(Settings.INSTANCE.DNS_URL() + "/alliance/") || arg.startsWith("" + Settings.INSTANCE.DNS_URL() + "/alliance/")) {
+            String[] split = arg.split("/alliance/");
             if (split.length == 2) {
                 arg = split[1].replaceAll("/", "");
             }
@@ -404,8 +404,8 @@ public final class DNS {
                 return alliance.getAlliance_id();
             }
         }
-        if (arg.contains("=HYPERLINK") && arg.contains("alliance/id=")) {
-            String regex = "alliance/id=([0-9]+)";
+        if (arg.contains("=HYPERLINK") && arg.contains("alliance/")) {
+            String regex = "alliance/([0-9]+)";
             Matcher m = Pattern.compile(regex).matcher(arg);
             m.find();
             arg = m.group(1);
@@ -504,7 +504,7 @@ public final class DNS {
             DBNation nation = Locutus.imp().getNationDB().getNation(nationOrAllianceId);
             name = nation != null ? nation.getNation() : nationOrAllianceId + "";
         }
-        String url = "" + Settings.INSTANCE.DNS_URL() + "/" + type + "/id=" + nationOrAllianceId;
+        String url = "" + Settings.INSTANCE.DNS_URL() + "/" + type + "/" + nationOrAllianceId;
         return String.format("[%s](%s)", name, url);
     }
 
@@ -520,15 +520,15 @@ public final class DNS {
             DBNation nation = Locutus.imp().getNationDB().getNation(nationOrAllianceId);
             name = nation != null ? nation.getNation() : nationOrAllianceId + "";
         }
-        return "" + Settings.INSTANCE.DNS_URL() + "/" + type + "/id=" + nationOrAllianceId;
+        return "" + Settings.INSTANCE.DNS_URL() + "/" + type + "/" + nationOrAllianceId;
     }
 
     public static String getNationUrl(int nationId) {
-        return "" + Settings.INSTANCE.DNS_URL() + "/nation/id=" + nationId;
+        return "" + Settings.INSTANCE.DNS_URL() + "/nation/" + nationId;
     }
 
     public static String getAllianceUrl(int cityId) {
-        return "" + Settings.INSTANCE.DNS_URL() + "/alliance/id=" + cityId;
+        return "" + Settings.INSTANCE.DNS_URL() + "/alliance/" + cityId;
     }
 
     public static BiFunction<Double, Double, Integer> getIsNationsInScoreRange(Collection<DBNation> attackers) {

@@ -70,8 +70,8 @@ public class NationPlaceholders extends Placeholders<DBNation> {
                 new SelectorInfo("leader:NATION_NAME", "leader:Danzek", "A qualified leader name"),
                 new SelectorInfo("aa:ALLIANCE_NAME", "aa:Rose", "A qualified alliance name"),
                 new SelectorInfo("alliance:ALLIANCE_NAME", "alliance:Eclipse", "A qualified alliance name"),
-                new SelectorInfo("nation/id=NATION_ID", "nation/id=6", "A nation url"),
-                new SelectorInfo("alliance/id=ALLIANCE_ID", "alliance/id=790", "An alliance url"),
+                new SelectorInfo("nation/NATION_ID", "nation/2163", "A nation url"),
+                new SelectorInfo("alliance/ALLIANCE_ID", "alliance/1411", "An alliance url"),
                 new SelectorInfo("coalition:COALITION", "coalition:allies", "A qualified coalition name"),
                 new SelectorInfo("~COALITION", "~enemies", "A coalition name"),
                 new SelectorInfo("NATION_NAME", "Borg", "An unqualified nation name"),
@@ -82,8 +82,6 @@ public class NationPlaceholders extends Placeholders<DBNation> {
                 new SelectorInfo("ROLE_ID", "123456789012345678", "A discord role id"),
                 new SelectorInfo("@USER_MENTION", "@xdnw", "A discord user mention or name"),
                 new SelectorInfo("USER_ID", "123456789012345678", "A discord user id"),
-                new SelectorInfo("https://politicsandwar.com/index.php?id=15&tax_id=TAX_ID", "https://politicsandwar.com/index.php?id=15&tax_id=1234", "A full tax url"),
-                new SelectorInfo("TAX_ID", "tax_id=1234", "A tax bracket id or url"),
                 new SelectorInfo("*", null, "All nations")
         ));
     }

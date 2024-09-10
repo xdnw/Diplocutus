@@ -71,7 +71,7 @@ public class AlliancePlaceholders extends Placeholders<DBAlliance> {
         return new LinkedHashSet<>(List.of(
                 new SelectorInfo("aa:ALLIANCE_NAME", "aa:Rose", "A qualified alliance name"),
                 new SelectorInfo("alliance:ALLIANCE_NAME", "alliance:Eclipse", "A qualified alliance name"),
-                new SelectorInfo("alliance/id=ALLIANCE_ID", "alliance/id=790", "An alliance url"),
+                new SelectorInfo("alliance/ALLIANCE_ID", "alliance/1411", "An alliance url"),
                 new SelectorInfo("ALLIANCE_ID", "790", "An alliance id"),
                 new SelectorInfo("coalition:COALITION", "coalition:allies", "A qualified coalition name"),
                 new SelectorInfo("~COALITION", "~enemies", "A coalition name"),

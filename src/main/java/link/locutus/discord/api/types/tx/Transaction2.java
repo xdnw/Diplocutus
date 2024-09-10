@@ -153,26 +153,6 @@ public abstract class Transaction2 {
         return false;
     }
 
-    private static Map.Entry<Long, Integer> idIsAlliance(Element td) {
-        try {
-            long id;
-            int type;
-
-            String url = td.getElementsByTag("a").get(0).attr("href").toLowerCase();
-            id = Integer.parseInt(url.split("=")[1]);
-            if (url.contains("/alliance/")) {
-                type = 2;
-            } else if (url.contains("/nation/")) {
-                type = 1;
-            } else {
-                type = 0;
-            }
-            return new AbstractMap.SimpleEntry<>(id, type);
-        } catch (IndexOutOfBoundsException ignore) {
-            return new AbstractMap.SimpleEntry<>(0L, 0);
-        }
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Transaction2 tx) {

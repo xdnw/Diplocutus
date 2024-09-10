@@ -1648,7 +1648,7 @@ public class ArrayUtil {
 //        };
 //        System.out.println(calculate("5+3>1?55:30", func));
 //        System.out.println("---");
-//        List<LazyMathEntity> result = (calculate("HYPERLINK(\"politicsandwar.com/nation/id={nation_id}\", \"{nation}\")", func));
+//        List<LazyMathEntity> result = (calculate("HYPERLINK(\"diplomacyandstrife.com/nation/{nation_id}\", \"{nation}\")", func));
 //        if (result.size() == 1) {
 //            System.out.println(result.get(0).resolve(null));
 //        } else {

@@ -257,7 +257,7 @@ public class GuildHandler {
                 String title;
                 if (current.isVacation() == false && (current.active_m() < 2880 && !current.hasProtection())) {
                     type = "ACTIVE NATION SET TO APPLICANT";
-                    title = type + ": " + current.getNation() + " | " + "" + Settings.INSTANCE.DNS_URL() + "/nation/id=" + current.getNation_id() + " | " + current.getAllianceName();
+                    title = type + ": " + current.getNation() + " | " + "" + Settings.INSTANCE.DNS_URL() + "/nation/" + current.getNation_id() + " | " + current.getAllianceName();
                 } else {
                     if (current.isVacation()) {
                         type = "INACTIVE VACATION MODE NATION SET TO APPLICANT";
@@ -266,7 +266,7 @@ public class GuildHandler {
                     } else {
                         type = "INACTIVE NATION SET TO APPLICANT";
                     }
-                    title = type + ": " + current.getNation() + " | " + "" + Settings.INSTANCE.DNS_URL() + "/nation/id=" + current.getNation_id() + " | " + current.getAllianceName();
+                    title = type + ": " + current.getNation() + " | " + "" + Settings.INSTANCE.DNS_URL() + "/nation/" + current.getNation_id() + " | " + current.getAllianceName();
                 }
                 String message = "**" + title + "**\n" + current.toString() + "\n";
                 RateLimitUtil.queueMessage(channel, message, true, 60);
@@ -330,7 +330,7 @@ public class GuildHandler {
                     if (user != null) {
                         type += " | " + user.getAsMention();
                     }
-                    String title = type + ": " + current.getNation() + " | " + "" + Settings.INSTANCE.DNS_URL() + "/nation/id=" + current.getNation_id() + " | " + current.getAllianceName();
+                    String title = type + ": " + current.getNation() + " | " + "" + Settings.INSTANCE.DNS_URL() + "/nation/" + current.getNation_id() + " | " + current.getAllianceName();
 
                     String message = "**" + title + "**" + "\n" + current.toString() + "\n";
                     RateLimitUtil.queueMessage(channel, message, true, 60);

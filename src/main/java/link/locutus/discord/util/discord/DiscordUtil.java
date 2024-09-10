@@ -821,8 +821,8 @@ public class DiscordUtil {
         }
         if (arg.toLowerCase().startsWith("nation:")) arg = arg.substring(7);
 
-        if (arg.contains("/nation/id=") || arg.contains("politicsandwar.com/nation/war/declare/id=") || arg.contains("politicsandwar.com/nation/espionage/eid=")) {
-            String[] split = arg.split("=");
+        if (arg.contains("/nation/") || arg.contains("diplomacyandstrife.com/nation/")) {
+            String[] split = arg.split("/nation/");
             if (split.length == 2) {
                 arg = split[1].replaceAll("/", "");
             }
@@ -866,8 +866,8 @@ public class DiscordUtil {
             if (nation != null) return nation.getId();
         }
         if (!MathMan.isInteger(arg)) {
-            if (arg.contains("=HYPERLINK") && arg.contains("nation/id=")) {
-                String regex = "nation/id=([0-9]+)";
+            if (arg.contains("=HYPERLINK") && arg.contains("nation/")) {
+                String regex = "nation/([0-9]+)";
                 Matcher m = Pattern.compile(regex).matcher(arg);
                 m.find();
                 arg = m.group(1);

@@ -191,7 +191,7 @@ public class WarCard {
     }
 
     private String formatNation(boolean attacker) {
-        String nationFormat = "[%s](%s)- [%s](" + Settings.INSTANCE.DNS_URL() + "/alliance/id=%s)- %s- %s- %s\n" + // name - alliance - active
+        String nationFormat = "[%s](%s)- [%s](" + Settings.INSTANCE.DNS_URL() + "/alliance/%s)- %s- %s- %s\n" + // name - alliance - active
                 "%s " +
                 "%s " +
                 "**Resistance**:\n" +

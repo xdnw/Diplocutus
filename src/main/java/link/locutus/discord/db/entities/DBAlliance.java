@@ -103,6 +103,10 @@ public class DBAlliance implements NationList, NationOrAlliance, GuildOrAlliance
 
     public boolean update(NationDB db, Alliance alliance, Consumer<Event> eventConsumer) {
         DBAlliance copy = null;
+        if (alliance.AllianceId != null && this.AllianceId != alliance.AllianceId) {
+            copy = this.copy();
+            this.AllianceId = alliance.AllianceId;
+        }
         if (alliance.CreationDate != null && this.CreationDate != alliance.CreationDate.getTime()) {
             copy = this.copy();
             this.CreationDate = alliance.CreationDate.getTime();
@@ -678,7 +682,7 @@ public class DBAlliance implements NationList, NationOrAlliance, GuildOrAlliance
 
     @Command(desc = "Get the alliance's in-game link")
     public String getUrl() {
-        return "" + Settings.INSTANCE.DNS_URL() + "/alliance/id=" + getAlliance_id();
+        return "" + Settings.INSTANCE.DNS_URL() + "/alliance/" + getAlliance_id();
     }
 
     public boolean exists() {
@@ -854,7 +858,7 @@ public class DBAlliance implements NationList, NationOrAlliance, GuildOrAlliance
         DnsApi api = getApi(requireLeader);
         if (api == null) {
             String msg = "No api key found for " + getMarkdownUrl() + ". Please use" + CM.settings_default.registerApiKey.cmd.toSlashMention() + "\n" +
-                    "Api key can be found on <https://politicsandwar.com/account/>";
+                    "Api key can be found on <https://diplomacyandstrife.com/account/>";
             if (requireLeader) msg += " and ensure your in-game position grants: " + "LEADER";
             throw new IllegalArgumentException(msg);
         }

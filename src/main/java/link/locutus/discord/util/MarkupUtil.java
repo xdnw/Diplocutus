@@ -242,7 +242,6 @@ public class MarkupUtil {
     }
 
     public static String markdownToBBCode(String source) {
-//        source = source.replace("https://politicsandwar.com", "https://tinyurl.com/borg404");
         source = source.replaceAll("([^`])`([^`])", "$1'$2");
         source = source.replaceAll("_", "\u200B");
         String result = htmlToBBCode(markdownToHTML(source));

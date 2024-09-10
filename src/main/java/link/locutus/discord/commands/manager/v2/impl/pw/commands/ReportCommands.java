@@ -219,7 +219,6 @@ public class ReportCommands {
                          @Default @Arg("Nation to report") DBNation nation,
                          @Default @Arg("Discord user to report") Long discord_user_id,
                          @Arg("Image evidence of report") @Switch("i") String imageEvidenceUrl,
-                         @Arg("Link to relevant forum post") @Switch("p") String forum_post,
                          @Arg("Link to relevant news post") @Switch("m") String news_post,
                                @Switch("u") ReportManager.Report updateReport,
                                @Switch("f") boolean force) {
@@ -255,9 +254,6 @@ public class ReportCommands {
             if (message == null) {
                 message = existing.message;
             }
-            if (forum_post == null && existing.forumUrl != null && !existing.forumUrl.isEmpty()) {
-                forum_post = existing.forumUrl;
-            }
             if (news_post == null && existing.newsUrl != null && !existing.newsUrl.isEmpty()) {
                 news_post = existing.newsUrl;
             }
@@ -282,36 +278,27 @@ public class ReportCommands {
 
         // At least one forum post or news report must be attached
         Set<Long> supportedServers = new HashSet<>(Arrays.asList(
-                869424139037990912L, // Ducc News Network
-                446601982564892672L, // Royal Orbis News
-                821587932384067584L, // Orbis Crowned News
-                827905979575959629L, // Very Good Media
-                353730979816407052L, // Pirate Island Times
-                1022224780751011860L, // Micro Minute
-                580481635645128745L, // Thalmoria
-                1139041525817409539L, // Orbis Business & Innovation Forum
-                756580822739320883L // Black Label Media
+                1062236523120033793L, // GMT
+                715153567727747163L, // A S S
+                952271499060998197L // Main
         ));
 
 
-        if (forum_post != null && !forum_post.startsWith("https://forum.politicsandwar.com/index.php?/topic/")) {
-            return "Forum post (`" + forum_post + "`) must be on domain `https://forum.politicsandwar.com/index.php?/topic/`\n" + Messages.FORUM_NEWS_ERROR;
-        }
         if (news_post != null) {
             // https://discord.com/channels/SERVER_ID/992205932006228041/1073856622545346641
             // remove the https://discord.com/channels/ part
             news_post = news_post.replace("ptb.", "");
             String[] idsStr = news_post.substring("https://discord.com/channels/".length()).split("/");
             if (idsStr.length != 3) {
-                return "News post must be discord message link in the format `https://discord.com/channels/SERVER_ID/CHANNEL_ID/MESSAGE_ID`\n" + Messages.FORUM_NEWS_ERROR;
+                return "News post must be discord message link in the format `https://discord.com/channels/SERVER_ID/CHANNEL_ID/MESSAGE_ID`\n";
             }
             try {
                 long serverId = Long.parseLong(idsStr[0]);
                 if (!supportedServers.contains(serverId)) {
-                    return "The news server you linked is not supported\n" + Messages.FORUM_NEWS_ERROR;
+                    return "The news server you linked is not supported\n";
                 }
             } catch (NumberFormatException e) {
-                return "News post must be discord message link in the format `https://discord.com/channels/SERVER_ID/CHANNEL_ID/MESSAGE_ID`\n" + Messages.FORUM_NEWS_ERROR;
+                return "News post must be discord message link in the format `https://discord.com/channels/SERVER_ID/CHANNEL_ID/MESSAGE_ID`\n";
             }
     }
 
@@ -357,9 +344,6 @@ public class ReportCommands {
             body.append("Your message:\n```\n" + message + "\n```\n");
             if (imageEvidenceUrl != null) {
                 body.append("Image evidence: " + imageEvidenceUrl + "\n");
-            }
-            if (forum_post != null) {
-                body.append("Forum post: " + forum_post + "\n");
             }
             if (news_post != null) {
                 body.append("News post: " + news_post + "\n");
@@ -408,7 +392,7 @@ public class ReportCommands {
             reporterGuildId,
             message,
             imageUrls,
-            forum_post == null ? "" : forum_post,
+            "", // TODO
             news_post == null ? "" : news_post,
             System.currentTimeMillis(),
             Roles.INTERNAL_AFFAIRS_STAFF.hasOnRoot(author));

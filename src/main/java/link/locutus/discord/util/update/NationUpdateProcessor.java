@@ -437,7 +437,7 @@ public class NationUpdateProcessor {
 //        }
         String msg = defender.toMarkdown(true, true, true, true, true, false);
         String title = "Target: " + defender.getNation();
-        String url = "https://politicsandwar.com/nation/war/declare/id=" + defender.getNation_id();
+        String url = "https://diplomacyandstrife.com/nation/" + defender.getNation_id();
         msg += "\n" + url;
 
         String finalMsg = msg;
@@ -742,7 +742,7 @@ public class NationUpdateProcessor {
             StringBuilder body = new StringBuilder(previous.toEmbedString());
             String finalType = type;
             String finalBody = body.toString();
-            String title = "Detected " + finalType + ": " + previous.getNation() + " | " + "" + Settings.INSTANCE.DNS_URL() + "/nation/id=" + previous.getNation_id() + " | " + previous.getAllianceName();
+            String title = "Detected " + finalType + ": " + previous.getNation() + " | " + "" + Settings.INSTANCE.DNS_URL() + "/nation/" + previous.getNation_id() + " | " + previous.getAllianceName();
             AlertUtil.forEachChannel(f -> true, GuildKey.DELETION_ALERT_CHANNEL, new BiConsumer<MessageChannel, GuildDB>() {
                 @Override
                 public void accept(MessageChannel channel, GuildDB db) {

@@ -1,5 +1,5 @@
 Terms and Conditions
-1. Users of Locutus are required the Politics and War Game Rules found here: <https://politicsandwar.com/rules/>
+1. Users of Locutus are required the Politics and War Game Rules found here: <https://diplomacyandstrife.com/rules/>
 2. No guarantee is provided of the accuracy of any content provided through or by the service.
 3. Locutus is licensed under the GNU General Public License 3.0 which can be found here: <https://github.com/xdnw/diplocutus/blob/master/LICENSE.md>
 4. Locutus will not be used in an abusive or unlawful manner.

@@ -481,7 +481,7 @@ public class NationDB extends DBMainV2 implements SyncableDatabase {
                     dirtyAlliances.add(existing);
                 } else {
                     String originalName = existing.getName();
-                    if (existing.update(alliance, eventConsumer)) {
+                    if (existing.update(this, alliance, eventConsumer)) {
                         dirtyAlliances.add(existing);
                         if (!originalName.equals(existing.getName())) {
                             allianceByNameCache.put(existing.getName().toLowerCase(Locale.ROOT), existing.getId());
@@ -1697,7 +1697,7 @@ public class NationDB extends DBMainV2 implements SyncableDatabase {
         List<Nation> record = v3.nation(nation.getId()).call();
         if (record != null && !record.isEmpty()) {
             Nation nationRecord = record.get(0);
-            boolean changed = nation.update(nationRecord, eventConsumer);
+            boolean changed = nation.update(this, nationRecord, eventConsumer);
             save(List.of(nation));
             return changed;
         }

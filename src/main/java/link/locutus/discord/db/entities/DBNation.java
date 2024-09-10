@@ -1453,9 +1453,9 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
     public String toMarkdown(boolean war, boolean showOff, boolean showSpies, boolean showInfra, boolean spies) {
         StringBuilder response = new StringBuilder();
         if (war) {
-            response.append("<" + Settings.INSTANCE.DNS_URL() + "/nation/war/declare/id=" + getNation_id() + ">");
+            response.append("<" + Settings.INSTANCE.DNS_URL() + "/nation/" + getNation_id() + ">");
         } else {
-            response.append("<" + Settings.INSTANCE.DNS_URL() + "/nation/id=" + getNation_id() + ">");
+            response.append("<" + Settings.INSTANCE.DNS_URL() + "/nation/" + getNation_id() + ">");
         }
         // TODO FIXME :||remove
 //        String beigeStr = null;
@@ -1845,7 +1845,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         if (title) {
             String nationUrl;
             if (war) {
-                String url = Settings.INSTANCE.DNS_URL() + "/nation/war/declare/id=" + getNation_id();
+                String url = Settings.INSTANCE.DNS_URL() + "/nation/" + getNation_id();
                 nationUrl = embed ? MarkupUtil.markdownUrl(getName(), url) : "<" + url + ">";
             } else {
                 nationUrl = getNationUrlMarkup(embed);

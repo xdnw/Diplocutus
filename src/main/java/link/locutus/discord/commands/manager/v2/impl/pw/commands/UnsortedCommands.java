@@ -146,7 +146,7 @@ public class UnsortedCommands {
     }
 
     private void sendIO(StringBuilder out, String selfName, boolean isAlliance, Map<Integer, List<Transaction2>> transferMap, long timestamp, boolean inflow) {
-        String URL_BASE = "" + Settings.INSTANCE.DNS_URL() + "/%s/id=%s";
+        String URL_BASE = "" + Settings.INSTANCE.DNS_URL() + "/%s/%s";
         long days = TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis() - timestamp);
         for (Map.Entry<Integer, List<Transaction2>> entry : transferMap.entrySet()) {
             int id = entry.getKey();
@@ -181,10 +181,9 @@ public class UnsortedCommands {
     }
 
     @Command(desc="Set your api and bot key for the bot\n" +
-            "Your API key can be found on the account page: <https://politicsandwar.com/account/>\n" +
-            "See: <https://forms.gle/KbszjAfPVVz3DX9A7> and DM <@258298021266063360> to get a bot key")
+            "Your API key can be found on the account page: <https://diplomacyandstrife.com/account/>")
     @Ephemeral
-    public String addApiKey(@Me IMessageIO io, @Me DBNation me, DBNation nation, String apiKey, @Default String verifiedBotKey) {
+    public String addApiKey(@Me IMessageIO io, @Me DBNation me, DBNation nation, String apiKey) {
         if (me.getId() != nation.getId()) {
             throw new IllegalArgumentException("You can only set your own api key");
             }
@@ -192,7 +191,7 @@ public class UnsortedCommands {
         apiKey = apiKey.trim();
         // check if string is HEX (case insensitive)
         if (!apiKey.matches("[0-9a-fA-F]+")) {
-            return "Invalid API key. Please use the API key found on the account page: <https://politicsandwar.com/account/>";
+            return "Invalid API key. Please use the API key found on the account page: <https://diplomacyandstrife.com/account/>";
         }
         try {
             IMessageBuilder msg = io.getMessage();

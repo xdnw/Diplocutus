@@ -1142,8 +1142,8 @@ public class PlaceholdersMap {
                         int id = Integer.parseInt(input);
                         return Locutus.imp().getWarDb().getWarsById(Set.of(id));
                     }
-                    if (input.contains("/war/id=")) {
-                        int warId = Integer.parseInt(input.substring(input.indexOf('=') + 1));
+                    if (input.contains("/war/")) {
+                        int warId = Integer.parseInt(input.substring(input.indexOf("/war/") + 5));
                         return Locutus.imp().getWarDb().getWarsById(Set.of(warId));
                     }
                     Set<NationOrAlliance> natOrAA = nationOrAlliancesSingle(store, input, false);
@@ -1164,8 +1164,8 @@ public class PlaceholdersMap {
                     return f -> warIds.contains(f.getWarId());
                 }
             }
-            if (input.contains("/war/id=")) {
-                int id = Integer.parseInt(input.substring(input.indexOf('=') + 1));
+            if (input.contains("/war/")) {
+                int id = Integer.parseInt(input.substring(input.indexOf("/war/") + 5));
                 return f -> f.getWarId() == id;
             }
             if (MathMan.isInteger(input)) {
