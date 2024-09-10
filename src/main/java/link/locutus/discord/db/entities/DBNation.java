@@ -1803,7 +1803,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
             body.append("L:`" + MathMan.format(land)).append("` ");
 
             body.append(" | O:").append("`").append(getOff()).append("/").append(getMaxOff()).append("` \uD83D\uDDE1\uFE0F | ");
-            body.append("D:`").append(getDef()).append("/").append(3).append("` \uD83D\uDEE1\uFE0F").append(" | `").append(MathMan.format(Score) + "ns`\n");
+            body.append("D:`").append(getDef()).append("/").append(2).append("` \uD83D\uDEE1\uFE0F").append(" | `").append(MathMan.format(Score) + "ns`\n");
         }
         //Domestic/War policy | beige turns | score
         long diff = System.currentTimeMillis() - ProtectionTime;

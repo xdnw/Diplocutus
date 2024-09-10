@@ -74,7 +74,7 @@ public class Treaty implements DBEntity<AllianceTreaties, Treaty> {
 
     @Override
     public Object[] write() {
-        return new Object[]{id, date, endTime, type, fromId, toId};
+        return new Object[]{id, date, endTime, type.ordinal(), fromId, toId};
     }
 
     @Override

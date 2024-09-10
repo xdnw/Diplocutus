@@ -339,16 +339,14 @@ public class GuildKey {
             for (ApiKeyPool.ApiKey key : apiKeys) {
                 if (existingNationIds.containsKey(key.getNationId())) {
                     response.append("The existing key for nation: " + key.getNationId() + " is already registered\n");
-                    existing.remove(key);
+                    existing.removeIf(f -> f.getNationId() == key.getNationId());
                 }
                 if (existingNationIds.containsValue(key.getKey())) {
                     response.append("The existing key for nation: " + key.getNationId() + " is already registered\n");
-                    existing.remove(key);
+                    existing.removeIf(f -> f.getKey().equals(key.getKey()));
                 }
                 existing.add(key);
             }
-
-            existing.addAll(apiKeys);
             apiKeys = API_KEY.allowedAndValidate(db, user, existing);
             Set<Integer> aaIds = new HashSet<>(db.getAllianceIds());
             for (ApiKeyPool.ApiKey key : existing) {
@@ -362,7 +360,7 @@ public class GuildKey {
                 response.append("The following alliance ids are missing from the api keys: " + StringMan.join(aaIds, ",") + "\n");
             }
 
-            response.append(API_KEY.set(db, user, existing));
+            response.append(API_KEY.set(db, user, apiKeys));
             return response.toString();
         }
 

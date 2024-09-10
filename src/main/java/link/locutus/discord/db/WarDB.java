@@ -163,7 +163,6 @@ public class WarDB extends DBMainV2 {
     public void loadWars() {
         List<DBWar> wars = loadAll(new DBWar());
         for (DBWar war : wars) {
-            wars.add(war);
             if (war.isActive()) {
                 activeWars.addActiveWar(war);
             }
