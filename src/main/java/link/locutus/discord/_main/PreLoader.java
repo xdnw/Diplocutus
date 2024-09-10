@@ -109,7 +109,7 @@ public class PreLoader implements ILoader {
         } else {
             this.adminUserId = CompletableFuture.completedFuture(() -> Settings.INSTANCE.ADMIN_USER_ID);
         }
-        this.apiV3 = add("PW-API V3", () -> {
+        this.apiV3 = add("DNS-API V3", () -> {
             ApiKeyPool.SimpleBuilder builder = ApiKeyPool.builder();
             Settings.INSTANCE.API_KEY_POOL.forEach(builder::addKey);
             if (builder.isEmpty()) {

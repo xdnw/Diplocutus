@@ -73,11 +73,11 @@ public class WikiHostingLocutus extends BotWikiGen {
                             
                 # 3. Setting up the config yaml <a name="setting-up-the-config-yaml"></a>
                             
-                The Locutus bot requires a configuration file (`config.yaml`) to be set up with your P&W (Politics & War) and Discord details. Follow these steps to set up the `config.yaml` file:
+                The Locutus bot requires a configuration file (`config.yaml`) to be set up with your D&S (Diplomacy & Strife) and Discord details. Follow these steps to set up the `config.yaml` file:
                             
                 1. Close the Locutus bot program if it's running.
                 2. Open the `config/config.yaml` file in a text editor.
-                3. Provide your P&W and Discord details in the `config.yaml` file.
+                3. Provide your D&S and Discord details in the `config.yaml` file.
                    - To register a bot with Discord, go to the [Discord Developer Portal](https://discord.com/developers/applications) and create a new application. Make sure to enable the guild and message intents for your bot user.
                    - To obtain server IDs, you can refer to this guide on [how to find your User, Server, and Message ID](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-).
                    - To create an invite for your bot go to My Apps page under the "Applications" section, click on your bot application, and open the OAuth2 page.

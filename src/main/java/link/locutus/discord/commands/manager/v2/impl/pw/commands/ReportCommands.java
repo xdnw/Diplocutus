@@ -359,7 +359,7 @@ public class ReportCommands {
             }
 
             io.create().embed(title, body.toString()).append("""
-                    If there is a game rule violation, create a report on the P&W discord, or forums
+                    If there is a game rule violation, create a report on the D&S discord, or forums
                     If there is a violation of discord ToS, report to discord: 
                     <https://discord.com/safety/360044103651-reporting-abusive-behavior-to-discord>""")
                     .confirmation(command).send();
