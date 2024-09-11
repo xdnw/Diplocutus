@@ -57,6 +57,15 @@ import java.util.regex.Pattern;
 
 
 public final class DNS {
+    public static class Development {
+        // {\displaystyle DevelopmentCost=DevelopmentCostReduction*DevelopmentBeingBought{\Bigl (}{\frac {TotalDevelopment}{100}}{\Bigr )}^{2}}
+    }
+
+    public static class Land {
+        // {\displaystyle DevelopmentCostReductionFromLand={\Bigl (}{\frac {Development}{Land}}{\Bigr )}^{2}}
+        // {\displaystyle LandCost={\frac {LandCostReduction*LandBeingBought{\Bigl (}{\frac {TotalLand}{100}}{\Bigr )}^{2}}{2}}}
+    }
+
     public static int getTier(double infra) {
         return (int) ((Math.max(1, infra) + 9_999) / 10_000);
     }

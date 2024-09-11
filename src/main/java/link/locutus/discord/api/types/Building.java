@@ -82,6 +82,10 @@ public enum Building {
         this.level = level;
     }
 
+    public double cost() {
+        // {\displaystyle Cost=Math.floor((BuildingBaseCost+{\frac {0.005}{BuildingScaleFactor}}BuildingLevel*BuildingBaseCost)*Math.max(1,Math.pow({\frac {BuildingLevel}{TotalSlots*BuildingScaleFactor}},2))*BuildingCostReduction)}
+    }
+
     public static Building parse(String input) {
         for (Building building : values) {
             if (building.name().equalsIgnoreCase(input)) {
