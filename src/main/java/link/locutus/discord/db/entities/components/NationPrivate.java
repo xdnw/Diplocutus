@@ -1,9 +1,7 @@
 package link.locutus.discord.db.entities.components;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import link.locutus.discord.Locutus;
 import link.locutus.discord.api.endpoints.DnsApi;
-import link.locutus.discord.api.endpoints.DnsQuery;
 import link.locutus.discord.api.generated.*;
 import link.locutus.discord.api.types.*;
 import link.locutus.discord.db.SQLUtil;
@@ -12,7 +10,6 @@ import link.locutus.discord.db.entities.DBEntity;
 import link.locutus.discord.db.entities.DBNation;
 import link.locutus.discord.event.Event;
 import link.locutus.discord.util.IOUtil;
-import link.locutus.discord.util.StringMan;
 import link.locutus.discord.util.math.ArrayUtil;
 
 import java.io.ByteArrayInputStream;
@@ -54,8 +51,10 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
     private final Map<Technology, Integer> technology = new ConcurrentHashMap<>();
     private final Map<Building, Integer> building = new ConcurrentHashMap<>();
     private final Map<ResourceType, Double> stockpile = new ConcurrentHashMap<>();
-    private final Map<Policy, Long> policyLastRan = new ConcurrentHashMap<>();
+    private final Map<TimedPolicy, Long> policyLastRan = new ConcurrentHashMap<>();
     private final List<AllianceMemberInventory> memberInventory = new ArrayList<>();
+    private int totalSlots = 0;
+    private int usedSlots = 0;
 
     private final AtomicLong outdatedProjects = new AtomicLong(-1);
     private final AtomicLong outdatedMilitary = new AtomicLong(-1);
@@ -123,7 +122,9 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
                     inventoryToBytes(memberInventory),
                     outdatedInventory,
                     ArrayUtil.writeEnumMap(militaryCapacity),
-                    ArrayUtil.writeEnumMapDouble(militaryQuality)
+                    ArrayUtil.writeEnumMapDouble(militaryQuality),
+                    totalSlots,
+                    usedSlots,
             };
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -179,7 +180,7 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             if (raw[3] != null) technology.putAll(ArrayUtil.readEnumMap((byte[]) raw[3], Technology.class));
             if (raw[4] != null) building.putAll(ArrayUtil.readEnumMap((byte[]) raw[4], Building.class));
             if (raw[5] != null) stockpile.putAll(ResourceType.resourcesToMap(ArrayUtil.toDoubleArray((byte[]) raw[5])));
-            if (raw[6] != null) policyLastRan.putAll(ArrayUtil.readEnumMapLong((byte[]) raw[6], Policy.class));
+            if (raw[6] != null) policyLastRan.putAll(ArrayUtil.readEnumMapLong((byte[]) raw[6], TimedPolicy.class));
 
             outdatedProjects.set(SQLUtil.castLong(raw[7]));
             outdatedMilitary.set(SQLUtil.castLong(raw[8]));
@@ -192,6 +193,9 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             if (raw[14] != null) outdatedInventory.set(SQLUtil.castLong(raw[14]));
             if (raw[15] != null) militaryCapacity.putAll(ArrayUtil.readEnumMap((byte[]) raw[15], MilitaryUnitType.class));
             if (raw[16] != null) militaryQuality.putAll(ArrayUtil.readEnumMapDouble((byte[]) raw[16], MilitaryUnit.class));
+
+            totalSlots = (int) raw[17];
+            usedSlots = (int) raw[18];
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -217,6 +221,8 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
         result.put("outdatedInventory", long.class);
         result.put("militaryCapacity", byte[].class);
         result.put("militaryQuality", byte[].class);
+        result.put("totalSlots", int.class);
+        result.put("usedSlots", int.class);
         return result;
     }
 
@@ -244,6 +250,9 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
         result.outdatedInventory.set(outdatedInventory.get());
         result.militaryCapacity.putAll(militaryCapacity);
         result.militaryQuality.putAll(militaryQuality);
+
+        result.totalSlots = totalSlots;
+        result.usedSlots = usedSlots;
         return result;
     }
 
@@ -319,6 +328,16 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
         return localCall(timestamp, outdatedBuilding, building, this::getAllianceApi, () -> parentId, DnsApi::nationBuildings, this::update);
     }
 
+    public int getTotalSlots(long timestamp) {
+        getBuildings(timestamp);
+        return totalSlots;
+    }
+
+    public int getUsedSlots(long timestamp) {
+        getBuildings(timestamp);
+        return usedSlots;
+    }
+
     //    private final Map<ResourceType, Double> stockpile = new ConcurrentHashMap<>();
     public Map<ResourceType, Double> getStockpile(long timestamp) {
         return withApi(outdatedStockpile, timestamp, stockpile, () -> {
@@ -333,7 +352,7 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
         });
     }
     //    private final Map<Policy, Long> policyLastRan = new ConcurrentHashMap<>();
-    public Map<Policy, Long> getPolicyLastRan(long timestamp) {
+    public Map<TimedPolicy, Long> getPolicyLastRan(long timestamp) {
         return localCall(timestamp, outdatedPolicyLastRan, policyLastRan, this::getAllianceApi, () -> parentId, DnsApi::nationPolicyLastRan, this::update);
     }
 
@@ -427,6 +446,14 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             this.building.put(building, newValue);
             dirty = true;
         }
+        if (buildings.TotalSlots != this.totalSlots) {
+            this.totalSlots = buildings.TotalSlots;
+            dirty = true;
+        }
+        if (buildings.OpenSlots != this.usedSlots) {
+            this.usedSlots = buildings.OpenSlots;
+            dirty = true;
+        }
         this.outdatedBuilding.set(timestamp);
         if (dirty) Locutus.imp().getNationDB().saveNationPrivate(this);
     }
@@ -447,7 +474,7 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
 
     public void update(NationPolicyLastRan policies, long timestamp) {
         boolean dirty = false;
-        for (Policy policy : Policy.values) {
+        for (TimedPolicy policy : TimedPolicy.values) {
             long existing = this.policyLastRan.getOrDefault(policy, 0L);
             long newValue = policy.get(policies);
             if (newValue == existing) continue;

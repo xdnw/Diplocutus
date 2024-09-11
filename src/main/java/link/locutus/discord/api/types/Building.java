@@ -3,16 +3,37 @@ package link.locutus.discord.api.types;
 import link.locutus.discord.api.generated.NationBuildings;
 import link.locutus.discord.commands.manager.v2.binding.annotation.Command;
 
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
 public enum Building {
-    RESEARCH_CENTERS(f -> f.ResearchCenters, 250000, 0.05, 100, 10000, 50000),
-    ANCIENT_RUIN(f -> f.AncientRuin, 1000000, 0.005, 200, 10000, 200000),
-    PRECURSOR_MATRIX(f -> f.PrecursorMatrix, 1000000, 0.003, 500, 10000, 400000, () -> Technology.PRECURSOR_TECHNOLOGY, 7),
-    UNIVERSITIES(f -> f.Universitys, 500000, 0.01, 50, 10000, 50000, () -> Technology.EDUCATION_TECHNOLOGY, 3),
+    RESEARCH_CENTERS(f -> f.ResearchCenters, 250000, 0.05, 100, 10000, 50000) {
+        @Override
+        public void apply(NationModifier modifier, int level) {
+            modifier.TECH_OUTPUT += 100 * level;
+        }
+    },
+    ANCIENT_RUIN(f -> f.AncientRuin, 1000000, 0.005, 200, 10000, 200000) {
+        @Override
+        public void apply(NationModifier modifier, int level) {
+            modifier.TECH_OUTPUT += 200 * level;
+        }
+    },
+    PRECURSOR_MATRIX(f -> f.PrecursorMatrix, 1000000, 0.003, 500, 10000, 400000, () -> Technology.PRECURSOR_TECHNOLOGY, 7) {
+        @Override
+        public void apply(NationModifier modifier, int level) {
+            modifier.TECH_OUTPUT += 500 * level;
+        }
+    },
+    UNIVERSITIES(f -> f.Universitys, 500000, 0.01, 50, 10000, 50000, () -> Technology.EDUCATION_TECHNOLOGY, 3) {
+        @Override
+        public void apply(NationModifier modifier, int level) {
+            modifier.TECH_OUTPUT += 50 * level;
+        }
+    },
     SCHOOL_DISTRICTS(f -> f.SchoolDistricts, 250000, 0.05, 0, 5000, 25000),
     TRADE_SCHOOLS(f -> f.TradeSchools, 1000000, 0.05, 0, 10000, 100000, () -> Project.CAPITAL_UNIVERSITY),
     COMMERCIAL_DISTRICTS(f -> f.CommercialDistricts, 250000, 0.05, 0, 15000, 500000),
@@ -39,10 +60,10 @@ public enum Building {
     ARMY_BASES(f -> f.ArmyBases, 500000, 0.015, 0, 10000, 50000),
     NAVAL_BASES(f -> f.NavalBases, 2000000, 0.01, 0, 10000, 25000),
     AIR_BASES(f -> f.AirBases, 1000000, 0.01, 0, 10000, 25000),
-    RESIDENTIAL_DISTRICTS(f -> f.ResidentialDistricts, 250000, 0.05, 0, 100000, 0),
+    RESIDENTIAL_DISTRICTS(f -> f.ResidentialDistricts, 250000, 0.05, 0, 0, 100000),
 
     // TODO FIXME :||remove missing from wiki
-    RICH_MINING_AREA(f -> f.RichMiningArea, 250000, 0.005, 0, 0, 0, () -> Technology.RARE_METAL_MINING, 1),
+    RICH_MINING_AREA(f -> f.RichMiningArea, 250000, 0.005, 0, 10000, 25000, () -> Technology.RARE_METAL_MINING, 1),
     ;
 
     public static Building[] values = Building.values();
@@ -82,9 +103,14 @@ public enum Building {
         this.level = level;
     }
 
-    public double cost() {
-        // {\displaystyle Cost=Math.floor((BuildingBaseCost+{\frac {0.005}{BuildingScaleFactor}}BuildingLevel*BuildingBaseCost)*Math.max(1,Math.pow({\frac {BuildingLevel}{TotalSlots*BuildingScaleFactor}},2))*BuildingCostReduction)}
+    public double cost(int level, int totalSlots, double costReduction) {
+        return Math.floor((baseCost + (0.005 / scaleFactor) * level * baseCost) * Math.max(1, Math.pow((level / (totalSlots * scaleFactor)), 2)) * costReduction);
     }
+
+    public void apply(NationModifier modifier, int level) {
+
+    }
+
 
     public static Building parse(String input) {
         for (Building building : values) {
@@ -101,6 +127,10 @@ public enum Building {
     public int get(NationBuildings buildings) {
         Integer amt = get.apply(buildings);
         return amt == null ? 0 : amt;
+    }
+
+    public static int getJobs(Map<Building, Integer> buildings) {
+        return buildings.entrySet().stream().mapToInt(e -> e.getKey().jobsPerLevel * e.getValue()).sum();
     }
 
     @Command(desc = "Get the name of the building")

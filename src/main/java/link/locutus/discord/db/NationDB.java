@@ -72,6 +72,10 @@ public class NationDB extends DBMainV2 implements SyncableDatabase {
         executeStmt(SQLUtil.createTable(new DBAlliance()));
         executeStmt(SQLUtil.createTable(new Treaty()));
         executeStmt(SQLUtil.createTable(new NationPrivate()));
+        {
+            executeStmt(SQLUtil.addColumn(new NationPrivate(), "totalSlots", int.class, "0"), true);
+            executeStmt(SQLUtil.addColumn(new NationPrivate(), "usedSlots", int.class, "0"), true);
+        }
         executeStmt(SQLUtil.createTable(new AlliancePrivate()));
         {
 

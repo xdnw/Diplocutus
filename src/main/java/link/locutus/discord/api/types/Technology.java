@@ -18,7 +18,13 @@ public enum Technology {
 //-100 Net Base Tech Cost per level
 //+100 technology output per level
 //Required for unlocking many different technology's
-/* enum */ SCIENTIFIC_THEORY(TechnologyCategory.SCIENCE, 300, f -> f.ScientificTheory),
+/* enum */ SCIENTIFIC_THEORY(TechnologyCategory.SCIENCE, 300, f -> f.ScientificTheory) {
+    @Override
+    public void apply(NationModifier modifier, int level) {
+        modifier.TECH_OUTPUT += 100 * level;
+        modifier.TECH_OUTPUT_PERCENT += 1 * level;
+    }
+},
 //Espionage
 //Initial Cost: 300 tech points
 //Requirements: Scientific Theory level 2
@@ -26,7 +32,12 @@ public enum Technology {
 //Increases the success change of espionage operation
 //Increases base war intel by 1% per level
 //+200 technology output per level
-/* enum */ ESPIONAGE(TechnologyCategory.SCIENCE, 300, () -> SCIENTIFIC_THEORY, 2, f -> f.Espionage),
+/* enum */ ESPIONAGE(TechnologyCategory.SCIENCE, 300, () -> SCIENTIFIC_THEORY, 2, f -> f.Espionage) {
+    @Override
+    public void apply(NationModifier modifier, int level) {
+        modifier.TECH_OUTPUT += 200 * level;
+    }
+},
 //Counter Intelligence
 //Initial Cost: 300 tech points
 //Requirements: Espionage level 3
@@ -65,7 +76,12 @@ public enum Technology {
 //+1% Tech cost reduction per level
 //+300 tech output per level
 //-100 Net Base Tech Cost per level
-    /* enum */ ARTIFICIAL_INTELLIGENCE(TechnologyCategory.SCIENCE, 10000, () -> COMPUTER_TECHNOLOGY, 6, f -> f.ArtificialIntelligence),
+    /* enum */ ARTIFICIAL_INTELLIGENCE(TechnologyCategory.SCIENCE, 10000, () -> COMPUTER_TECHNOLOGY, 6, f -> f.ArtificialIntelligence) {
+    @Override
+    public void apply(NationModifier modifier, int level) {
+        modifier.TECH_OUTPUT += 300 * level;
+    }
+},
 //Nuclear Technology
 //Initial Cost: 10,000 tech points
 //Requirements: Energy Technology Level 6
@@ -90,7 +106,12 @@ public enum Technology {
 //Requirements: Rocketry Level 3
 //+1000 tech output per level
 //Will unlock !?!?!??!??! in the future
-    /* enum */ SPACE_EXPLORATION(TechnologyCategory.SCIENCE, 200000, () -> ROCKETRY, 3, f -> f.SpaceExploration),
+    /* enum */ SPACE_EXPLORATION(TechnologyCategory.SCIENCE, 200000, () -> ROCKETRY, 3, f -> f.SpaceExploration) {
+    @Override
+    public void apply(NationModifier modifier, int level) {
+        modifier.TECH_OUTPUT += 1000 * level;
+    }
+},
 //Orbital Construction
 //Initial Cost: 200,000 tech points
 //Requirements: Rocketry Level 7
@@ -289,6 +310,10 @@ public enum Technology {
         this.requiredTech = requiredTech == null ? () -> null : requiredTech;
         this.requiredTechLevel = requiredTechLevel;
         this.get = get;
+    }
+
+    public void apply(NationModifier modifier, int level) {
+
     }
 
     public final Technology getRequiredTech() {

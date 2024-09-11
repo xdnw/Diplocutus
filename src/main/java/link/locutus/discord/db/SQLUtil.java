@@ -4,6 +4,7 @@ import com.ptsmods.mysqlw.table.ColumnStructure;
 import com.ptsmods.mysqlw.table.ColumnType;
 import link.locutus.discord.db.entities.DBEntity;
 import link.locutus.discord.db.entities.DBNation;
+import link.locutus.discord.db.entities.components.NationPrivate;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -112,5 +113,10 @@ public class SQLUtil {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    public static String addColumn(DBEntity<?, ?> entity, String columnName, Class<Integer> integerClass, String def) {
+        String tableName = entity.getTableName();
+        return "ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + toSqlType(integerClass) + " DEFAULT " + def;
     }
 }

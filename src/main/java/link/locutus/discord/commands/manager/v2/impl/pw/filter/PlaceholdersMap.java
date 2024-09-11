@@ -21,7 +21,6 @@ import link.locutus.discord.commands.manager.v2.impl.discord.permission.RolePerm
 import link.locutus.discord.commands.manager.v2.impl.pw.binding.PWBindings;
 import link.locutus.discord.commands.manager.v2.impl.pw.refs.CM;
 import link.locutus.discord.commands.manager.v2.perm.PermissionHandler;
-import link.locutus.discord.db.BankDB;
 import link.locutus.discord.db.conflict.Conflict;
 import link.locutus.discord.db.conflict.ConflictManager;
 import link.locutus.discord.db.GuildDB;
@@ -34,15 +33,12 @@ import link.locutus.discord.db.entities.Treaty;
 import link.locutus.discord.db.entities.UserWrapper;
 import link.locutus.discord.db.guild.GuildKey;
 import link.locutus.discord.db.guild.GuildSetting;
-import link.locutus.discord.pnw.AllianceList;
 import link.locutus.discord.pnw.NationList;
 import link.locutus.discord.pnw.NationOrAlliance;
-import link.locutus.discord.pnw.NationOrAllianceOrGuild;
 import link.locutus.discord.pnw.SimpleNationList;
 import link.locutus.discord.user.Roles;
 import link.locutus.discord.util.DNS;
 import link.locutus.discord.util.MathMan;
-import link.locutus.discord.util.DNS;
 import link.locutus.discord.util.StringMan;
 import link.locutus.discord.util.discord.DiscordUtil;
 import link.locutus.discord.util.scheduler.ThrowingTriFunction;
@@ -59,7 +55,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.security.GeneralSecurityException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,13 +67,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import static link.locutus.discord.commands.manager.v2.binding.BindingHelper.emumSet;
 
 public class PlaceholdersMap {
 
@@ -110,7 +101,7 @@ public class PlaceholdersMap {
     public static Placeholders<CyberOps> CYBEROPS = null;
     public static Placeholders<Building> BUILDINGS = null;
     public static Placeholders<MilitaryUnit> UNITS = null;
-    public static Placeholders<Policy> POLICIES = null;
+    public static Placeholders<TimedPolicy> POLICIES = null;
     public static Placeholders<Project> PROJECTS = null;
     public static Placeholders<Technology> TECHNOLOGIES = null;
     public static Placeholders<GrantTransfer> GRANTS = null;

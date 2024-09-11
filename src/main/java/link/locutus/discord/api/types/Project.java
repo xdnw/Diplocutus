@@ -96,7 +96,12 @@ CAPITAL_UNIVERSITY(ProjectCategory.EDUCATION, Map.of(ResourceType.CASH, 360_000_
 //Increases your education index by 6
 //Also increases your education index by 3%
 //Increases your tech production by 3%
-NATIONAL_EDUCATION_SYSTEM(ProjectCategory.EDUCATION, Map.of(ResourceType.CASH, 1_500_000_000.0, ResourceType.TECHNOLOGY, 100_000.0, ResourceType.MINERALS, 100_000.0), f -> f.NationalEducationSystem),
+NATIONAL_EDUCATION_SYSTEM(ProjectCategory.EDUCATION, Map.of(ResourceType.CASH, 1_500_000_000.0, ResourceType.TECHNOLOGY, 100_000.0, ResourceType.MINERALS, 100_000.0), f -> f.NationalEducationSystem) {
+    @Override
+    public void apply(NationModifier modifier, int level) {
+        modifier.TECH_OUTPUT += 3 * level;
+    }
+},
 //Virtual Reality Learning Center
 //Cost: $12 Billion, 1,500,000 Tech, 1,500,000 Minerals
 //Requirements: Entertainment Technology Level 10 and Virtual Reality Level 3
@@ -111,7 +116,13 @@ VIRTUAL_REALITY_LEARNING_CENTER(ProjectCategory.EDUCATION, Map.of(ResourceType.C
 //Increases your tech production by 10,000
 //Also increases your tech production by 10%
 //Reduces tech cost by 5%
-ORBITAL_RESEARCH_STATION(ProjectCategory.EDUCATION, Map.of(ResourceType.CASH, 120_000_000_000.0, ResourceType.TECHNOLOGY, 20_000_000.0, ResourceType.MINERALS, 1_000_000.0), f -> f.OribitalResearchStation),
+ORBITAL_RESEARCH_STATION(ProjectCategory.EDUCATION, Map.of(ResourceType.CASH, 120_000_000_000.0, ResourceType.TECHNOLOGY, 20_000_000.0, ResourceType.MINERALS, 1_000_000.0), f -> f.OribitalResearchStation) {
+    @Override
+    public void apply(NationModifier modifier, int level) {
+        modifier.TECH_OUTPUT += 10_000 * level;
+        modifier.TECH_OUTPUT_PERCENT += 10 * level;
+    }
+},
 //Commerce Projects
 //Sports Stadium
 //Cost: $320 Million, 100,000 Minerals
@@ -168,14 +179,24 @@ ORBITAL_INTERNET_SATELLITE_NETWORK(ProjectCategory.COMMERCE, Map.of(ResourceType
 //Increases your education index by 5
 //Increases your tech production by 3,000
 //Will unlock ??????? in the future
-NATIONAL_OBSERVATORY(ProjectCategory.SPACE, Map.of(ResourceType.CASH, 3_000_000_000.0, ResourceType.TECHNOLOGY, 200_000.0, ResourceType.MINERALS, 100_000.0), f -> f.NationalObservatory),
+NATIONAL_OBSERVATORY(ProjectCategory.SPACE, Map.of(ResourceType.CASH, 3_000_000_000.0, ResourceType.TECHNOLOGY, 200_000.0, ResourceType.MINERALS, 100_000.0), f -> f.NationalObservatory) {
+    @Override
+    public void apply(NationModifier modifier, int level) {
+        modifier.TECH_OUTPUT += 3_000 * level;
+    }
+},
 //National Space Agency
 //Cost: $9 Billion, 600,000 Tech, 300,000 Minerals
 //Requirements: Space Exploration Level 1
 //Increases your education index by 10
 //Increases your tech production by 3,000
 //Will unlock ??????? in the future
-NATIONAL_SPACE_AGENCY(ProjectCategory.SPACE, Map.of(ResourceType.CASH, 9_000_000_000.0, ResourceType.TECHNOLOGY, 600_000.0, ResourceType.MINERALS, 300_000.0), f -> f.SpaceResearchCenter),
+NATIONAL_SPACE_AGENCY(ProjectCategory.SPACE, Map.of(ResourceType.CASH, 9_000_000_000.0, ResourceType.TECHNOLOGY, 600_000.0, ResourceType.MINERALS, 300_000.0), f -> f.SpaceResearchCenter) {
+    @Override
+    public void apply(NationModifier modifier, int level) {
+        modifier.TECH_OUTPUT += 3_000 * level;
+    }
+},
 //Orbital Telescope
 //Cost: $50 Billion, 2,000,000 Tech, 1,000,000 Minerals
 //Requirements: Sensor Technology Level 16
@@ -340,7 +361,13 @@ DEPARTMENT_OF_ARCHAEOLOGY(ProjectCategory.MISCELLANEOUS, Map.of(ResourceType.CAS
 //Increases your tech production by 300
 //Increases your tech production by 1%
 //Reduces tech cost by 1%
-    TECHNOLOGY_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 4000.0, ResourceType.MINERALS, 1.0), f -> f.TechnologyInvestment),
+    TECHNOLOGY_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 4000.0, ResourceType.MINERALS, 1.0), f -> f.TechnologyInvestment) {
+    @Override
+    public void apply(NationModifier modifier, int level) {
+        modifier.TECH_OUTPUT += 300 * level;
+        modifier.TECH_OUTPUT_PERCENT += 1d * level;
+    }
+},
 //Healthcare Investment
 //Cost: 4000* (Development + Land/20) * (1+Project Level^2)
 //Increases your stability index by 5
@@ -376,6 +403,10 @@ DEPARTMENT_OF_ARCHAEOLOGY(ProjectCategory.MISCELLANEOUS, Map.of(ResourceType.CAS
         } catch (IllegalArgumentException e) {
             return null;
         }
+    }
+
+    public void apply(NationModifier modifier, int level) {
+
     }
 
     public int get(NationProjects projects) {

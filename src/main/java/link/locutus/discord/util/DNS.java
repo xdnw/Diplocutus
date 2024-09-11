@@ -9,8 +9,7 @@ import com.google.gson.JsonParser;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import link.locutus.discord.Locutus;
 import link.locutus.discord.api.generated.ResourceType;
-import link.locutus.discord.api.types.DepositType;
-import link.locutus.discord.api.types.MilitaryUnit;
+import link.locutus.discord.api.types.*;
 import link.locutus.discord.api.types.tx.Transaction2;
 import link.locutus.discord.commands.manager.v2.binding.ValueStore;
 import link.locutus.discord.commands.manager.v2.impl.pw.filter.NationPlaceholders;
@@ -64,6 +63,22 @@ public final class DNS {
     public static class Land {
         // {\displaystyle DevelopmentCostReductionFromLand={\Bigl (}{\frac {Development}{Land}}{\Bigr )}^{2}}
         // {\displaystyle LandCost={\frac {LandCostReduction*LandBeingBought{\Bigl (}{\frac {TotalLand}{100}}{\Bigr )}^{2}}{2}}}
+    }
+
+    public static NationModifier getNationModifier(double development, Map<Building, Integer> buildings, Map<Project, Integer> projects, Map<Technology, Integer> tech) {
+        NationModifier modifier = new NationModifier();
+        modifier.TECH_OUTPUT += (int) Math.floor(development * 0.1);
+        for (Map.Entry<Building, Integer> entry : buildings.entrySet()) {
+            entry.getKey().apply(modifier, entry.getValue());
+        }
+        for (Map.Entry<Project, Integer> entry : projects.entrySet()) {
+            entry.getKey().apply(modifier, entry.getValue());
+        }
+        for (Map.Entry<Technology, Integer> entry : tech.entrySet()) {
+            entry.getKey().apply(modifier, entry.getValue());
+        }
+        return modifier;
+
     }
 
     public static int getTier(double infra) {

@@ -2358,6 +2358,31 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         return CorporationIncome;
     }
 
+    @Command(desc = "Cash output")
+    public double getCashOutput() {
+        return CashOutput;
+    }
+
+    @Command(desc = "Production output")
+    public double getProductionOutput() {
+        return ProductionOutput;
+    }
+
+    @Command(desc = "Uranium output")
+    public double getUraniumOutput() {
+        return UraniumOutput;
+    }
+
+    @Command(desc = "Rare metal output")
+    public double getRareMetalOutput() {
+        return RareMetalOutput;
+    }
+
+    @Command(desc = "Political power output")
+    public double getPoliticalPowerOutput() {
+        return PoliticalPowerOutput;
+    }
+
     // getMineralIncome
     @Command(desc = "Mineral income")
     public double getMineralOutput() {

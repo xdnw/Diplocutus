@@ -6,7 +6,7 @@ import link.locutus.discord.commands.manager.v2.binding.annotation.Command;
 import java.util.Date;
 import java.util.function.Function;
 
-public enum Policy {
+public enum TimedPolicy {
     TEMPORARY_TAX_INCREASE(f -> f.TemporaryTaxIncreaseLastRan),
     EMERGENCY_CONSCRIPTION(f -> f.EmergencyConsriptionLastRan),
     FUND_RESEARCH_PROJECT(f -> f.FundResearchProjectLastRan),
@@ -54,11 +54,15 @@ public enum Policy {
 
     ;
 
-    public static Policy[] values = values();
+    public static TimedPolicy[] values = values();
     private final Function<NationPolicyLastRan, Date> get;
 
-    Policy(Function<NationPolicyLastRan, Date> get) {
+    TimedPolicy(Function<NationPolicyLastRan, Date> get) {
         this.get = get;
+    }
+
+    public void apply(NationModifier modifier, int level) {
+
     }
 
     @Command(desc = "Get the name of the policy")

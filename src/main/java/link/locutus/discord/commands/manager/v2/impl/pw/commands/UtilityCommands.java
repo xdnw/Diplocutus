@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import link.locutus.discord.Locutus;
 import link.locutus.discord.api.generated.WarType;
-import link.locutus.discord.api.types.MilitaryUnit;
+import link.locutus.discord.api.types.*;
 import link.locutus.discord.api.types.tx.Transaction2;
 import link.locutus.discord.commands.manager.v2.binding.annotation.*;
 import link.locutus.discord.commands.manager.v2.binding.annotation.TextArea;
@@ -28,6 +28,7 @@ import link.locutus.discord.config.Settings;
 import link.locutus.discord.db.GuildDB;
 import link.locutus.discord.db.entities.*;
 import link.locutus.discord.db.entities.DBAlliance;
+import link.locutus.discord.db.entities.components.NationPrivate;
 import link.locutus.discord.db.entities.metric.AllianceMetric;
 import link.locutus.discord.db.guild.GuildKey;
 import link.locutus.discord.db.guild.SheetKey;
@@ -42,7 +43,6 @@ import link.locutus.discord.util.offshore.test.IAChannel;
 import link.locutus.discord.util.sheet.SpreadSheet;
 import link.locutus.discord.util.task.roles.AutoRoleInfo;
 import link.locutus.discord.util.task.roles.IAutoRoleTask;
-import link.locutus.discord.api.types.Rank;
 import link.locutus.discord.api.generated.ResourceType;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
@@ -1251,5 +1251,76 @@ public class UtilityCommands {
         byte[] bytes = ImageUtil.addWatermark(image, watermarkText, color, opacityF, font, repeat);
         io.create().image("locutus-watermark.png", bytes).send();
         return null;
+    }
+
+    @Command
+    @RolePermission(Roles.MEMBER)
+    public String development(@Me GuildDB db, @Me User user, @Me DBNation me, DBNation nation, @Switch("u") boolean update) {
+        boolean canViewPrivate = me.getId() == nation.getId() || (Roles.INTERNAL_AFFAIRS.has(user, db.getGuild()) && db.isAllianceId(nation.getAlliance_id()));
+        NationPrivate data = canViewPrivate ? nation.getPrivateData() : null;
+        long now = System.currentTimeMillis() - (update ? 0 : TimeUnit.HOURS.toMillis(1));
+
+        Map<String, Object> general = new LinkedHashMap<>();
+        Map<String, Object> indexes = new LinkedHashMap<>();
+        Map<String, Object> daily = new LinkedHashMap<>();
+        general.put("Development", nation.getInfra());
+        general.put("Land", nation.getLand());
+        general.put("Population", nation.getPopulation());
+
+        if (data != null) {
+            Map<Building, Integer> buildings = data.getBuildings(now);
+            int slots = data.getTotalSlots(now);
+            int openSlots = data.getUsedSlots(now);
+            int jobs = Building.getJobs(buildings);
+            general.put("Employment", jobs);
+            long unfilled = Math.round(jobs - nation.getPopulation());
+            if (unfilled > 0) {
+                general.put("Unfilled Jobs", unfilled);
+            } else if (unfilled < 0) {
+                general.put("Unemployment", -unfilled);
+            }
+            general.put("Total Building Slots", slots);
+            general.put("Open Building Slots", openSlots);
+        }
+        indexes.put("Military Index", nation.getWarIndex());
+        indexes.put("Stability Index", nation.getStabilityIndex());
+        indexes.put("Tech Index", nation.getTechIndex());
+        indexes.put("Education Index", nation.getEducationIndex());
+        indexes.put("Commerce Index", nation.getCommerceIndex());
+        indexes.put("Transportation Index", nation.getTransportationIndex());
+        indexes.put("Power Index", nation.getPowerIndex());
+        indexes.put("Employment Index", nation.getEmploymentIndex());
+
+        daily.put("Total Cash Income", nation.getCashOutput());
+        daily.put("- Corporate Income", nation.getCorporationIncome());
+        daily.put("- Other Income", nation.getOtherIncome());
+        daily.put("- Tax Income", nation.getTaxIncome());
+        daily.put("Minerals Income", nation.getMineralOutput());
+        daily.put("Fuel Income", nation.getFuelOutput());
+        if (data != null) {
+            Map<Building, Integer> buildings = data.getBuildings(now);
+            Map<Project, Integer> projects = data.getProjects(now);
+            Map<Technology, Integer> tech = data.getTechnology(now);
+            NationModifier modifier = DNS.getNationModifier(nation.getInfra(), buildings, projects, tech);
+            double techOutput = modifier.getTechOutput(nation.getEducationIndex());
+            daily.put("Tech Income (no policies)", techOutput);
+        }
+        daily.put("Production Income", nation.getProductionOutput());
+        daily.put("Uranium Income", nation.getUraniumOutput());
+        daily.put("Rare Metal Income", nation.getRareMetalOutput());
+        daily.put("Political Support Gain", nation.getPoliticalPowerOutput());
+
+        Function<Map.Entry<String, Object>, String> toString = f -> {
+            Object value = f.getValue();
+            return "" + f.getKey() + ": `" + ((value instanceof Number n) ? (MathMan.formatSig(n.doubleValue())) : (StringMan.getString(value))) + "`";
+        };
+        StringBuilder response = new StringBuilder("## " + nation.getMarkdownUrl() + " Development\n");
+        response.append("### General Information\n");
+        general.forEach((k, v) -> response.append(toString.apply(Map.entry(k, v))).append("\n"));
+        response.append("\n### Indexes\n");
+        indexes.forEach((k, v) -> response.append(toString.apply(Map.entry(k, v))).append("\n"));
+        response.append("\n### Daily Income\n");
+        daily.forEach((k, v) -> response.append(toString.apply(Map.entry(k, v))).append("\n"));
+        return response.toString();
     }
 }
