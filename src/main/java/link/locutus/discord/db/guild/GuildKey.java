@@ -398,7 +398,7 @@ public class GuildKey {
         @Override
         public String toString(List<ApiKeyPool.ApiKey> value) {
             value.removeIf(f -> f.getKey().isEmpty() || f.getNation() == null);
-            return value.stream().map(f -> f.getNation() + ":" + f.getKey()).collect(Collectors.joining(","));
+            return value.stream().map(f -> f.getNationId() + ":" + f.getKey()).collect(Collectors.joining(","));
         }
 
         @Override
