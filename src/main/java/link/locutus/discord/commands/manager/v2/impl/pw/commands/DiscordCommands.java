@@ -319,9 +319,7 @@ public class DiscordCommands {
         Map<String, List<DiscordUtil.CommandInfo>> commandMap = DiscordUtil.getCommands(embedMessage.isFromGuild() ? embedMessage.getGuild() : null, embed, embedMessage.getButtons(), embedMessage.getJumpUrl(), true);
         List<String> commands = new ArrayList<>();
 
-        // TODO FIXME :||remove
-//        commands.add(CM.embed.create.cmd.title(title).description(desc).toSlashCommand(false));
-
+        commands.add(CM.embed.create.cmd.title(title).description(desc).toSlashCommand(false));
         String url = copyToMessage == null ? "" : copyToMessage.getJumpUrl();
 
         for (Map.Entry<String, List<DiscordUtil.CommandInfo>> entry : commandMap.entrySet()) {
@@ -340,9 +338,8 @@ public class DiscordCommands {
             String label = entry.getKey();
 
             String behaviorStr = (behavior == null ? CommandBehavior.DELETE_MESSAGE : behavior).name();
-            // TODO FIXME :||remove
-//            String cmdStr = CM.embed.add.raw.cmd.message(url).label(label).behavior(behaviorStr).command(StringMan.join(current, "\n")).channel(channelId == null ? null : channelId.toString()).toSlashCommand(false);
-//            commands.add(cmdStr);
+            String cmdStr = CM.embed.add.raw.cmd.message(url).label(label).behavior(behaviorStr).command(StringMan.join(current, "\n")).channel(channelId == null ? null : channelId.toString()).toSlashCommand(false);
+            commands.add(cmdStr);
         }
 
         return "Run the following commands:\n" +
@@ -433,8 +430,7 @@ public class DiscordCommands {
                 "2. Scroll down to where it says Discord Username:\n" +
                 "3. Put your discord username `" + fullDiscriminator + "` in the field\n" +
                 "4. Click save\n" +
-                // TODO FIXME :||remove
-//                "5. Run the command " + CM.register.cmd.nation(nation.getNation_id() + "").toSlashCommand() +
+                "5. Run the command " + CM.register.cmd.nation(nation.getNation_id() + "").toSlashCommand() +
                 " again";
 
         long id = user.getIdLong();
@@ -454,8 +450,7 @@ public class DiscordCommands {
                 "2. Scroll down to where it says Discord Username:\n" +
                 "3. Put your **DISCORD ID** `" + user.getIdLong() + "` in the field\n" +
                 "4. Click save\n" +
-                // TODO FIXME :||remove
-//                "5. Run the command " + CM.register.cmd.nation(nation.getNation_id() + "").toSlashCommand() +
+                "5. Run the command " + CM.register.cmd.nation(nation.getNation_id() + "").toSlashCommand() +
                 " again";
 
         if (existingUser != null && existingUser.getNationId() != nation.getNation_id()) {
@@ -470,8 +465,11 @@ public class DiscordCommands {
             checkId = fullDiscriminator.contains("#");
         }
         try {
-            // TODO FIXME :||remove update
             String pnwDiscordName = nation.getUsername();
+            if (pnwDiscordName == null || pnwDiscordName.isEmpty()) {
+                Locutus.imp().runEventsAsync(events -> Locutus.imp().getNationDB().updateNation(nation, events));
+            }
+            pnwDiscordName = nation.getUsername();
             if (pnwDiscordName == null || pnwDiscordName.isEmpty()) {
                 return errorMsg;
             }

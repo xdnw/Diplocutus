@@ -267,6 +267,13 @@ public class CM {
                 }
             }
             public static class sync{
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.AdminCommands.class,method="syncBanks")
+                public static class syncBanks extends CommandRef {
+                    public static final syncBanks cmd = new syncBanks();
+                    public syncBanks alliance(String value) {
+                        return set("alliance", value);
+                    }
+                }
                 @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.AdminCommands.class,method="savePojos")
                 public static class pojos extends CommandRef {
                     public static final pojos cmd = new pojos();

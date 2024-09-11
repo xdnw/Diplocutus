@@ -399,13 +399,11 @@ public class GuildHandler {
                 e.printStackTrace();
             }
             String emoji = "Claim";
-            // TODO FIXME :||remove
-//            CM.embed.update cmd = CM.embed.update.cmd.desc("{description}\nAssigned to {usermention} in {timediff}");
+            CM.embed.update cmd = CM.embed.update.cmd.desc("{description}\nAssigned to {usermention} in {timediff}");
 
 
             io.create().embed(title, body.toString())
-                    // TODO FIXME :||remove
-//                    .commandButton(CommandBehavior.DELETE_BUTTONS, cmd, emoji)
+                    .commandButton(CommandBehavior.DELETE_BUTTONS, cmd, emoji)
                     .send();
         } else {
             RateLimitUtil.queueMessage(io, new Function<IMessageBuilder, Boolean>() {
@@ -722,7 +720,7 @@ public class GuildHandler {
                                             body.append("- " + attacker.getPositionEnum());
                                         }
                                     }
-                                    // TODO FIXME :||remove
+                                    // TODO FIXME :||remove war info
 //                                    body.append(" ```\nc" + attacker.getCities() + " | " + attacker.getAvg_infra() + "\uD83C\uDFD7 | " + MathMan.format(attacker.getScore()) + "ns``` ");
 //                                    body.append("``` " + attacker.getSoldiers()).append(" \uD83D\uDC82").append(" | ");
 //                                    body.append(attacker.getTanks()).append(" \u2699").append(" | ");
@@ -746,7 +744,7 @@ public class GuildHandler {
                                             body.append(" | " + user.getAsMention());
                                         }
                                     }
-                                    // TODO FIXME :||remove
+                                    // TODO FIXME :||remove war info
 //                                    body.append(" ```\nc" + defender.getCities() + " | " + defender.getAvg_infra() + "\uD83C\uDFD7 | " + MathMan.format(defender.getScore()) + "ns``` ");
 //                                    body.append("```" + defender.getSoldiers()).append(" \uD83D\uDC82").append(" | ");
 //                                    body.append(defender.getTanks()).append(" \u2699").append(" | ");

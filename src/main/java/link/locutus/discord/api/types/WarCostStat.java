@@ -94,25 +94,25 @@ public enum WarCostStat {
     public ResourceType resource() {
         return this.resource;
     }
-
-    public final BiFunction<Boolean, DBWar, Double> getFunction(boolean excludeUnits, boolean excludeInfra, boolean excludeConsumption, boolean excludeLoot, boolean excludeBuildings) {
-        // TODO FIXME :||remove
-        return null;
-//        if (unit != null) {
-//            return (attacker, war) -> (double) war.getUnitLosses(unit(), attacker);
-//        } else if (resource != null) {
-//            double[] rssBuffer = ResourceType.getBuffer();
-//            Arrays.fill(rssBuffer, 0);
-//            return (attacker, war) -> {
-//                rssBuffer[resource.ordinal()] = 0;
-//                return war.getLosses(rssBuffer, attacker, !excludeUnits, !excludeInfra, !excludeConsumption, !excludeLoot, !excludeBuildings)[resource.ordinal()];
-//            };
-//        } else {
-//            double[] rssBuffer = ResourceType.getBuffer();
-//            return (attacker, attack) -> {
-//                Arrays.fill(rssBuffer, 0);
-//                return attack.getLossesConverted(rssBuffer, attacker, !excludeUnits, !excludeInfra, !excludeConsumption, !excludeLoot, !excludeBuildings);
-//            };
-//        }
-    }
+// !!later2-important
+//    public final BiFunction<Boolean, DBWar, Double> getFunction(boolean excludeUnits, boolean excludeInfra, boolean excludeConsumption, boolean excludeLoot, boolean excludeBuildings) {
+//        // TODO FIXME :||remove resource War cost stat
+//        return null;
+////        if (unit != null) {
+////            return (attacker, war) -> (double) war.getUnitLosses(unit(), attacker);
+////        } else if (resource != null) {
+////            double[] rssBuffer = ResourceType.getBuffer();
+////            Arrays.fill(rssBuffer, 0);
+////            return (attacker, war) -> {
+////                rssBuffer[resource.ordinal()] = 0;
+////                return war.getLosses(rssBuffer, attacker, !excludeUnits, !excludeInfra, !excludeConsumption, !excludeLoot, !excludeBuildings)[resource.ordinal()];
+////            };
+////        } else {
+////            double[] rssBuffer = ResourceType.getBuffer();
+////            return (attacker, attack) -> {
+////                Arrays.fill(rssBuffer, 0);
+////                return attack.getLossesConverted(rssBuffer, attacker, !excludeUnits, !excludeInfra, !excludeConsumption, !excludeLoot, !excludeBuildings);
+////            };
+////        }
+//    }
 }

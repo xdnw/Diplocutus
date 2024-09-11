@@ -88,9 +88,8 @@ public class IAChannel {
                 Map.Entry<Object, String> result = entry.getValue();
                 emojis.add(type.emoji);
             }
-//             TODO FIXME :||remove next three lines
-//            String cmd = CM.audit.run.cmd.nationList(nation.getNation_id() + "").toCommandArgs();
-//            IACheckup.createEmbed(new DiscordChannelIO(channel), cmd, nation, audits, 0);
+            String cmd = CM.audit.run.cmd.nationList(nation.getNation_id() + "").toCommandArgs();
+            IACheckup.createEmbed(new DiscordChannelIO(channel), cmd, nation, audits, 0);
         }
     }
 }

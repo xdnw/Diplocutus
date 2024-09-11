@@ -119,8 +119,7 @@ public class UnsortedCommands {
             totals = alliance.getStockpile(cutoff);
             if (totals == null) {
                 return "No stockpile found for " + alliance.getMarkdownUrl() + ". Ensure the api key is set correctly: "
-                        // TODO FIXME :||remove
-//                        + CM.settings.info.cmd.key(GuildKey.API_KEY.name())
+                        + CM.settings.info.cmd.key(GuildKey.API_KEY.name())
                 ;
             }
         } else {
@@ -755,8 +754,7 @@ public class UnsortedCommands {
                 // buttons
                 IMessageBuilder msg = io.create().append("Options:");
                 for (String option : options) {
-                    // TODO FIXME :||remove
-//                    msg.commandButton(CommandBehavior.DELETE_MESSAGE, CM.copyPasta.cmd.key(option), option);
+                    msg.commandButton(CommandBehavior.DELETE_MESSAGE, CM.copyPasta.cmd.key(option), option);
                 }
                 msg.send();
                 return null;
@@ -826,16 +824,15 @@ public class UnsortedCommands {
             db.deleteCopyPasta(key);
             db.deleteCopyPasta(setKey);
             return "Deleted message for "
-                    // TODO FIXME :||remove
-//                    + CM.copyPasta.cmd.key(key).toString()
+                    + CM.copyPasta.cmd.key(key).toString()
                     ;
         } else {
             db.setCopyPasta(setKey, message);
             return "Added message for "
-                    // TODO FIXME :||remove + CM.copyPasta.cmd.key(setKey).toString()
+                     + CM.copyPasta.cmd.key(setKey).toString()
                     + "\n" +
                     "Remove using "
-                    // TODO FIXME :||remove + CM.copyPasta.cmd.key(key).message("null").toString()
+                     + CM.copyPasta.cmd.key(key).message("null").toString()
                     ;
         }
 
@@ -1300,9 +1297,9 @@ public class UnsortedCommands {
 
             msg = msg.embed("[#" + annId + "] " + subject, body.toString());
 
-            // TODO FIXME :||remove CM.announcement.view cmd = CM.announcement.view.cmd.ann_id(annId + "");
+            CM.announcement.view cmd = CM.announcement.view.cmd.ann_id(annId + "");
             msg
-                    // TODO FIXME :||remove .commandButton(CommandBehavior.EPHEMERAL, cmd, "view")
+                    .commandButton(CommandBehavior.EPHEMERAL, cmd, "view")
                     .send();
         }
 

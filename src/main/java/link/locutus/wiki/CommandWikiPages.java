@@ -195,8 +195,7 @@ Message: `$who Rose -l`
             }
             Set<ParametricCallable> callables = setting.getCallables();
             List<String> commandRefs = callables.stream().map(c -> c.getSlashCommand(Collections.emptyMap())).toList();
-            // TODO FIXME :||remove
-//            if (commandRefs.isEmpty()) commandRefs = List.of(CM.settings.info.cmd.key(setting.name()).value("<value>").toString());
+            if (commandRefs.isEmpty()) commandRefs = List.of(CM.settings.info.cmd.key(setting.name()).value("<value>").toString());
 
             List<String> requirementsStr = setting.getRequirementDesc();
 

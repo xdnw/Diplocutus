@@ -193,11 +193,10 @@ public class DiscordChannelIO implements IMessageIO {
             String argName = input.getId();
             argList.add(argName);
         }
-//        TODO FIXME :||remove
-//        CM.modal.create cmRef = CM.modal.create.cmd.command(cmd).arguments(StringMan.join(argList, " ")).defaults(defaultsStr);
-//        io.create().embed("Form: `" + cmd + "`", cmRef.toSlashCommand(true))
-//                .commandButton(cmRef, "Open")
-//                .send();
+        CM.modal.create cmRef = CM.modal.create.cmd.command(cmd).arguments(StringMan.join(argList, " ")).defaults(defaultsStr);
+        io.create().embed("Form: `" + cmd + "`", cmRef.toSlashCommand(true))
+                .commandButton(cmRef, "Open")
+                .send();
         return CompletableFuture.completedFuture(builder);
     }
 }

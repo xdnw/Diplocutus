@@ -146,24 +146,26 @@ public class WarCard {
 
     public IMessageBuilder embed(IMessageBuilder builder, boolean addReactions, boolean condense, boolean send) {
         String warUrl = "" + Settings.INSTANCE.DNS_URL() + "/nation/war/timeline/war=" + warId;
-        // TODO FIXME :||remove
+        // TODO FIXME :||remove War embed !!important
 //        CommandRef cmd = CM.war.card.cmd.warId(warId + "");
 //        CommandRef counter = CM.war.counter.url.cmd.war(warUrl);
 //        CommandRef counterSpy = CM.spy.counter.cmd.enemy(war.getAttacker_id() + "").operations("*");
 //
-//        String pendingEmoji = "Claim";
-//        CommandRef pending = CM.embed.update.cmd.desc("{description}\nAssigned to {usermention} in {timediff}").requiredRole(Roles.MILCOM.name());
+        String pendingEmoji = "Claim";
+        CommandRef pending = CM.embed.update.cmd.desc("{description}\nAssigned to {usermention} in {timediff}").requiredRole(Roles.MILCOM.name());
 
         IMessageBuilder msg;
         if (addReactions) {
             String desc = getDescription();
             // TODO FIXME :||remove
-//            desc += "\n\nPress `" + pendingEmoji + "` to assign";
-            msg = builder.embed(getTitle(), desc);// TODO FIXME :||remove
-//                    .commandButton(CommandBehavior.DELETE_PRESSED_BUTTON, pending, pendingEmoji)
+            desc += "\n\nPress `" + pendingEmoji + "` to assign";
+            msg = builder.embed(getTitle(), desc)
+                    .commandButton(CommandBehavior.DELETE_PRESSED_BUTTON, pending, pendingEmoji)
+                    // TODO FIXME :||remove
 //                    .commandButton(CommandBehavior.UNPRESS, cmd, cmdEmoji)
 //                    .commandButton(CommandBehavior.UNPRESS, counter, counterEmoji)
-//                    .commandButton(CommandBehavior.UNPRESS, counterSpy, spyEmoji);
+//                    .commandButton(CommandBehavior.UNPRESS, counterSpy, spyEmoji)
+            ;
         } else {
             msg = builder.embed(getTitle(), getDescription());
         }

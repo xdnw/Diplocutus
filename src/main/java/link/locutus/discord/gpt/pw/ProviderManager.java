@@ -180,7 +180,7 @@ public class ProviderManager {
             }
         }
         throw new IllegalArgumentException("No providers available. Errors:\n- " + String.join("\n- ", noPermsMessages) + "\n\nSee "
-                // TODO FIXME :||remove +  CM.chat.providers.list.cmd.toSlashMention()
+                +  CM.chat.providers.list.cmd.toSlashMention()
                 + " and " + CM.chat.providers.set.cmd.toSlashMention());
     }
 

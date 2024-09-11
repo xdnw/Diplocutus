@@ -1457,7 +1457,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         } else {
             response.append("<" + Settings.INSTANCE.DNS_URL() + "/nation/" + getNation_id() + ">");
         }
-        // TODO FIXME :||remove
+        // TODO FIXME :||remove marktdown who !!important
 //        String beigeStr = null;
 //        if (color == NationColor.BEIGE) {
 //            int turns = getBeigeTurns();
@@ -1656,7 +1656,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         response.append(toMarkdown(true, false, true, true, false, false));
         response.append(toMarkdown(true, false, false, false, true, true));
 
-        // TODO FIXME :||remove
+        // TODO FIXME :||remove markdown !!important
 
 
         response.append(" ```")
@@ -1806,7 +1806,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
             body.append("D:`").append(getDef()).append("/").append(2).append("` \uD83D\uDEE1\uFE0F").append(" | `").append(MathMan.format(Score) + "ns`\n");
         }
         //Domestic/War policy | beige turns | score
-        long diff = System.currentTimeMillis() - ProtectionTime;
+        long diff = ProtectionTime - System.currentTimeMillis();
         if (diff > 0) {
             body.append("Protected: ").append(TimeUtil.secToTime(TimeUnit.MILLISECONDS, diff)).append("\n");
         }
@@ -2073,7 +2073,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         }
         body.append(this.getNationUrlMarkup(true));
 //        body.append("\n").append(this.toCityMilMarkdown());
-        // TODO FIXME :||remove
+        // TODO FIXME :||remove war info !!important
         return body.toString().replaceAll(" \\| ","|");
     }
 

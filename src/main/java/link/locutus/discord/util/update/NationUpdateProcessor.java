@@ -653,8 +653,7 @@ public class NationUpdateProcessor {
             }
         }
 
-        // TODO FIXME :||remove fix departures cmd
-//        CM.alliance.departures cmd = CM.alliance.departures.cmd.nationOrAlliance(alliance.getQualifiedId()).time("7d").filter("*,#alliance_id!=" + alliance.getId()).ignoreInactives("true").ignoreVM("true");
+        CM.alliance.departures cmd = CM.alliance.departures.cmd.nationOrAlliance(alliance.getQualifiedId()).time("7d").filter("*,#alliance_id!=" + alliance.getId()).ignoreInactives("true").ignoreVM("true");
 
         if (memberRemoves >= 5) {
             Map<DBAlliance, Integer> ranks = Locutus.imp().getNationDB().getAllianceRanks(f -> f.isVacation() == false && f.getPositionEnum().id > Rank.MEMBER.id, true);
@@ -697,8 +696,7 @@ public class NationUpdateProcessor {
                     Integer topX = GuildKey.ALLIANCE_EXODUS_TOP_X.getOrNull(guildDB);
                     if (topX != null && topX < aaRank) return;
                     IMessageBuilder msg = new DiscordChannelIO(channel).create().embed(title, finalBody)
-                            // TODO FIXME :||remove departures cmd
-//                            .commandButton(CommandBehavior.EPHEMERAL, cmd, "list departures")
+                            .commandButton(CommandBehavior.EPHEMERAL, cmd, "list departures")
                             ;
                     if (finalGraphData != null) {
                         msg = msg.image("members.png", finalGraphData);

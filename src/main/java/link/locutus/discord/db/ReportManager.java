@@ -523,7 +523,7 @@ public class ReportManager {
                         body.append("-" + comment.toMarkdown() + "\n");
                     }
                 } else {
-                    body.append(comments.size() + " comments, see: " /*+ TODO FIXME :||remove CM.report.show.cmd.toSlashMention() */);
+                    body.append(comments.size() + " comments, see: " + CM.report.show.cmd.toSlashMention() );
                 }
             }
             return body.toString();

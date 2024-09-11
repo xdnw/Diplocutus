@@ -452,7 +452,7 @@ public class AutoRoleTask implements IAutoRoleTask {
         if (nation != null) {
             if (registeredRole == null) {
                 info.logError(member, "No registered role exists. Please create one on discord, then use "
-//                        // TODO FIXME :||remove + CM.role.setAlias.cmd.locutusRole(Roles.REGISTERED.name()).discordRole(null)
+                        + CM.role.setAlias.cmd.locutusRole(Roles.REGISTERED.name()).discordRole(null)
                         + "");
             } else {
                 info.logError(member, "Not registered. See: " + CM.register.cmd.toSlashMention());

@@ -80,8 +80,7 @@ public class TestCommands {
         String fromUrl;
         Set<Integer> ids = db.getAllianceIds();
         if (alliance != null && !ids.contains(alliance.getId())) {
-            // TODO FIXME :||remove
-            throw new IllegalArgumentException("Alliance " + alliance.getName() + " is not registered to this guild: " /*+ M.settings_default.registerAlliance.cmd.toSlashMention() */);
+            throw new IllegalArgumentException("Alliance " + alliance.getName() + " is not registered to this guild: " + CM.settings_default.registerAlliance.cmd.toSlashMention());
         }
         if (ids.isEmpty()) {
             fromId = db.getIdLong();

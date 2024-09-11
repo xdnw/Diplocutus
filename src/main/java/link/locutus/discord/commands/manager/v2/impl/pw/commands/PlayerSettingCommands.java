@@ -132,8 +132,7 @@ public class PlayerSettingCommands {
         List<String> notes = new ArrayList<>();
         if (optInDiscRoles.isEmpty() && optInRoles.length > 0) {
             notes.add("No role `" + Arrays.stream(optInRoles).map(Roles::name).collect(Collectors.joining("`, `")) + "` is set. Have an admin use e.g. "
-                    // TODO FIXME :||remove
-//                    + CM.role.setAlias.cmd.locutusRole(optInRoles[0].name()).discordRole("@someRole")
+                    + CM.role.setAlias.cmd.locutusRole(optInRoles[0].name()).discordRole("@someRole")
             );
         }
         Role role = lcRole.toRole(guild);

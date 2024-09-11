@@ -283,7 +283,7 @@ public class UtilityCommands {
         return null;
     }
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove infra cost !!important
 //    @Command(desc = "Calculate the costs of purchasing infra (from current to max)", aliases = {"InfraCost", "infrastructurecost", "infra", "infrastructure", "infracosts"})
 //    public String InfraCost(@Range(min=0, max=40000) int currentInfra, @Range(min=0, max=40000) int maxInfra,
 //                            @Default("false") boolean urbanization,
@@ -309,7 +309,7 @@ public class UtilityCommands {
 //        return "$" + MathMan.format(total);
 //    }
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove land cost !!important
 //    @Command(desc = "Calculate the costs of purchasing land (from current to max)", aliases = {"LandCost", "land", "landcosts"})
 //    public String LandCost(@Range(min=0, max=40000) int currentLand,
 //                           @Range(min=0, max=40000) int maxLand,
@@ -337,7 +337,6 @@ public class UtilityCommands {
 //        return "$" + MathMan.format(total);
 //    }
 
-    // TODO FIXME :||remove
     @Command(desc = "Calculate the score of various things. Each argument is option, and can go in any order")
     public String score(@Default DBNation nation,
                         @Default Double EducationIndex,
@@ -375,7 +374,7 @@ public class UtilityCommands {
     }
 
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove project cost !!important
 //    @Command(desc = "Shows the cost of a project")
 //    public String ProjectCost(@Me GuildDB db, @Me IMessageIO channel,
 //                              Set<Project> projects,
@@ -570,7 +569,7 @@ public class UtilityCommands {
         return null;
     }
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove alliance sheet
 //    @RolePermission(value = {Roles.MILCOM, Roles.INTERNAL_AFFAIRS,Roles.ECON,Roles.FOREIGN_AFFAIRS}, any=true)
 //    @Command(desc = "Create a sheet of alliances with customized columns\n" +
 //            "See <https://github.com/xdnw/diplocutus/wiki/nation_placeholders> for a list of placeholders")
@@ -682,7 +681,7 @@ public class UtilityCommands {
         return "Protection ends " + DiscordUtil.timestamp(nation.getProtectionEnds(), null);
     }
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove quickest beige
 //    @Command(desc = "Return quickest attacks to beige an enemy at a resistance level", aliases = {"fastBeige", "quickestBeige", "quickBeige", "fastestBeige"})
 //    public String quickestBeige(@Range(min=1, max=100) int resistance,
 //                                @Arg("Don't allow ground attacks")
@@ -873,7 +872,7 @@ public class UtilityCommands {
                         .append(" | " + String.format("%16s", nation.getNation()))
                         .append(" | " + String.format("%16s", nation.getAllianceName()))
                         .append("\n```")
-                        // TODO FIXME :||remove
+                        // TODO FIXME :||remove who !!important
 //                            .append(String.format("%5s", (int) nation.getScore())).append(" ns").append(" | ")
 //                        .append(String.format("%2s", nation.getCities())).append(" \uD83C\uDFD9").append(" | ")
 //                        .append(String.format("%5s", nation.getAvg_infra())).append(" \uD83C\uDFD7").append(" | ")
@@ -970,7 +969,6 @@ public class UtilityCommands {
         sheet.updateClearCurrentTab();
         sheet.updateWrite();
 
-        // TODO FIXME :||remove
         CM.deposits.addSheet cmd = CM.deposits.addSheet.cmd.sheet(sheet.getURL()).note("#deposit");
 
         IMessageBuilder msg = channel.create();
@@ -979,7 +977,7 @@ public class UtilityCommands {
 
         result.append("Total: `" + ResourceType.resourcesToString(total) + "`" +
                 "\nWorth: $" + MathMan.format(ResourceType.convertedTotal(total)));
-        // TODO FIXME :||remove result.append("\n\nUse " + CM.transfer.bulk.cmd.toSlashMention());
+        result.append("\n\nUse " + CM.transfer.bulk.cmd.toSlashMention());
         result.append("\nOr press \uD83C\uDFE6 to run " + cmd.toSlashCommand() + "");
 
         String title = "Nation Interest";
@@ -1087,7 +1085,7 @@ public class UtilityCommands {
         return null;
     }
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove unit cost !!important
 //    @Command(desc = "Get the cost of military units and their upkeep")
 //    public String unitCost(Map<MilitaryUnit, Long> units,
 //                           @Arg("Show the upkeep during war time")
@@ -1136,7 +1134,7 @@ public class UtilityCommands {
         }
     }
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove alliance cost
 //    @Command(aliases = {"alliancecost", "aacost"}, desc = "Get the value of nations including their cities, projects and units")
 //    public String allianceCost(@Me IMessageIO channel, @Me GuildDB db,
 //                               NationList nations, @Switch("u") boolean update, @Switch("s") @Timestamp Long snapshotDate) {
@@ -1208,7 +1206,7 @@ public class UtilityCommands {
 //        return null;
 //    }
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove building cost !!important
 //    @Command(desc = "Get the cost a specific amount of buildings")
 //    public static String buildingCost(CityBuild build) {
 //        JavaCity jc = new JavaCity(build);

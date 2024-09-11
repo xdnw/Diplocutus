@@ -311,8 +311,7 @@ public class CustomSheetCommands {
                 "- Selection: `" + select.getName() + "`\n" +
                 "- Template: `" + columns.getName() + "`\n" +
                 "- Url: <" + sheet.getUrl() + ">\n" +
-                // TODO FIXME :||remove
-//                CM.sheet_custom.update.cmd.toSlashMention() + " to update the sheet\n" +
+                CM.sheet_custom.update.cmd.toSlashMention() + " to update the sheet\n" +
                 "See: " + CM.sheet_custom.view.cmd.toSlashMention() + " | " + CM.sheet_custom.remove_tab.cmd.toSlashMention() + " | " + CM.sheet_custom.update.cmd.toSlashMention();
     }
 

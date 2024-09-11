@@ -298,7 +298,7 @@ public class LeavingBeigeAlert {
                 "**These nations are leaving protection within a few minutes**" +
                 "`note: Default day change is 5 minutes, turn change is 30s`\n" +
                 "To disable automatic alerts, go to your alliance server and use "
-                // TODO FIXME :||remove + CM.alerts.beige.beigeAlertMode.cmd.mode(NationMeta.ProtectionAlertMode.NO_ALERTS.name()).toSlashCommand()
+                 + CM.alerts.beige.beigeAlertMode.cmd.mode(NationMeta.ProtectionAlertMode.NO_ALERTS.name()).toSlashCommand()
                 + "";
 
         for (Map.Entry<DBNation, Map<DBNation, Boolean>> entry : nationTargets.entrySet()) {

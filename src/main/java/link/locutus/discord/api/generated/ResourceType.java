@@ -807,8 +807,7 @@ public enum ResourceType {
 
     @Command(desc = "The market value of this resource (weekly average)")
     public double getMarketValue() {
-        // TODO :||remove
-        return 1;
+        return convertedTotal(this, 1);
     }
 
     public static interface IResourceArray {

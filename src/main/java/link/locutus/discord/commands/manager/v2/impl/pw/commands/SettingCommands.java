@@ -104,8 +104,7 @@ public class SettingCommands {
                         response.append("**current value**: `" + key.toReadableString(db, valueObj) + "`\n\n");
                     }
                     response.append("`note: to delete, use: "
-                            // TODO FIXME :||remove
-//                            + CM.settings.delete.cmd.key(key.name()).toSlashCommand(false)
+                            + CM.settings.delete.cmd.key(key.name()).toSlashCommand(false)
                             + "`\n");
                 } else {
                     response.append("`no value is set`\n");
@@ -146,12 +145,11 @@ public class SettingCommands {
                 response.append("\n");
                 if (!listAll) {
                     response.append("To list all setting: "
-                            // TODO FIXME :||remove
-//                            + CM.settings.info.cmd.listAll("true")
+                            + CM.settings.info.cmd.listAll("true")
                             + "\n");
                 }
                 response.append("For info/usage: "
-//                        + CM.settings.info.cmd.key("YOUR_KEY_HERE").toSlashCommand(false) // TODO FIXME :||remove
+                        + CM.settings.info.cmd.key("YOUR_KEY_HERE").toSlashCommand(false)
                         + "\n");
                 response.append("To delete: " + CM.settings.delete.cmd.toSlashMention() + "\n");
                 response.append("Find a setting: " + CM.help.find_setting.cmd.toSlashMention());

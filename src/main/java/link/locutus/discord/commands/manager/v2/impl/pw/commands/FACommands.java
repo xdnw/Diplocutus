@@ -231,11 +231,13 @@ public class FACommands {
 
         if (alliances.size() == 1) {
             DBAlliance alliance = alliances.iterator().next();
-            // TODO FIXME :||remove update treaties
             boolean update = false;
             GuildDB aaDb = alliance.getGuildDB();
             if (aaDb != null) {
                 update = (Roles.FOREIGN_AFFAIRS.getAllowedAccounts(user, aaDb).contains(alliance.getIdLong()));
+            }
+            if (update) {
+                Locutus.imp().runEventsAsync(events -> Locutus.imp().getNationDB().fetchTreaties(f -> f.getAlliance_id() == alliance.getId(), events));
             }
             allTreaties.addAll(alliance.getTreaties().values());
         } else {

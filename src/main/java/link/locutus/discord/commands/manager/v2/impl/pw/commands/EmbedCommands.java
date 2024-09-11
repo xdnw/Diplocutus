@@ -246,7 +246,7 @@ public class EmbedCommands {
                 .send();
         io.create().embed("Added Button", "Added button `" + label + "` to " + message.getJumpUrl() + "\n" +
                 "Remove it using: " + CM.embed.remove.button.cmd.toSlashMention() + "\n" +
-                "Rename using " + CM.embed.remove.button.cmd.toSlashMention()).cancelButton("Dismiss").send();// + CM.embed.rename.button.cmd.toSlashMention();
+                "Rename using " + CM.embed.rename.button.cmd.toSlashMention()).cancelButton("Dismiss").send();
         return null;
     }
 
@@ -268,8 +268,7 @@ public class EmbedCommands {
             String name = param.getName();
             if (!parsed.containsKey(name) && !parsed.containsKey(name.toLowerCase(Locale.ROOT))) {
                 throw new IllegalArgumentException("The command `" + command.getFullPath() + "` has a required argument `" + name + "` that is missing from your `arguments` value: `" + arguments + "`.\n"
-                        // TODO FIXME :||remove
-//                        + "See: " + CM.help.command.cmd.command(command.getFullPath())
+                        + "See: " + CM.help.command.cmd.command(command.getFullPath())
                 );
             }
         }
@@ -327,8 +326,7 @@ public class EmbedCommands {
             String nameL = name.toLowerCase(Locale.ROOT);
             if (!promptedArguments.contains(name) && !promptedArguments.contains(nameL) && !providedArguments.containsKey(name) && !providedArguments.containsKey(nameL)) {
                 throw new IllegalArgumentException("The command `" + command.getFullPath() + "` has a required argument `" + name + "` that is missing from your `arguments` or `defaults`.\n"
-                        // TODO FIXME :||remove
-//                        + "See: " + CM.help.command.cmd.command(command.getFullPath())
+                        + "See: " + CM.help.command.cmd.command(command.getFullPath())
                 );
             }
         }
@@ -346,7 +344,7 @@ public class EmbedCommands {
         return null;
     }
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove raid embed
 //    @Command(desc="Makes a raid panel, which is a discord embed with buttons for different options for finding raid targets")
 //    @RolePermission(Roles.ADMIN)
 //    public void raid(@Me IMessageIO io, @Default MessageChannel outputChannel) {
@@ -393,7 +391,7 @@ public class EmbedCommands {
 //    }
 
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove member econ panel
 //        @Command(desc="Econ panel for members")
 //        @RolePermission(Roles.ADMIN)
 //        public void memberEconPanel(@Me IMessageIO io, @Default MessageChannel outputChannel, @Default CommandBehavior behavior, @Switch("d") boolean showDepositsInDms) {
@@ -442,7 +440,7 @@ public class EmbedCommands {
 
 
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove war guerilla embed
     /*
     @Locutus#7602 !embed "High infra enemies" "0 = Active enemies
 1 = Weak enemies
@@ -503,7 +501,7 @@ public class EmbedCommands {
 //                .send();
 //    }
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove war contested sheet
             /*
             @Locutus#7602 !embed "War Finder" "**If you are above 5,500 score, ONLY go for easy targets**
 (Or if you have defensive wars, and dont want to over extend)
@@ -591,7 +589,7 @@ public class EmbedCommands {
 //                .send();
 //    }
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove spy enemy
     // Spy embed with spy - airplane - tank - ship spying - auto
 //  @Command(desc="Enemy espionage finder discord embed template")
 //  @RolePermission(Roles.ADMIN)
@@ -651,7 +649,7 @@ public class EmbedCommands {
 
   // Winning target being high average infra, high mil, low mil, off beige soon
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove war winning
     /*
     high: war find target ~enemies,#attacking=~allies,#attacking2/3strengthenemyofscore<99999 -p -e
     med: war find target ~enemies,#attacking=~allies -p -e
@@ -718,7 +716,7 @@ public class EmbedCommands {
 //            .send();
 //    }
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove econ panel
 //    @Command(desc = "Discord embed for Econ Staff to view deposits, stockpiles, revenue, tax brackets, tax income, warchest and offshore funds")
 //    @RolePermission(Roles.ADMIN)
 //    @IsAlliance
@@ -782,7 +780,7 @@ public class EmbedCommands {
 //        msg.send();
 //    }
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove ia panel
     // todo ia panel
     // // Press `audit` to view member audit sheet /audit sheet
     //        // Press `activity` to view member activity sheet /sheets_ia activitysheet
@@ -833,7 +831,7 @@ public class EmbedCommands {
 //        msg.send();
 //    }
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove deposits panel
 //    @Command(desc = "Discord embed for checking deposits, withdrawing funds, viewing your stockpile, depositing resources and offshoring funds")
 //    @RolePermission(Roles.ADMIN)
 //    public void depositsPanel(@Me GuildDB db, @Me IMessageIO io, @Arg("Only applicable to corporate servers. The nation accepting trades for bank deposits. Defaults to the bot owner's nation") @Default DBNation bankerNation, @Switch("c") MessageChannel outputChannel) {
@@ -925,7 +923,7 @@ public class EmbedCommands {
 //    }
 
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove ally enemy sheet
 //    @Command(desc="Generates sheets for a coalition war:" +
 //            "- All enemies\n" +
 //            "- Priority enemies\n" +
@@ -1109,7 +1107,7 @@ public class EmbedCommands {
 //                ), "update").send();
 //    }
 
-    // TODO FIXME :||remove
+    // TODO FIXME :||remove spy sheets
 //    @Command(desc = "Discord embed for sheet to update ally and enemy spy counts, generate and send spy blitz targets")
 //    @RolePermission(Roles.ADMIN)
 //    public void spySheets(@Me GuildDB db, @Me IMessageIO io, @Default("spyops") @GuildCoalition String allies, @Default MessageChannel outputChannel, @Default SpreadSheet spySheet) throws GeneralSecurityException, IOException {
@@ -1228,8 +1226,7 @@ public class EmbedCommands {
         Collection<DBNation> nations = sendTo.getNations();
         Set<String> results = StringMan.enumerateReplacements(announcement, replacementLines, nations.size() + 1000, 0, 0);
 
-        // TODO FIXME :||remove
-//        CM.announcement.view cmd = CM.announcement.view.cmd.ann_id(annId + "").document("true");
+        CM.announcement.view cmd = CM.announcement.view.cmd.ann_id(annId + "").document("true");
 
         StringBuilder body = new StringBuilder();
         body.append("Title: `" + title + "`\n");
@@ -1237,8 +1234,7 @@ public class EmbedCommands {
         body.append("ID: `#" + annId + "`\n\n");
         body.append("Press `view` to view the document");
         io.create().embed(title, body.toString())
-                // TODO FIXME :||remove
-//                .commandButton(CommandBehavior.EPHEMERAL, cmd, "view")
+                .commandButton(CommandBehavior.EPHEMERAL, cmd, "view")
                 .send();
     }
 }

@@ -404,7 +404,7 @@ public class PlaceholdersMap {
                     DBNation nation = DiscordUtil.getNation(user);
                     if (nation == null) {
                         throw new IllegalArgumentException("User `" + DiscordUtil.getFullUsername(user) + "` is not registered. See "
-                                // TODO FIXME :||remove + CM.register.cmd.toSlashMention()
+                                 + CM.register.cmd.toSlashMention()
                         );
                     }
                     return Set.of(nation);

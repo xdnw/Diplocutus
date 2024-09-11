@@ -625,7 +625,7 @@ public class DBWar implements DBEntity<WarHistory, DBWar> {
             body.append("`" + enemy.getNation() + "`")
                     .append(" | ").append(enemy.getAllianceName()).append(":");
         }
-        // TODO FIXME :||remove loot and military markdown
+        // TODO FIXME :||remove loot and military markdown !!important
 //        if (loot && isAttacker) {
 //            double lootValue = enemy.lootTotal();
 //            body.append("$" + MathMan.format((int) lootValue));

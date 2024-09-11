@@ -949,9 +949,8 @@ public class AdminCommands {
                 msg = msg.append(bottomText);
             }
 
-            // TODO FIXME :||remove
-//            CM.announcement.view cmd = CM.announcement.view.cmd.ann_id(annId + "");
-//            msg.commandButton(CommandBehavior.EPHEMERAL, cmd, "view").send();
+            CM.announcement.view cmd = CM.announcement.view.cmd.ann_id(annId + "");
+            msg.commandButton(CommandBehavior.EPHEMERAL, cmd, "view").send();
         }
 
         return output.toString().trim();
@@ -1419,7 +1418,7 @@ public class AdminCommands {
         String allianceStr = alliance == null ? "*" : alliance.getName() + "/" + aaId;
         db.addRole(locutusRole, discordRole, aaId);
         return "Added role alias: " + locutusRole.name().toLowerCase() + " to " + discordRole.getName() + " for alliance " + allianceStr + "\n" +
-                "To unregister, use " /* // TODO FIXME :||remove + CM.role.unregister.cmd.locutusRole(locutusRole.name()).toSlashCommand() */ + "";
+                "To unregister, use " + CM.role.unregister.cmd.locutusRole(locutusRole.name()).toSlashCommand() + "";
     }
 
     @Command(desc = "Import api keys from the guild API_KEY setting, so they can be validated")
@@ -1614,18 +1613,12 @@ public class AdminCommands {
 
     @Command()
     @RolePermission(value = Roles.ADMIN, root = true)
-    public String syncBanks(@Me GuildDB db, @Me IMessageIO channel, @Default DBAlliance alliance, @Default @Timestamp Long timestamp) throws IOException, ParseException {
-        // TODO FIXME :||remove fix bank sync for each alliance with api
-//        if (alliance != null) {
-//            db = alliance.getGuildDB();
-//            if (db == null) throw new IllegalArgumentException("No guild found for AA:" + alliance);
-//
-//            channel.send("Syncing banks for " + db.getGuild() + "...");
-//            OffshoreInstance bank = alliance.getBank();
-//            bank.sync(timestamp, false);
-//        }
-//
-//        Locutus.imp().getBankDB().updateBankRecs(false, Event::post);
+    public String syncBanks(@Me GuildDB db, @Me IMessageIO channel, DBAlliance alliance) throws IOException, ParseException {
+        BankDB bankDb = Locutus.imp().getBankDB();
+        bankDb.updateBankTransfers(alliance);
+        bankDb.updateEquipmentTransfers(alliance);
+        bankDb.updateGrantTransfers(alliance);
+        bankDb.updateLoanTransfers(alliance);
         return "Done!";
     }
 

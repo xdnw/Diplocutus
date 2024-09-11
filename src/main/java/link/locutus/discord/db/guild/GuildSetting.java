@@ -206,10 +206,9 @@ public abstract class GuildSetting<T> {
 
     @Command(desc = "The setting command mention")
     public String getCommandMention() {
-        // TODO FIXME :||remove
-//        if (Locutus.imp() == null || Locutus.imp().getSlashCommands() == null) {
-//            return CM.settings.info.cmd.key(name).toSlashCommand();
-//        }
+        if (Locutus.imp() == null || Locutus.imp().getSlashCommands() == null) {
+            return CM.settings.info.cmd.key(name).toSlashCommand();
+        }
         return getCommandMention(getCallables());
     }
 
@@ -225,7 +224,7 @@ public abstract class GuildSetting<T> {
         String readableStr = toReadableString(db, value);
         db.setInfo(this, user, value);
         return "Set `" + name() + "` to `" + readableStr + "`\n"
-                // TODO FIXME :||remove + "Delete with " + CM.settings.delete.cmd.key(name)
+                 + "Delete with " + CM.settings.delete.cmd.key(name)
                 ;
     }
 
@@ -303,7 +302,7 @@ public abstract class GuildSetting<T> {
             if (db.getCoalition(coalition).isEmpty()) {
                 if (throwException) {
                     errors.add("You must first set the coalition `" + coalition + "` (see: "
-                            // TODO FIXME :||remove + CM.coalition.add.cmd.coalitionName(coalition).toSlashCommand()
+                             + CM.coalition.add.cmd.coalitionName(coalition).toSlashCommand()
                             + ")");
                 } else {
                     return false;
@@ -327,7 +326,7 @@ public abstract class GuildSetting<T> {
             if (roleMap.isEmpty() || (!allowAARole && !roleMap.containsKey(0L))) {
                 if (throwException) {
                     errors.add("Missing required role " + role.name() + " (see: "
-                            // TODO FIXME :||remove + CM.role.setAlias.cmd.locutusRole(role.name()).discordRole(null).toSlashCommand()
+                             + CM.role.setAlias.cmd.locutusRole(role.name()).discordRole(null).toSlashCommand()
                             + ")");
                 } else {
                     return false;

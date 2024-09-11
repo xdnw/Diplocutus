@@ -159,8 +159,7 @@ public class NationPlaceholders extends Placeholders<DBNation> {
 
     @Override
     public String getDescription() {
-        return "Nation"; // TODO FIXME :||remove
-//        return CM.help.find_nation_placeholder.cmd.toSlashMention();
+        return CM.help.find_nation_placeholder.cmd.toSlashMention();
     }
 
     public List<NationAttribute> getMetrics(ValueStore store) {

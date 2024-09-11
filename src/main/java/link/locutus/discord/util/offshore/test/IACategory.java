@@ -448,8 +448,7 @@ public class IACategory {
 
                     body.append("\n\nPress `" + emoji + "` to delete");
                     output.create().embed( "Interview not assigned to a member", body.toString())
-                            // TODO FIXME :||remove
-//                                    .commandButton(CM.channel.delete.current.cmd.channel(channel.getAsMention()), emoji)
+                                    .commandButton(CM.channel.delete.current.cmd.channel(channel.getAsMention()), emoji)
                                             .send();
 
                     if (nation != null && ((nation.active_m() > 7200) || (nation.active_m() > 2880 && (nation.getPosition() <= 1 || !alliance.contains(nation.getAlliance_id()))))) {

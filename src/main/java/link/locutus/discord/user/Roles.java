@@ -199,7 +199,7 @@ public enum Roles {
             return role.getName();
         }
         return "No " + name() + " role set. Use "
-        // TODO FIXME :||remove  + CM.role.setAlias.cmd.locutusRole(name()).discordRole(null)
+        + CM.role.setAlias.cmd.locutusRole(name()).discordRole(null)
           ;
     }
 

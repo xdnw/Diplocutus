@@ -58,7 +58,7 @@ public class GuildKey {
             for (DBAlliance alliance : alliances) {
                 if (existing.contains(alliance.getId())) {
                     throw new IllegalArgumentException("Alliance " + alliance.getName() + " (id: " + alliance.getId() + ") is already registered (registered: " + StringMan.join(existing, ",") + ")\n" +
-                            "To set multiple alliances, first delete the currently set alliance ids: " /* TODO FIXME :||remove + CM.settings.delete.cmd.key(GuildKey.ALLIANCE_ID.name())*/);
+                            "To set multiple alliances, first delete the currently set alliance ids: " + CM.settings.delete.cmd.key(GuildKey.ALLIANCE_ID.name()));
                 }
             }
             toAdd = ALLIANCE_ID.allowedAndValidate(db, user, toAdd);
@@ -552,7 +552,7 @@ public class GuildKey {
             return "The #channel to receive alerts for defensive wars\n" +
                     "Members and `" + Roles.MILCOM.name() + "` are pinged for defensive wars\n" +
                     "To set the `" + Roles.MILCOM.name() + "` role, see: "
-            // TODO FIXME :||remove + CM.role.setAlias.cmd.locutusRole(Roles.MILCOM.name()).discordRole("")
+                    + CM.role.setAlias.cmd.locutusRole(Roles.MILCOM.name()).discordRole("")
               ;
         }
     }.setupRequirements(f -> f.requiresAllies().requireActiveGuild().requireValidAlliance());
@@ -593,7 +593,7 @@ public class GuildKey {
             return "The #channel to receive alerts for offensive wars\n" +
                     "Members and `" + Roles.FOREIGN_AFFAIRS.name() + "` role are pinged for Do Not Raid (DNR) violations\n" +
                     "To set the `" + Roles.FOREIGN_AFFAIRS.name() + "` role, see: "
-                    // TODO FIXME :||remove  + CM.role.setAlias.cmd.locutusRole(Roles.FOREIGN_AFFAIRS.name()).discordRole("")
+                    + CM.role.setAlias.cmd.locutusRole(Roles.FOREIGN_AFFAIRS.name()).discordRole("")
                     + "\n" +
                     "Wars against inactive nones do not create alerts";
         }
@@ -786,7 +786,7 @@ public class GuildKey {
             return "Options: " + StringMan.getString(GuildDB.AutoRoleOption.values()) + "\n" +
                     "See also:\n" +
                     "- "
-            // TODO FIXME :||remove + CM.coalition.create.cmd.coalitionName(Coalition.MASKED_ALLIANCES.name())
+            + CM.coalition.create.cmd.coalitionName(Coalition.MASKED_ALLIANCES.name())
               + "\n" +
                     "- " + CM.role.clearAllianceRoles.cmd.toSlashMention() + "\n" +
                     "- " + AUTOROLE_MEMBERS.getCommandMention() + "\n" +
@@ -928,7 +928,7 @@ public class GuildKey {
             GuildDB otherDb = Locutus.imp().getGuildDB(guild);
             if (guild.getIdLong() == db.getGuild().getIdLong())
                 throw new IllegalArgumentException("Use "
-                        // TODO FIXME :||remove + CM.settings.delete.cmd.key(GuildKey.WAR_SERVER.name())
+                        + CM.settings.delete.cmd.key(GuildKey.WAR_SERVER.name())
                         + " to unset the war server");
             if (otherDb.getOrNull(GuildKey.WAR_SERVER, false) != null)
                 throw new IllegalArgumentException("Circular reference. The server you have set already defers its war room");
@@ -1022,7 +1022,7 @@ public class GuildKey {
         public GuildDB validate(GuildDB db, User user, GuildDB otherDb) {
             if (otherDb.getIdLong() == db.getGuild().getIdLong())
                 throw new IllegalArgumentException("Use "
-                        // TODO FIXME :||remove + CM.settings.delete.cmd.key(FA_SERVER.name())
+                         + CM.settings.delete.cmd.key(FA_SERVER.name())
                         + " to unset the FA_SERVER");
             if (FA_SERVER.has(otherDb, false))
                 throw new IllegalArgumentException("Circular reference. The server you have set already defers its FA_SERVER");
@@ -1062,7 +1062,7 @@ public class GuildKey {
         @Override
         public String help() {
             return "The #channel to receive alerts when a raid target leaves protection.\n"
-                    // TODO FIXME :||remove + CM.role.setAlias.cmd.locutusRole(Roles.PROTECTION_ALERT.name()).discordRole(null)
+                    + CM.role.setAlias.cmd.locutusRole(Roles.PROTECTION_ALERT.name()).discordRole(null)
                     + " must also be set and have members in range";
         }
     }.setupRequirements(f -> f.requireValidAlliance().requires(ALLIANCE_ID).requiresWhitelisted().requireActiveGuild());

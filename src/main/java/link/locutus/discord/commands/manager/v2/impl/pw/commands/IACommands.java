@@ -559,7 +559,7 @@ public class IACommands {
         Map<Role, Set<Role>> assignable = db.getOrNull(GuildKey.ASSIGNABLE_ROLES);
         if (assignable == null || assignable.isEmpty()) {
             return "No roles found. See "
-                    // TODO FIXME :||remove +  CM.self.create.cmd.toSlashMention()
+                    +  CM.self.create.cmd.toSlashMention()
                     + "";
         }
         assignable = new HashMap<>(assignable);
@@ -594,7 +594,7 @@ public class IACommands {
 
         result.append(StringMan.getString(requireRole) + " can now add/remove " + StringMan.getString(assignableRoles) + " via " + CM.self.add.cmd.toSlashMention() + " / " + CM.self.remove.cmd.toSlashMention() + "\n" +
                 "- To see a list of current mappings, use "
-                // TODO FIXME :||remove + CM.settings.info.cmd.key(GuildKey.ASSIGNABLE_ROLES.name())
+                + CM.settings.info.cmd.key(GuildKey.ASSIGNABLE_ROLES.name())
                 + "");
         return result.toString();
     }
@@ -644,7 +644,7 @@ public class IACommands {
         }
         if (!canAssign) {
             return "No permission to assign " + addRole + " (see: `listAssignableRoles` | ADMIN: see "
-                    // TODO FIXME :||remove +  CM.self.create.cmd.toSlashMention()
+                    +  CM.self.create.cmd.toSlashMention()
                     + ")";
         }
         if (member.getRoles().contains(addRole)) {
@@ -680,7 +680,7 @@ public class IACommands {
         }
         if (!canAssign) {
             return "No permission to assign " + addRole + " (see: `listAssignableRoles` | ADMIN: see "
-                    // TODO FIXME :||remove +  CM.self.create.cmd.toSlashMention()
+                    +  CM.self.create.cmd.toSlashMention()
                     + ")";
         }
         if (!member.getRoles().contains(addRole)) {
@@ -1200,9 +1200,8 @@ public class IACommands {
         IMessageBuilder msg = channel.create();
         sheet.attach(msg, "mail_command", embed, false, 0);
         embed.append("\nPress `confirm` to confirm");
-        // TODO FIXME :||remove
-//        CM.mail.sheet cmd = CM.mail.sheet.cmd.sheet(sheet.getURL()).dm(sendDM ? "true" : null).skipMail(skipMail ? "true" : null);
-//        msg.confirmation(title, embed.toString(), cmd).send();
+        CM.message.sheet cmd = CM.message.sheet.cmd.sheet(sheet.getURL());
+        msg.confirmation(title, embed.toString(), cmd).send();
 
         if (errorMsgs.isEmpty()) return null;
         return "Errors\n- " + StringMan.join(errorMsgs, "\n- ");
@@ -1722,8 +1721,7 @@ public class IACommands {
         String message = db.getCopyPasta("interview", true);
         if (message == null) {
             return "No message set. Set one with " + ""
-                    // TODO FIXME :||remove
-//                    +  CM.interview.questions.set.cmd.toSlashMention()
+                    +  CM.interview.questions.set.cmd.toSlashMention()
                     ;
         }
         return "Interview questions:\n" + message + "";

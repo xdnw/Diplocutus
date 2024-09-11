@@ -119,7 +119,7 @@ public class DocumentConverter {
         long hash = embeddings.getHash(markdown);
         if (hash == source.source_hash) {
             throw new IllegalArgumentException("An identical document already exists: `" + documentName + "`. See: "
-                    // TODO FIXME :||remove + CM.chat.dataset.view.cmd.source(source.getQualifiedName())
+                    + CM.chat.dataset.view.cmd.source(source.getQualifiedName())
                       );
         }
 

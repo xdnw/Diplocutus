@@ -415,8 +415,7 @@ public class ReportCommands {
 
         return "Report " + (existing == null ? "created" : "updated") + " with id `" + report.reportId + "`\n" +
                 "See: "
-                // TODO FIXME :||remove
-//                + CM.report.show.cmd.report(report.reportId + "").toSlashCommand(true)
+                + CM.report.show.cmd.report(report.reportId + "").toSlashCommand(true)
                 ;
     }
 
@@ -709,8 +708,7 @@ public class ReportCommands {
             int approved = (int) reports.stream().filter(report -> report.approved).count();
             int pending = reports.size() - approved;
             response.append("Reports: " + reports.size() + " (" + approved + " approved, " + pending + " pending) "
-                    // TODO FIXME :||remove
-//                    + CM.report.search.cmd.toSlashMention() + "\n"
+                    + CM.report.search.cmd.toSlashMention() + "\n"
             );
         }
 
