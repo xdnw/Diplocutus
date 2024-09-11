@@ -31,6 +31,21 @@ public interface DBEntity<T, E extends DBEntity<T, E>> {
 
     E emptyInstance();
 
+    default <U, V> U localCallList(long timestamp, AtomicLong cacheMs, U data, Supplier<DnsApi> getApi, Supplier<Integer> getId, BiFunction<DnsApi, Integer, DnsQuery<V>> call, BiConsumer<List<V>, Long> update) {
+        return withApi(cacheMs, timestamp, data, () -> {
+            DnsApi api = getApi.get();
+            if (api != null) {
+                long now = System.currentTimeMillis();
+                List<V> result = call.apply(api, getId.get()).call();
+                if (result != null && !result.isEmpty()) {
+                    update.accept(result, now);
+                }
+                return true;
+            }
+            return false;
+        });
+    }
+
     default <U, V> U localCall(long timestamp, AtomicLong cacheMs, U data, Supplier<DnsApi> getApi, Supplier<Integer> getId, BiFunction<DnsApi, Integer, DnsQuery<V>> call, BiConsumer<V, Long> update) {
         return withApi(cacheMs, timestamp, data, () -> {
             DnsApi api = getApi.get();

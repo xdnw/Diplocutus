@@ -10,4 +10,6 @@ public enum InventoryType {
     MISSILE_LAUNCHERS,
     SUBMARINES,
     SUPPORT_VEHICLES,
+    ;
+    public static InventoryType[] values = InventoryType.values();
 }

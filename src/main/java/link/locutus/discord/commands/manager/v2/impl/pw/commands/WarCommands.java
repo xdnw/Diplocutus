@@ -7,8 +7,13 @@ import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import link.locutus.discord.Locutus;
+import link.locutus.discord.api.generated.AllianceMemberInventory;
+import link.locutus.discord.api.generated.InventoryType;
 import link.locutus.discord.api.generated.ResourceType;
 import link.locutus.discord.api.generated.TreatyType;
+import link.locutus.discord.api.types.Building;
+import link.locutus.discord.api.types.MilitaryUnit;
+import link.locutus.discord.api.types.MilitaryUnitType;
 import link.locutus.discord.api.types.tx.Transaction2;
 import link.locutus.discord.commands.WarCategory;
 import link.locutus.discord.commands.manager.v2.impl.discord.permission.IsAlliance;
@@ -37,6 +42,7 @@ import link.locutus.discord.db.GuildDB;
 import link.locutus.discord.db.NationDB;
 import link.locutus.discord.db.entities.*;
 import link.locutus.discord.db.entities.DBAlliance;
+import link.locutus.discord.db.entities.components.NationPrivate;
 import link.locutus.discord.db.guild.GuildKey;
 import link.locutus.discord.db.guild.SheetKey;
 import link.locutus.discord.gpt.GPTUtil;
@@ -2117,171 +2123,160 @@ public class WarCommands {
         return null;
     }
 
-    // TODO FIXME :||remove mmrsheet !!important
-//    @RolePermission(value = {Roles.MILCOM, Roles.INTERNAL_AFFAIRS,Roles.ECON}, any=true)
-//    @Command(desc = "Generate a sheet of alliance/nation/city military unit and building counts (MMR)")
-//    public String MMRSheet(@Me IMessageIO io, @Me GuildDB db, NationList nations, @Switch("s") SpreadSheet sheet,
-//                           @Switch("f") boolean forceUpdate,
-//                           @Arg("List the military building count of each city instead of each nation")
-//                           @Switch("c") boolean showCities,
-//                           @Switch("t") @Timestamp Long snapshotTime) throws GeneralSecurityException, IOException {
-//        Set<DBNation> nationSet = DNS.getNationsSnapshot(nations.getNations(), nations.getFilter(), snapshotTime, db.getGuild(), false);
-//        if (sheet == null) sheet = SpreadSheet.create(db, SheetKey.MMR_SHEET);
-//        List<Object> header = new ArrayList<>(Arrays.asList(
-//                "city",
-//                "nation",
-//                "alliance",
-//                "\uD83C\uDFD9", // cities
-//                "\uD83C\uDFD7", // avg_infra
-//                "score",
-//                "\uD83D\uDDE1",
-//                "\uD83D\uDEE1",
-//                "\uD83D\uDC82",
-//                "\u2699",
-//                "\u2708",
-//                "\u26F5",
-//                "spy",
-//                "spy_buy_days",
-//                "spy_cap",
-//                "barracks",
-//                "factory",
-//                "hangar",
-//                "drydock",
-//                "$\uD83D\uDC82",
-//                "$\u2699",
-//                "$A\u2708",
-//                "$\u26F5"
-//        ));
-//
-//        sheet.setHeader(header);
-//        nationSet.removeIf(n -> n.hasUnsetMil());
-//
-//        Map<Integer, Set<DBNation>> byAlliance = new HashMap<>();
-//
-//        for (DBNation nation : nationSet) {
-//            byAlliance.computeIfAbsent(nation.getAlliance_id(), f -> new HashSet<>()).add(nation);
-//        }
-//
-//        Map<Integer, DBNation> averageByAA = new HashMap<>();
-//
-//
-//        Map<DBNation, List<Object>> nationRows = new HashMap<>();
-//
-//        double barracksTotal = 0;
-//        double factoriesTotal = 0;
-//        double hangarsTotal = 0;
-//        double drydocksTotal = 0;
-//
-//        double soldierBuyTotal = 0;
-//        double tankBuyTotal=  0;
-//        double airBuyTotal = 0;
-//        double navyBuyTotal= 0;
-//
-//        Set<Integer> nationIds = nationSet.stream().map(f -> f.getNation_id()).collect(Collectors.toSet());
-//        long dayCutoff = TimeUtil.getDay() - 2;
-////        Map<Integer, Integer> lastSpyCounts = Locutus.imp().getNationDB().getLastSpiesByNation(nationIds, dayCutoff);
-//
-//        if (forceUpdate) {
-//            new SimpleNationList(nationSet).updateCities(true);
-//        }
-//
-//        for (Map.Entry<Integer, Set<DBNation>> entry : byAlliance.entrySet()) {
-//            int aaId = entry.getKey();
-//
-//            Set<DBNation> aaNations = entry.getValue();
-//            for (DBNation nation : aaNations) {
-//
-//                double barracks = 0;
-//                double factories = 0;
-//                double hangars = 0;
-//                double drydocks = 0;
-//
-//                double soldierBuy = 0;
-//                double tankBuy=  0;
-//                double airBuy = 0;
-//                double navyBuy= 0;
-//
-//                List<Object> row = new ArrayList<>(header);
-//
-//                double daysSpies = nation.daysSinceLastSpyBuy();
-//
-//                Map<Integer, JavaCity> cities = nation.getCityMap(false, false, false);
-//                int i = 0;
-//                for (Map.Entry<Integer, JavaCity> cityEntry : cities.entrySet()) {
-//                    int cityBarracks = cityEntry.getValue().getBuilding(Buildings.BARRACKS);
-//                    int cityFactories = cityEntry.getValue().getBuilding(Buildings.FACTORY);
-//                    int cityHangars = cityEntry.getValue().getBuilding(Buildings.HANGAR);
-//                    int cityDrydocks = cityEntry.getValue().getBuilding(Buildings.DRYDOCK);
-//                    barracks += cityBarracks;
-//                    factories += cityFactories;
-//                    hangars += cityHangars;
-//                    drydocks += cityDrydocks;
-//                    if (showCities) {
-//                        String url = MarkupUtil.sheetUrl("CITY " + (++i), DNS.City.getCityUrl(cityEntry.getKey()));
-//                        setRowMMRSheet(url, row, nation, daysSpies, cityBarracks, cityFactories, cityHangars, cityDrydocks, 0, 0, 0, 0);
-//                        sheet.addRow(row);
-//                    }
-//                }
-//
-//                long turn = TimeUtil.getTurn();
-//                long dayStart = TimeUtil.getTimeFromTurn(turn - (turn % 24));
-//                soldierBuy = 100 * Locutus.imp().getNationDB().getMilitaryBuy(nation, MilitaryUnit.SOLDIER, dayStart) / (Buildings.BARRACKS.getUnitDailyBuy() * barracks);
-//                tankBuy = 100 * Locutus.imp().getNationDB().getMilitaryBuy(nation, MilitaryUnit.TANK, dayStart) / (Buildings.FACTORY.getUnitDailyBuy() * factories);
-//                airBuy = 100 * Locutus.imp().getNationDB().getMilitaryBuy(nation, MilitaryUnit.AIRCRAFT, dayStart) / (Buildings.HANGAR.getUnitDailyBuy() * hangars);
-//                navyBuy = 100 * Locutus.imp().getNationDB().getMilitaryBuy(nation, MilitaryUnit.SHIP, dayStart) / (Buildings.DRYDOCK.getUnitDailyBuy() * drydocks);
-//
-//                if (!Double.isFinite(soldierBuy)) soldierBuy = 100;
-//                if (!Double.isFinite(tankBuy)) tankBuy = 100;
-//                if (!Double.isFinite(airBuy)) airBuy = 100;
-//                if (!Double.isFinite(navyBuy)) navyBuy = 100;
-//
-//                barracks /= nation.getCities();
-//                factories /= nation.getCities();
-//                hangars /= nation.getCities();
-//                drydocks /= nation.getCities();
-//
-//                barracksTotal += barracks;
-//                factoriesTotal += factories;
-//                hangarsTotal += hangars;
-//                drydocksTotal += drydocks;
-//
-//                soldierBuyTotal += soldierBuy;
-//                tankBuyTotal += tankBuy;
-//                airBuyTotal += airBuy;
-//                navyBuyTotal += navyBuy;
-//
-//                setRowMMRSheet("NATION", row, nation, daysSpies, barracks, factories, hangars, drydocks, soldierBuy, tankBuy, airBuy, navyBuy);
-//                sheet.addRow(row);
-//            }
-//
-//            barracksTotal /= aaNations.size();
-//            factoriesTotal /= aaNations.size();
-//            hangarsTotal /= aaNations.size();
-//            drydocksTotal /= aaNations.size();
-//
-//            soldierBuyTotal /= aaNations.size();
-//            tankBuyTotal /= aaNations.size();
-//            airBuyTotal /= aaNations.size();
-//            navyBuyTotal /= aaNations.size();
-//
-//            String name = DNS.getName(aaId, true);
-//            DBNation total = DBNation.createFromList("", entry.getValue(), false);
-//
-//            total.setNation_id(0);
-//            total.setAlliance_id(aaId);
-//
-//            List<Object> row = new ArrayList<>(header);
-//            setRowMMRSheet("ALLIANCE", row, total, -1, barracksTotal, factoriesTotal, hangarsTotal, drydocksTotal, soldierBuyTotal, tankBuyTotal, airBuyTotal, navyBuyTotal);
-//            sheet.addRow(row);
-//        }
-//
-//        sheet.updateClearCurrentTab();
-//        sheet.updateWrite();
-//        String response = "";
-//        if (!forceUpdate) response += "\nNote: Results may be outdated, add `-f` to update.";
-//        sheet.attach(io.create(), "mmr", response).send();
-//        return null;
-//    }
+    @RolePermission(value = {Roles.MILCOM, Roles.INTERNAL_AFFAIRS,Roles.ECON}, any=true)
+    @Command(desc = "Generate a sheet of alliance/nation/city military unit and building counts (MMR)")
+    public String MMRSheet(@Me IMessageIO io, @Me GuildDB db, Set<DBNation> nations, @Switch("s") SpreadSheet sheet,
+                           @Switch("f") boolean forceUpdate) throws GeneralSecurityException, IOException {
+        for (DBNation nation : nations) {
+            if (!db.isAllianceId(nation.getAlliance_id())) {
+                throw new IllegalArgumentException("Nation " + nation.getMarkdownUrl() + " is not in the guild's alliance: " + db.getAllianceIds());
+            }
+        }
+
+        if (sheet == null) sheet = SpreadSheet.create(db, SheetKey.MMR_SHEET);
+        List<Object> header = new ArrayList<>(Arrays.asList(
+                "nation",
+                "alliance",
+                "infra",
+                "land",
+                "score",
+                "army",
+                "air",
+                "navy"
+        ));
+        for (MilitaryUnit unit : MilitaryUnit.values()) {
+            header.add(unit.name());
+        }
+        for (MilitaryUnitType type : MilitaryUnitType.values()) {
+            header.add(type.name());
+        }
+
+        sheet.setHeader(header);
+
+        long now = System.currentTimeMillis() - (forceUpdate ? 0 : TimeUnit.HOURS.toMillis(1));
+        for (DBNation nation : nations) {
+            NationPrivate privateData = nation.getPrivateData();
+            Map<Building, Integer> buildings = privateData.getBuildings(now);
+            Map<MilitaryUnit, Integer> military = privateData.getMilitary(now);
+            Map<MilitaryUnit, Double> quality = privateData.getMilitaryQuality(now);
+            Map<MilitaryUnitType, Integer> capacity = privateData.getMilitaryCapacity(now);
+//            List<AllianceMemberInventory> inventory = privateData.getInventory(now);
+
+        header.set(0, MarkupUtil.sheetUrl(nation.getNation(), DNS.getUrl(nation.getNation_id(), false)));
+        header.set(2, MarkupUtil.sheetUrl(nation.getAllianceName(), DNS.getUrl(nation.getAlliance_id(), true)));
+        header.set(3, nation.getInfra());
+        header.set(4, nation.getLand());
+
+        header.set(5, nation.getScore());
+        header.set(6, nation.getOff());
+        header.set(7, nation.getDef());
+        }
+
+        Map<Integer, Set<DBNation>> byAlliance = new HashMap<>();
+
+        for (DBNation nation : nationSet) {
+            byAlliance.computeIfAbsent(nation.getAlliance_id(), f -> new HashSet<>()).add(nation);
+        }
+
+
+
+        for (Map.Entry<Integer, Set<DBNation>> entry : byAlliance.entrySet()) {
+            int aaId = entry.getKey();
+
+            Set<DBNation> aaNations = entry.getValue();
+            for (DBNation nation : aaNations) {
+
+                double barracks = 0;
+                double factories = 0;
+                double hangars = 0;
+                double drydocks = 0;
+
+                double soldierBuy = 0;
+                double tankBuy=  0;
+                double airBuy = 0;
+                double navyBuy= 0;
+
+                List<Object> row = new ArrayList<>(header);
+
+                double daysSpies = nation.daysSinceLastSpyBuy();
+
+                Map<Integer, JavaCity> cities = nation.getCityMap(false, false, false);
+                int i = 0;
+                for (Map.Entry<Integer, JavaCity> cityEntry : cities.entrySet()) {
+                    int cityBarracks = cityEntry.getValue().getBuilding(Buildings.BARRACKS);
+                    int cityFactories = cityEntry.getValue().getBuilding(Buildings.FACTORY);
+                    int cityHangars = cityEntry.getValue().getBuilding(Buildings.HANGAR);
+                    int cityDrydocks = cityEntry.getValue().getBuilding(Buildings.DRYDOCK);
+                    barracks += cityBarracks;
+                    factories += cityFactories;
+                    hangars += cityHangars;
+                    drydocks += cityDrydocks;
+                    if (showCities) {
+                        String url = MarkupUtil.sheetUrl("CITY " + (++i), DNS.City.getCityUrl(cityEntry.getKey()));
+                        setRowMMRSheet(url, row, nation, daysSpies, cityBarracks, cityFactories, cityHangars, cityDrydocks, 0, 0, 0, 0);
+                        sheet.addRow(row);
+                    }
+                }
+
+                long turn = TimeUtil.getTurn();
+                long dayStart = TimeUtil.getTimeFromTurn(turn - (turn % 24));
+                soldierBuy = 100 * Locutus.imp().getNationDB().getMilitaryBuy(nation, MilitaryUnit.SOLDIER, dayStart) / (Buildings.BARRACKS.getUnitDailyBuy() * barracks);
+                tankBuy = 100 * Locutus.imp().getNationDB().getMilitaryBuy(nation, MilitaryUnit.TANK, dayStart) / (Buildings.FACTORY.getUnitDailyBuy() * factories);
+                airBuy = 100 * Locutus.imp().getNationDB().getMilitaryBuy(nation, MilitaryUnit.AIRCRAFT, dayStart) / (Buildings.HANGAR.getUnitDailyBuy() * hangars);
+                navyBuy = 100 * Locutus.imp().getNationDB().getMilitaryBuy(nation, MilitaryUnit.SHIP, dayStart) / (Buildings.DRYDOCK.getUnitDailyBuy() * drydocks);
+
+                if (!Double.isFinite(soldierBuy)) soldierBuy = 100;
+                if (!Double.isFinite(tankBuy)) tankBuy = 100;
+                if (!Double.isFinite(airBuy)) airBuy = 100;
+                if (!Double.isFinite(navyBuy)) navyBuy = 100;
+
+                barracks /= nation.getCities();
+                factories /= nation.getCities();
+                hangars /= nation.getCities();
+                drydocks /= nation.getCities();
+
+                barracksTotal += barracks;
+                factoriesTotal += factories;
+                hangarsTotal += hangars;
+                drydocksTotal += drydocks;
+
+                soldierBuyTotal += soldierBuy;
+                tankBuyTotal += tankBuy;
+                airBuyTotal += airBuy;
+                navyBuyTotal += navyBuy;
+
+                setRowMMRSheet("NATION", row, nation, daysSpies, barracks, factories, hangars, drydocks, soldierBuy, tankBuy, airBuy, navyBuy);
+                sheet.addRow(row);
+            }
+
+            barracksTotal /= aaNations.size();
+            factoriesTotal /= aaNations.size();
+            hangarsTotal /= aaNations.size();
+            drydocksTotal /= aaNations.size();
+
+            soldierBuyTotal /= aaNations.size();
+            tankBuyTotal /= aaNations.size();
+            airBuyTotal /= aaNations.size();
+            navyBuyTotal /= aaNations.size();
+
+            String name = DNS.getName(aaId, true);
+            DBNation total = DBNation.createFromList("", entry.getValue(), false);
+
+            total.setNation_id(0);
+            total.setAlliance_id(aaId);
+
+            List<Object> row = new ArrayList<>(header);
+            setRowMMRSheet("ALLIANCE", row, total, -1, barracksTotal, factoriesTotal, hangarsTotal, drydocksTotal, soldierBuyTotal, tankBuyTotal, airBuyTotal, navyBuyTotal);
+            sheet.addRow(row);
+        }
+
+        sheet.updateClearCurrentTab();
+        sheet.updateWrite();
+        String response = "";
+        if (!forceUpdate) response += "\nNote: Results may be outdated, add `-f` to update.";
+        sheet.attach(io.create(), "mmr", response).send();
+        return null;
+    }
 
     // TODO FIXME :||remove mmr sheet rows !!important
 //    private void setRowMMRSheet(String name, List<Object> row, DBNation nation, double lastSpies, double barracks, double factories, double hangars, double drydocks, double soldierBuy, double tankBuy, double airBuy, double navyBuy) {

@@ -186,6 +186,16 @@ public class ArrayUtil {
         return baos.toByteArray();
     }
 
+    public static <T extends Enum<T>> byte[] writeEnumMapDouble(Map<T, Double> data) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(baos);
+        for (Map.Entry<T, Double> entry : data.entrySet()) {
+            IOUtil.writeVarInt(baos, entry.getKey().ordinal());
+            dos.writeDouble(entry.getValue());
+        }
+        return baos.toByteArray();
+    }
+
     public static <T extends Enum<T>> byte[] writeEnumMapLong(Map<T, Long> data) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (Map.Entry<T, Long> entry : data.entrySet()) {
@@ -249,6 +259,18 @@ public class ArrayUtil {
         while (bais.available() > 0) {
             int ordinal = IOUtil.readVarInt(bais);
             long value = IOUtil.readVarLong(bais);
+            map.put(clazz.getEnumConstants()[ordinal], value);
+        }
+        return map;
+    }
+
+    public static <T extends Enum<T>> Map<T, Double> readEnumMapDouble(byte[] data, Class<T> clazz) throws IOException {
+        ByteArrayInputStream bais = new ByteArrayInputStream(data);
+        DataInputStream dis = new DataInputStream(bais);
+        Map<T, Double> map = new EnumMap<>(clazz);
+        while (bais.available() > 0) {
+            int ordinal = IOUtil.readVarInt(bais);
+            double value = dis.readDouble();
             map.put(clazz.getEnumConstants()[ordinal], value);
         }
         return map;

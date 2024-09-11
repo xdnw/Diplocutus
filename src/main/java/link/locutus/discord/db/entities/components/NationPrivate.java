@@ -1,5 +1,6 @@
 package link.locutus.discord.db.entities.components;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import link.locutus.discord.Locutus;
 import link.locutus.discord.api.endpoints.DnsApi;
 import link.locutus.discord.api.endpoints.DnsQuery;
@@ -9,12 +10,13 @@ import link.locutus.discord.db.entities.DBAlliance;
 import link.locutus.discord.db.entities.DBEntity;
 import link.locutus.discord.db.entities.DBNation;
 import link.locutus.discord.event.Event;
+import link.locutus.discord.util.IOUtil;
 import link.locutus.discord.util.math.ArrayUtil;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.*;
@@ -45,10 +47,13 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
 
     private final Map<Project, Integer> projects = new ConcurrentHashMap<>();
     private final Map<MilitaryUnit, Integer> military = new ConcurrentHashMap<>();
+    private final Map<MilitaryUnitType, Integer> militaryCapacity = new ConcurrentHashMap<>();
+    private final Map<MilitaryUnit, Double> militaryQuality = new ConcurrentHashMap<>();
     private final Map<Technology, Integer> technology = new ConcurrentHashMap<>();
     private final Map<Building, Integer> building = new ConcurrentHashMap<>();
     private final Map<ResourceType, Double> stockpile = new ConcurrentHashMap<>();
     private final Map<Policy, Long> policyLastRan = new ConcurrentHashMap<>();
+    private final List<AllianceMemberInventory> memberInventory = new ArrayList<>();
 
     private final AtomicLong outdatedProjects = new AtomicLong(-1);
     private final AtomicLong outdatedMilitary = new AtomicLong(-1);
@@ -56,6 +61,7 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
     private final AtomicLong outdatedBuilding = new AtomicLong(-1);
     private final AtomicLong outdatedStockpile = new AtomicLong(-1);
     private final AtomicLong outdatedPolicyLastRan = new AtomicLong(-1);
+    private final AtomicLong outdatedInventory = new AtomicLong(-1);
 
     public AtomicLong getOutdatedProjects() {
         return outdatedProjects;
@@ -79,6 +85,10 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
 
     public AtomicLong getOutdatedPolicyLastRan() {
         return outdatedPolicyLastRan;
+    }
+
+    public AtomicLong getOutdatedInventory() {
+        return outdatedInventory;
     }
 
     @Override
@@ -107,10 +117,44 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
                     outdatedTechnology.get(),
                     outdatedBuilding.get(),
                     outdatedStockpile.get(),
-                    outdatedPolicyLastRan.get()
+                    outdatedPolicyLastRan.get(),
+                    inventoryToBytes(memberInventory),
+                    outdatedInventory,
+                    ArrayUtil.writeEnumMap(militaryCapacity),
+                    ArrayUtil.writeEnumMapDouble(militaryQuality)
             };
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private byte[] inventoryToBytes(List<AllianceMemberInventory> equipment) throws IOException {
+        synchronized (memberInventory) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            for (AllianceMemberInventory inventory : equipment) {
+                out.write(inventory.type.ordinal());
+                IOUtil.writeVarInt(out, inventory.quality);
+                IOUtil.writeVarInt(out, inventory.quantity);
+            }
+            return out.toByteArray();
+        }
+    }
+
+    private List<AllianceMemberInventory> readMemberInventory(byte[] raw) throws IOException {
+        synchronized (memberInventory) {
+            memberInventory.clear();
+            ByteArrayInputStream in = new ByteArrayInputStream(raw);
+            while (in.available() > 0) {
+                InventoryType type = InventoryType.values[in.read()];
+                int quality = IOUtil.readVarInt(in);
+                int quantity = IOUtil.readVarInt(in);
+                AllianceMemberInventory record = new AllianceMemberInventory();
+                record.type = type;
+                record.quality = quality;
+                record.quantity = quantity;
+                memberInventory.add(record);
+            }
+            return memberInventory;
         }
     }
 
@@ -123,6 +167,9 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             building.clear();
             stockpile.clear();
             policyLastRan.clear();
+            memberInventory.clear();
+            militaryCapacity.clear();
+            militaryQuality.clear();
 
             parentId = (int) raw[0];
             if (raw[1] != null) projects.putAll(ArrayUtil.readEnumMap((byte[]) raw[0], Project.class));
@@ -138,6 +185,11 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             outdatedBuilding.set((long) raw[10]);
             outdatedStockpile.set((long) raw[11]);
             outdatedPolicyLastRan.set((long) raw[12]);
+
+            if (raw[13] != null) readMemberInventory((byte[]) raw[13]);
+            if (raw[14] != null) outdatedInventory.set((long) raw[15]);
+            if (raw[15] != null) militaryCapacity.putAll(ArrayUtil.readEnumMap((byte[]) raw[16], MilitaryUnitType.class));
+            if (raw[16] != null) militaryQuality.putAll(ArrayUtil.readEnumMapDouble((byte[]) raw[17], MilitaryUnit.class));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -159,6 +211,10 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
         result.put("outdatedBuilding", long.class);
         result.put("outdatedStockpile", long.class);
         result.put("outdatedPolicyLastRan", long.class);
+        result.put("memberInventory", byte[].class);
+        result.put("outdatedInventory", long.class);
+        result.put("militaryCapacity", byte[].class);
+        result.put("militaryQuality", byte[].class);
         return result;
     }
 
@@ -181,6 +237,10 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
         result.outdatedBuilding.set(outdatedBuilding.get());
         result.outdatedStockpile.set(outdatedStockpile.get());
         result.outdatedPolicyLastRan.set(outdatedPolicyLastRan.get());
+        result.memberInventory.addAll(memberInventory);
+        result.outdatedInventory.set(outdatedInventory.get());
+        result.militaryCapacity.putAll(militaryCapacity);
+        result.militaryQuality.putAll(militaryQuality);
         return result;
     }
 
@@ -211,6 +271,33 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             return false;
         });
     }
+
+    public Map<MilitaryUnitType, Integer> getMilitaryCapacity(long timestamp) {
+        return withApi(outdatedMilitary, timestamp, militaryCapacity, () -> {
+            DBAlliance aa = getAlliance();
+            AllianceMilitary result = aa.updateMilitaryOfNation(parentId);
+            if (result != null) {
+                long now = System.currentTimeMillis();
+                update(result, now);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    public Map<MilitaryUnit, Double> getMilitaryQuality(long timestamp) {
+        return withApi(outdatedMilitary, timestamp, militaryQuality, () -> {
+            DBAlliance aa = getAlliance();
+            AllianceMilitary result = aa.updateMilitaryOfNation(parentId);
+            if (result != null) {
+                long now = System.currentTimeMillis();
+                update(result, now);
+                return true;
+            }
+            return false;
+        });
+    }
+
     //    private final Map<Technology, Integer> technology = new ConcurrentHashMap<>();
     public Map<Technology, Integer> getTechnology(long timestamp) {
         return withApi(outdatedTechnology, timestamp, technology, () -> {
@@ -247,6 +334,10 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
         return localCall(timestamp, outdatedPolicyLastRan, policyLastRan, this::getAllianceApi, () -> parentId, DnsApi::nationPolicyLastRan, this::update);
     }
 
+    public List<AllianceMemberInventory> getInventory(long timestamp) {
+        return localCallList(timestamp, outdatedInventory, memberInventory, this::getAllianceApi, () -> parentId, DnsApi::allianceMemberInventory, this::update);
+    }
+
     public void update(NationProjects projects, long timestamp) {
         boolean dirty = false;
         for (Project project : Project.values) {
@@ -265,9 +356,25 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
         for (MilitaryUnit unit : MilitaryUnit.values) {
             int existing = this.military.getOrDefault(unit, 0);
             int newValue = unit.getAmount(military);
-            if (newValue == existing) continue;
-            this.military.put(unit, newValue);
-            dirty = true;
+            if (newValue != existing) {
+                this.military.put(unit, newValue);
+                dirty = true;
+            }
+
+            double existingQuality = this.militaryQuality.getOrDefault(unit, 0d);
+            double newQuality = unit.getQuality(military);
+            if (newQuality != existingQuality) {
+                this.militaryQuality.put(unit, newQuality);
+                dirty = true;
+            }
+        }
+        for (MilitaryUnitType type : MilitaryUnitType.values) {
+            int existing = this.militaryCapacity.getOrDefault(type, 0);
+            int newValue = type.getCapacity(military);
+            if (newValue != existing) {
+                this.militaryCapacity.put(type, newValue);
+                dirty = true;
+            }
         }
         this.outdatedMilitary.set(timestamp);
         if (dirty) Locutus.imp().getNationDB().saveNationPrivate(this);
@@ -283,6 +390,28 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             dirty = true;
         }
         this.outdatedTechnology.set(timestamp);
+        if (dirty) Locutus.imp().getNationDB().saveNationPrivate(this);
+    }
+
+    public void update(List<AllianceMemberInventory> equipment, long timestamp) {
+        boolean dirty = false;
+        synchronized (this.memberInventory) {
+            Map<InventoryType, Map<Integer, Integer>> inventoryToQualityToQuantity = new HashMap<>();
+            for (AllianceMemberInventory inventory : this.memberInventory) {
+                inventoryToQualityToQuantity.computeIfAbsent(inventory.type, k -> new HashMap<>()).put(inventory.quality, inventory.quantity);
+            }
+            for (AllianceMemberInventory inventory : equipment) {
+                InventoryType type = inventory.type;
+                int existingQuantity = inventoryToQualityToQuantity.getOrDefault(type, Collections.emptyMap()).getOrDefault(inventory.quality, 0);
+                if (existingQuantity == inventory.quantity) continue;
+                dirty = true;
+            }
+            if (dirty) {
+                this.memberInventory.clear();
+                this.memberInventory.addAll(equipment);
+            }
+        }
+        this.outdatedInventory.set(timestamp);
         if (dirty) Locutus.imp().getNationDB().saveNationPrivate(this);
     }
 

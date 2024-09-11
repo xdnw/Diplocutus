@@ -39,7 +39,10 @@ public enum Building {
     ARMY_BASES(f -> f.ArmyBases, 500000, 0.015, 0, 10000, 50000),
     NAVAL_BASES(f -> f.NavalBases, 2000000, 0.01, 0, 10000, 25000),
     AIR_BASES(f -> f.AirBases, 1000000, 0.01, 0, 10000, 25000),
-    RESIDENTIAL_DISTRICTS(f -> f.ResidentialDistricts, 250000, 0.05, 0, 100000, 0);
+    RESIDENTIAL_DISTRICTS(f -> f.ResidentialDistricts, 250000, 0.05, 0, 100000, 0),
+
+    // TODO FIXME :||remove missing from wiki
+    RICH_MINING_AREA(f -> f.RichMiningArea, 250000, 0.005, 0, 0, 0, () -> Technology.RARE_METAL_MINING, 1),
     ;
 
     public static Building[] values = Building.values();
