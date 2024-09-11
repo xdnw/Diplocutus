@@ -6,11 +6,13 @@ import link.locutus.discord.api.endpoints.DnsApi;
 import link.locutus.discord.api.endpoints.DnsQuery;
 import link.locutus.discord.api.generated.*;
 import link.locutus.discord.api.types.*;
+import link.locutus.discord.db.SQLUtil;
 import link.locutus.discord.db.entities.DBAlliance;
 import link.locutus.discord.db.entities.DBEntity;
 import link.locutus.discord.db.entities.DBNation;
 import link.locutus.discord.event.Event;
 import link.locutus.discord.util.IOUtil;
+import link.locutus.discord.util.StringMan;
 import link.locutus.discord.util.math.ArrayUtil;
 
 import java.io.ByteArrayInputStream;
@@ -172,24 +174,24 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             militaryQuality.clear();
 
             parentId = (int) raw[0];
-            if (raw[1] != null) projects.putAll(ArrayUtil.readEnumMap((byte[]) raw[0], Project.class));
-            if (raw[2] != null) military.putAll(ArrayUtil.readEnumMap((byte[]) raw[1], MilitaryUnit.class));
-            if (raw[3] != null) technology.putAll(ArrayUtil.readEnumMap((byte[]) raw[2], Technology.class));
-            if (raw[4] != null) building.putAll(ArrayUtil.readEnumMap((byte[]) raw[3], Building.class));
-            if (raw[5] != null) stockpile.putAll(ResourceType.resourcesToMap(ArrayUtil.toDoubleArray((byte[]) raw[4])));
-            if (raw[6] != null) policyLastRan.putAll(ArrayUtil.readEnumMapLong((byte[]) raw[5], Policy.class));
+            if (raw[1] != null) projects.putAll(ArrayUtil.readEnumMap((byte[]) raw[1], Project.class));
+            if (raw[2] != null) military.putAll(ArrayUtil.readEnumMap((byte[]) raw[2], MilitaryUnit.class));
+            if (raw[3] != null) technology.putAll(ArrayUtil.readEnumMap((byte[]) raw[3], Technology.class));
+            if (raw[4] != null) building.putAll(ArrayUtil.readEnumMap((byte[]) raw[4], Building.class));
+            if (raw[5] != null) stockpile.putAll(ResourceType.resourcesToMap(ArrayUtil.toDoubleArray((byte[]) raw[5])));
+            if (raw[6] != null) policyLastRan.putAll(ArrayUtil.readEnumMapLong((byte[]) raw[6], Policy.class));
 
-            outdatedProjects.set((long) raw[7]);
-            outdatedMilitary.set((long) raw[8]);
-            outdatedTechnology.set((long) raw[9]);
-            outdatedBuilding.set((long) raw[10]);
-            outdatedStockpile.set((long) raw[11]);
-            outdatedPolicyLastRan.set((long) raw[12]);
+            outdatedProjects.set(SQLUtil.castLong(raw[7]));
+            outdatedMilitary.set(SQLUtil.castLong(raw[8]));
+            outdatedTechnology.set(SQLUtil.castLong(raw[9]));
+            outdatedBuilding.set(SQLUtil.castLong(raw[10]));
+            outdatedStockpile.set(SQLUtil.castLong(raw[11]));
+            outdatedPolicyLastRan.set(SQLUtil.castLong(raw[12]));
 
             if (raw[13] != null) readMemberInventory((byte[]) raw[13]);
-            if (raw[14] != null) outdatedInventory.set((long) raw[15]);
-            if (raw[15] != null) militaryCapacity.putAll(ArrayUtil.readEnumMap((byte[]) raw[16], MilitaryUnitType.class));
-            if (raw[16] != null) militaryQuality.putAll(ArrayUtil.readEnumMapDouble((byte[]) raw[17], MilitaryUnit.class));
+            if (raw[14] != null) outdatedInventory.set(SQLUtil.castLong(raw[14]));
+            if (raw[15] != null) militaryCapacity.putAll(ArrayUtil.readEnumMap((byte[]) raw[15], MilitaryUnitType.class));
+            if (raw[16] != null) militaryQuality.putAll(ArrayUtil.readEnumMapDouble((byte[]) raw[16], MilitaryUnit.class));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -231,6 +233,7 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
         result.building.putAll(building);
         result.stockpile.putAll(stockpile);
         result.policyLastRan.putAll(policyLastRan);
+        
         result.outdatedProjects.set(outdatedProjects.get());
         result.outdatedMilitary.set(outdatedMilitary.get());
         result.outdatedTechnology.set(outdatedTechnology.get());

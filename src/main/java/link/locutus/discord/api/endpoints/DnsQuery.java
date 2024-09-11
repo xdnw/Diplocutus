@@ -42,6 +42,10 @@ public class DnsQuery<T> {
         this.pool = pool;
     }
 
+    public Class<T> getClazz() {
+        return clazz;
+    }
+
     public DnsQuery<T> setPublic() {
         this.publicQuery = true;
         return this;

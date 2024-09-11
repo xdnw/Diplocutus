@@ -9,14 +9,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class SQLUtil {
+
+    public static long castLong(Object object) {
+        return ((Number) object).longValue();
+    }
 
     public static String createTable(DBEntity<?, ?> entity) {
         ArrayList<Map.Entry<String, Class<?>>> types = new ArrayList<>(entity.getTypes().entrySet());

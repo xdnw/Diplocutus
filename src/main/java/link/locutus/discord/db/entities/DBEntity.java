@@ -49,9 +49,12 @@ public interface DBEntity<T, E extends DBEntity<T, E>> {
     default <U, V> U localCall(long timestamp, AtomicLong cacheMs, U data, Supplier<DnsApi> getApi, Supplier<Integer> getId, BiFunction<DnsApi, Integer, DnsQuery<V>> call, BiConsumer<V, Long> update) {
         return withApi(cacheMs, timestamp, data, () -> {
             DnsApi api = getApi.get();
+            System.out.println("Get api " + api);
             if (api != null) {
+                DnsQuery<V> query = call.apply(api, getId.get());
+                System.out.println("Update  call " + query.getEndpoint());
                 long now = System.currentTimeMillis();
-                List<V> result = call.apply(api, getId.get()).call();
+                List<V> result = query.call();
                 if (result != null && !result.isEmpty()) {
                     update.accept(result.get(0), now);
                 }
@@ -62,9 +65,13 @@ public interface DBEntity<T, E extends DBEntity<T, E>> {
     }
 
     default  <U> U withApi(AtomicLong lastUpdated, long timestamp, U result, Supplier<Boolean> update) {
-        if (lastUpdated.get() > timestamp) return result;
+        if (lastUpdated.get() > timestamp) {
+            return result;
+        }
         synchronized (lastUpdated) {
-            if (lastUpdated.get() > timestamp) return result;
+            if (lastUpdated.get() > timestamp) {
+                return result;
+            }
             long now = System.currentTimeMillis();
             if (update.get()) {
                 lastUpdated.set(now);

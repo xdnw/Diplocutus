@@ -699,12 +699,8 @@ public class AdminCommands {
 
     @Command
     @RolePermission(value = Roles.ADMIN, root = true)
-    public String syncWars(boolean forceAll) throws IOException, ParseException {
-        if (forceAll) {
-            Locutus.imp().getWarDb().updateWars(true, Event::post);
-        } else {
-            Locutus.imp().getWarDb().updateActiveWars(Event::post);
-        }
+    public String syncWars(DBAlliance alliance, boolean forceAll) throws IOException, ParseException {
+        Locutus.imp().getWarDb().fetchWars(forceAll, alliance, Event::post);
         return "Done!";
     }
 

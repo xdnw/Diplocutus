@@ -4,6 +4,7 @@ import link.locutus.discord.api.generated.AllianceTreaties;
 import link.locutus.discord.api.generated.TreatyType;
 import link.locutus.discord.commands.manager.v2.binding.annotation.Command;
 import link.locutus.discord.commands.manager.v2.binding.annotation.NoFormat;
+import link.locutus.discord.db.SQLUtil;
 import link.locutus.discord.event.Event;
 import link.locutus.discord.util.DNS;
 import link.locutus.discord.util.MathMan;
@@ -79,9 +80,9 @@ public class Treaty implements DBEntity<AllianceTreaties, Treaty> {
 
     @Override
     public void load(Object[] raw) {
-        id = (long) raw[0];
-        date = (long) raw[1];
-        endTime = (long) raw[2];
+        id = SQLUtil.castLong(raw[0]);
+        date = SQLUtil.castLong(raw[1]);
+        endTime = SQLUtil.castLong(raw[2]);
         type = TreatyType.values[(int) raw[3]];
         fromId = (int) raw[4];
         toId = (int) raw[5];

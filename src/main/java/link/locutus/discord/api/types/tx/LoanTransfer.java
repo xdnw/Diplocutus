@@ -1,6 +1,7 @@
 package link.locutus.discord.api.types.tx;
 
 import link.locutus.discord.api.generated.*;
+import link.locutus.discord.db.SQLUtil;
 import link.locutus.discord.db.entities.DBEntity;
 import link.locutus.discord.event.Event;
 import link.locutus.discord.event.loan.LoanUpdateEvent;
@@ -260,10 +261,10 @@ public class LoanTransfer implements DBEntity<LoanHistory, LoanTransfer> {
         PaymentDurationType = link.locutus.discord.api.generated.PaymentDurationType.values[(int) raw[12]];
         PaymentDuration = (int) raw[13];
         RequestText = (String) raw[14];
-        GivenDate = (long) raw[15];
-        NextPaymentDueDate = (long) raw[16];
-        DueDate = (long) raw[17];
-        NextInterestDate = (long) raw[18];
+        GivenDate = SQLUtil.castLong(raw[15]);
+        NextPaymentDueDate = SQLUtil.castLong(raw[16]);
+        DueDate = SQLUtil.castLong(raw[17]);
+        NextInterestDate = SQLUtil.castLong(raw[18]);
         PercentRepayed = (double) raw[19];
         MissedPaymentsInARow = (int) raw[20];
         MissedPayments = (int) raw[21];
@@ -276,8 +277,8 @@ public class LoanTransfer implements DBEntity<LoanHistory, LoanTransfer> {
         TotalInterest = (double) raw[28];
         ApprovalText = (String) raw[29];
         RemainingMinimumPayment = (double) raw[30];
-        DebtCollectedDate = (long) raw[31];
-        PayedOffDate = (long) raw[32];
+        DebtCollectedDate = SQLUtil.castLong(raw[31]);
+        PayedOffDate = SQLUtil.castLong(raw[32]);
         InterestType = link.locutus.discord.api.generated.InterestType.values[(int) raw[33]];
 
     }

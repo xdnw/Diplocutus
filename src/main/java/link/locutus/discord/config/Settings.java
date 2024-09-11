@@ -149,9 +149,6 @@ public class Settings extends Config {
     public static class TASKS {
         @Comment("If any turn related tasks are run (default: true)")
         public boolean ENABLE_TURN_TASKS = true;
-
-        @Comment("Fetches most active wars and then attacks (default: 1 minute)")
-        public int ACTIVE_WAR_SECONDS = 60;
 //
         @Comment("Fetches most active nations (default disabled)")
         public int ALL_NATION_SECONDS = 5 * 60;

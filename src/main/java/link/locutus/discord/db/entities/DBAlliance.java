@@ -18,6 +18,7 @@ import link.locutus.discord.config.Settings;
 import link.locutus.discord.db.BankDB;
 import link.locutus.discord.db.GuildDB;
 import link.locutus.discord.db.NationDB;
+import link.locutus.discord.db.SQLUtil;
 import link.locutus.discord.db.entities.components.AlliancePrivate;
 import link.locutus.discord.db.entities.components.NationPrivate;
 import link.locutus.discord.db.guild.GuildKey;
@@ -287,7 +288,7 @@ public class DBAlliance implements NationList, NationOrAlliance, GuildOrAlliance
         AllianceName = (String) raw[1];
         LeaderId = (int) raw[2];
         MemberCount = (int) raw[3];
-        CreationDate = (long) raw[4];
+        CreationDate = SQLUtil.castLong(raw[4]);
         Score = (double) raw[5];
         AllianceIncome = (double) raw[6];
         AllianceMineralIncome = (double) raw[7];
@@ -767,19 +768,17 @@ public class DBAlliance implements NationList, NationOrAlliance, GuildOrAlliance
     }
 
     public ApiKeyPool getApiKeys(boolean onlyLeader) {
-        if (onlyLeader) {
+        {
             DBNation leader = getLeader();
             if (leader != null) {
                 try {
                     ApiKeyPool.ApiKey key = leader.getApiKey(false);
-                    return key == null ? null : new ApiKeyPool.SimpleBuilder().addKey(key).build();
+                    if (key != null) return new ApiKeyPool.SimpleBuilder().addKey(key).build();
                 } catch (IllegalArgumentException ignore) {
                     ignore.printStackTrace();
                 }
             }
-            return null;
         }
-        Set<String> apiKeysToUse = new LinkedHashSet<>();
         GuildDB db = getGuildDB();
         if (db != null) {
             List<ApiKeyPool.ApiKey> apiKeys = db.getOrNull(GuildKey.API_KEY);
@@ -966,5 +965,20 @@ public class DBAlliance implements NationList, NationOrAlliance, GuildOrAlliance
 
     public void setAlliancePrivate(AlliancePrivate ap) {
         this.privateData = ap;
+    }
+
+    @Command(desc = "Offensive wars")
+    public int getOff() {
+        return getNations().stream().mapToInt(DBNation::getOff).sum();
+    }
+
+    @Command(desc = "Defensive wars")
+    public int getDef() {
+        return getNations().stream().mapToInt(DBNation::getDef).sum();
+    }
+
+    @Command(desc = "Total number of active wars")
+    public int getNumWars() {
+        return getNations().stream().mapToInt(DBNation::getNumWars).sum();
     }
 }

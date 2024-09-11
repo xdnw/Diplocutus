@@ -6,6 +6,7 @@ import link.locutus.discord.api.generated.WarHistory;
 import link.locutus.discord.api.generated.WarType;
 import link.locutus.discord.api.types.MilitaryUnit;
 import link.locutus.discord.config.Settings;
+import link.locutus.discord.db.SQLUtil;
 import link.locutus.discord.event.Event;
 import link.locutus.discord.event.war.WarUpdateEvent;
 import link.locutus.discord.util.*;
@@ -475,8 +476,8 @@ public class DBWar implements DBEntity<WarHistory, DBWar> {
             defInfra = (int) raw[6];
             WarType = link.locutus.discord.api.generated.WarType.values[(int) raw[7]];
             WarReason = (String) raw[8];
-            StartDate = (long) raw[9];
-            EndDate = (long) raw[10];
+            StartDate = SQLUtil.castLong(raw[9]);
+            EndDate = SQLUtil.castLong(raw[10]);
             DefendingNationVictoryPoints = (double) raw[11];
             DeclareingNationVictoryPoints = (double) raw[12];
             DevastationDeclareingNation = (double) raw[13];

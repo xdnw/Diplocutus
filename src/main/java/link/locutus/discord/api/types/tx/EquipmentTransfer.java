@@ -2,6 +2,7 @@ package link.locutus.discord.api.types.tx;
 
 import link.locutus.discord.api.generated.*;
 import link.locutus.discord.api.types.MilitaryUnit;
+import link.locutus.discord.db.SQLUtil;
 import link.locutus.discord.db.entities.DBEntity;
 import link.locutus.discord.event.Event;
 import link.locutus.discord.event.equipment.EquipmentUpdateEvent;
@@ -113,7 +114,7 @@ public class EquipmentTransfer implements DBEntity<EquipmentTransactionHistory, 
         ReceiverId = (int) raw[7];
         SenderType = (int) raw[8];
         ReceiverType = (int) raw[9];
-        TimeStampTxt = (long) raw[10];
+        TimeStampTxt = SQLUtil.castLong(raw[10]);
     }
 
     @Override

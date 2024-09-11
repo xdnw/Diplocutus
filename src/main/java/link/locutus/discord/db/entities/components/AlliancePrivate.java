@@ -6,6 +6,7 @@ import link.locutus.discord.api.generated.AllianceBankValues;
 import link.locutus.discord.api.generated.AllianceMemberFunds;
 import link.locutus.discord.api.generated.ResourceType;
 import link.locutus.discord.api.types.*;
+import link.locutus.discord.db.SQLUtil;
 import link.locutus.discord.db.entities.DBAlliance;
 import link.locutus.discord.db.entities.DBEntity;
 import link.locutus.discord.db.entities.DBNation;
@@ -68,7 +69,7 @@ public class AlliancePrivate implements DBEntity<Void, AlliancePrivate> {
         this.parentId = (int) raw[0];
         if (raw[1] != null) stockpile.putAll(ResourceType.resourcesToMap(ArrayUtil.toDoubleArray((byte[]) raw[0])));
         if (raw[2] != null) memberDeposited.putAll(ResourceType.resourcesToMap(ArrayUtil.toDoubleArray((byte[]) raw[1])));
-        outdatedStockpileAndDeposits.set((long) raw[2]);
+        outdatedStockpileAndDeposits.set(SQLUtil.castLong(raw[2]));
     }
 
     @Override

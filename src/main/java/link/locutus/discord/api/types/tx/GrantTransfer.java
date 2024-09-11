@@ -2,6 +2,7 @@ package link.locutus.discord.api.types.tx;
 
 import link.locutus.discord.api.generated.AllianceGrantHistory;
 import link.locutus.discord.api.generated.ResourceType;
+import link.locutus.discord.db.SQLUtil;
 import link.locutus.discord.db.entities.DBEntity;
 import link.locutus.discord.event.Event;
 import link.locutus.discord.event.grant.GrantUpdateEvent;
@@ -75,7 +76,7 @@ public class GrantTransfer extends Transaction2 implements DBEntity<AllianceGran
     @Override
     public void load(Object[] raw) {
         super.load(raw);
-        this.RequestedDate = (long) raw[9];
+        this.RequestedDate = SQLUtil.castLong(raw[9]);
         this.requestText = (String) raw[10];
 
     }

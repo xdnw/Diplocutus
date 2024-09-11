@@ -451,21 +451,14 @@ public final class Locutus extends ListenerAdapter {
 
         taskTrack.addTask("Nation", () -> {
             runEventsAsync(events -> getNationDB().updateAllNations(events));
+            synchronized (warUpdateLock) {
+                runEventsAsync(events -> getWarDb().updateActiveWars(events));
+            }
         }, Settings.INSTANCE.TASKS.ALL_NATION_SECONDS, TimeUnit.SECONDS);
+
         taskTrack.addTask("Alliance", () -> {
             runEventsAsync(events -> getNationDB().updateAllAlliances(events));
         }, Settings.INSTANCE.TASKS.ALL_ALLIANCE_SECONDS, TimeUnit.SECONDS);
-
-        taskTrack.addTask("War/Attack", () -> {
-            try {
-                synchronized (warUpdateLock) {
-                    runEventsAsync(getWarDb()::updateActiveWars);
-                }
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-
-        }, Settings.INSTANCE.TASKS.ACTIVE_WAR_SECONDS, TimeUnit.SECONDS);
 
         if (Settings.INSTANCE.TASKS.BEIGE_REMINDER_SECONDS > 0) {
             LeavingBeigeAlert beigeAlerter = new LeavingBeigeAlert();

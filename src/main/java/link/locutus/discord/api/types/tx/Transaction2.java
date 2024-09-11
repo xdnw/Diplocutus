@@ -5,6 +5,7 @@ import link.locutus.discord.api.generated.AllianceGrantHistory;
 import link.locutus.discord.api.generated.BankHistory;
 import link.locutus.discord.api.generated.LoanHistory;
 import link.locutus.discord.db.BankDB;
+import link.locutus.discord.db.SQLUtil;
 import link.locutus.discord.db.entities.DBEntity;
 import link.locutus.discord.db.entities.DBNation;
 import link.locutus.discord.event.Event;
@@ -117,11 +118,11 @@ public abstract class Transaction2 {
     }
 
     public void load(Object[] raw) {
-        this.tx_id = (long) raw[0];
-        this.tx_datetime = (long) raw[1];
-        this.sender_id = (long) raw[2];
+        this.tx_id = SQLUtil.castLong(raw[0]);
+        this.tx_datetime = SQLUtil.castLong(raw[1]);
+        this.sender_id = SQLUtil.castLong(raw[2]);
         this.sender_type = (int) raw[3];
-        this.receiver_id = (long) raw[4];
+        this.receiver_id = SQLUtil.castLong(raw[4]);
         this.receiver_type = (int) raw[5];
         this.banker_nation = (int) raw[6];
         this.note = (String) raw[7];

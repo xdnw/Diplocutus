@@ -2156,6 +2156,7 @@ public class WarCommands {
         long now = System.currentTimeMillis() - (forceUpdate ? 0 : TimeUnit.HOURS.toMillis(1));
         for (DBNation nation : nations) {
             NationPrivate privateData = nation.getPrivateData();
+            System.out.println("Get buildings");
             Map<Building, Integer> buildings = privateData.getBuildings(now);
             Map<MilitaryUnit, Integer> military = privateData.getMilitary(now);
             Map<MilitaryUnit, Double> quality = privateData.getMilitaryQuality(now);
@@ -2163,27 +2164,27 @@ public class WarCommands {
 //            List<AllianceMemberInventory> inventory = privateData.getInventory(now);
 
             header.set(0, MarkupUtil.sheetUrl(nation.getNation(), DNS.getUrl(nation.getNation_id(), false)));
-            header.set(2, MarkupUtil.sheetUrl(nation.getAllianceName(), DNS.getUrl(nation.getAlliance_id(), true)));
-            header.set(3, nation.getInfra());
-            header.set(4, nation.getLand());
-            header.set(5, nation.getScore());
-            header.set(6, buildings.getOrDefault(Building.ARMY_BASES, 0));
-            header.set(7, buildings.getOrDefault(Building.AIR_BASES, 0));
-            header.set(8, buildings.getOrDefault(Building.NAVAL_BASES, 0));
+            header.set(1, MarkupUtil.sheetUrl(nation.getAllianceName(), DNS.getUrl(nation.getAlliance_id(), true)));
+            header.set(2, nation.getInfra());
+            header.set(3, nation.getLand());
+            header.set(4, nation.getScore());
+            header.set(5, buildings.getOrDefault(Building.ARMY_BASES, 0) + "");
+            header.set(6, buildings.getOrDefault(Building.AIR_BASES, 0) + "");
+            header.set(7, buildings.getOrDefault(Building.NAVAL_BASES, 0) + "");
 
             for (MilitaryUnit unit : MilitaryUnit.values) {
                 int amt = military.getOrDefault(unit, 0);
                 double qualityVal = quality.getOrDefault(unit, 0d);
                 String unitStr = amt + "x" + MathMan.format(qualityVal);
-                header.set(9 + unit.ordinal(), unitStr);
+                header.set(8 + unit.ordinal(), unitStr);
             }
             for (MilitaryUnitType type : MilitaryUnitType.values) {
                 int capacityCap = capacity.getOrDefault(type, 0);
                 int capacityUsed = type.getUsedCapacity(military);
                 String capacityStr = capacityUsed + "/" + capacityCap;
-                header.set(9 + MilitaryUnit.values.length + type.ordinal(), capacityStr);
-                sheet.addRow(header);
+                header.set(8 + MilitaryUnit.values.length + type.ordinal(), capacityStr);
             }
+            sheet.addRow(header);
         }
         sheet.updateClearCurrentTab();
         sheet.updateWrite();
@@ -2192,43 +2193,6 @@ public class WarCommands {
         sheet.attach(io.create(), "mmr", response).send();
         return null;
     }
-
-    // TODO FIXME :||remove mmr sheet rows !!important
-//    private void setRowMMRSheet(String name, List<Object> row, DBNation nation, double lastSpies, double barracks, double factories, double hangars, double drydocks, double soldierBuy, double tankBuy, double airBuy, double navyBuy) {
-//        row.set(0, name);
-//        row.set(1, MarkupUtil.sheetUrl(nation.getNation(), DNS.getUrl(nation.getNation_id(), false)));
-//        row.set(2, MarkupUtil.sheetUrl(nation.getAllianceName(), DNS.getUrl(nation.getAlliance_id(), true)));
-//        row.set(3, nation.getCities());
-//        row.set(4, nation.getAvg_infra());
-//        row.set(5, nation.getScore());
-//        row.set(6, nation.getOff());
-//        row.set(7, nation.getDef());
-//
-//        double soldierPct = (double) nation.getSoldiers() / (Buildings.BARRACKS.getUnitCap() * nation.getCities());
-//        double tankPct = (double) nation.getTanks() / (Buildings.FACTORY.getUnitCap() * nation.getCities());
-//        double airPct = (double) nation.getAircraft() / (Buildings.HANGAR.getUnitCap() * nation.getCities());
-//        double navyPct = (double) nation.getShips() / (Buildings.DRYDOCK.getUnitCap() * nation.getCities());
-//
-//        row.set(8, soldierPct);
-//        row.set(9, tankPct);
-//        row.set(10, airPct);
-//        row.set(11, navyPct);
-//
-//        int spyCap = nation.getSpyCap();
-//        row.set(12, nation.getSpies() + "");
-//        row.set(13, MathMan.format(lastSpies));
-//        row.set(14, spyCap);
-//
-//        row.set(15, barracks);
-//        row.set(16, factories);
-//        row.set(17, hangars);
-//        row.set(18, drydocks);
-//
-//        row.set(19, soldierBuy);
-//        row.set(20, tankBuy);
-//        row.set(21, airBuy);
-//        row.set(22, navyBuy);
-//    }
 
     // TODO FIXME :||remove validate spy blitz sheet
 //    @RolePermission(Roles.MILCOM)

@@ -19,10 +19,7 @@ import link.locutus.discord.commands.manager.v2.impl.discord.permission.RolePerm
 import link.locutus.discord.commands.manager.v2.impl.pw.NationFilter;
 import link.locutus.discord.commands.manager.v2.impl.pw.refs.CM;
 import link.locutus.discord.config.Settings;
-import link.locutus.discord.db.BankDB;
-import link.locutus.discord.db.GuildDB;
-import link.locutus.discord.db.NationDB;
-import link.locutus.discord.db.ReportManager;
+import link.locutus.discord.db.*;
 import link.locutus.discord.db.entities.components.NationPrivate;
 import link.locutus.discord.db.guild.GuildKey;
 import link.locutus.discord.event.Event;
@@ -376,7 +373,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         this.LeaderName = (String) raw[3];
         this.DiscordName = (String) raw[4];
         this.rank = Rank.values[((int) raw[5])];
-        this.DateOfJoining = (long) raw[6];
+        this.DateOfJoining = SQLUtil.castLong(raw[6]);
         this.Infra = (double) raw[7];
         this.Land = (double) raw[8];
         this.Pop = (double) raw[9];
@@ -403,8 +400,8 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         this.Devastation = (double) raw[30];
         this.DefWars = (int) raw[31];
         this.OffWars = (int) raw[32];
-        this.LastOnline = (long) raw[33];
-        this.ProtectionTime = (long) raw[34];
+        this.LastOnline = SQLUtil.castLong(raw[33]);
+        this.ProtectionTime = SQLUtil.castLong(raw[34]);
         this.TotalSlots = (int) raw[35];
         this.PoliticalPowerOutput = (double) raw[36];
         this.RareMetalOutput = (double) raw[37];
