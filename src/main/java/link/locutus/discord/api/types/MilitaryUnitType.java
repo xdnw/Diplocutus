@@ -2,6 +2,7 @@ package link.locutus.discord.api.types;
 
 import link.locutus.discord.api.generated.AllianceMilitary;
 
+import java.util.Map;
 import java.util.function.Function;
 
 public enum MilitaryUnitType {
@@ -35,4 +36,13 @@ public enum MilitaryUnitType {
         return getUsedCapacity.apply(military);
     }
 
+    public int getUsedCapacity(Map<MilitaryUnit, Integer> military) {
+        int used = 0;
+        for (Map.Entry<MilitaryUnit, Integer> entry : military.entrySet()) {
+            if (entry.getKey().getCapacityType() == this) {
+                used += entry.getValue() * entry.getKey().getCapacityUsage();
+            }
+        }
+        return used;
+    }
 }

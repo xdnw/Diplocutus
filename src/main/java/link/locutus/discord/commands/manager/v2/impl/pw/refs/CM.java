@@ -5644,6 +5644,32 @@ public class CM {
 
             }
         }
+        public static class sheets_milcom{
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="MMRSheet")
+            public static class MMRSheet extends CommandRef {
+                public static final MMRSheet cmd = new MMRSheet();
+                public MMRSheet nations(String value) {
+                    return set("nations", value);
+                }
+
+                public MMRSheet sheet(String value) {
+                    return set("sheet", value);
+                }
+
+                public MMRSheet forceUpdate(String value) {
+                    return set("forceUpdate", value);
+                }
+
+                public MMRSheet showCities(String value) {
+                    return set("showCities", value);
+                }
+
+                public MMRSheet snapshotTime(String value) {
+                    return set("snapshotTime", value);
+                }
+
+            }
+        }
         public static class sheets_ia{
             @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="ActivitySheet")
             public static class ActivitySheet extends CommandRef {
