@@ -5645,6 +5645,26 @@ public class CM {
             }
         }
         public static class sheets_ia{
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="ActivitySheet")
+            public static class ActivitySheet extends CommandRef {
+                public static final ActivitySheet cmd = new ActivitySheet();
+                public ActivitySheet nations(String value) {
+                    return set("nations", value);
+                }
+
+                public ActivitySheet startTime(String value) {
+                    return set("startTime", value);
+                }
+
+                public ActivitySheet endTime(String value) {
+                    return set("endTime", value);
+                }
+
+                public ActivitySheet sheet(String value) {
+                    return set("sheet", value);
+                }
+
+            }
             @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="ActivitySheetFromId")
             public static class ActivitySheetFromId extends CommandRef {
                 public static final ActivitySheetFromId cmd = new ActivitySheetFromId();
