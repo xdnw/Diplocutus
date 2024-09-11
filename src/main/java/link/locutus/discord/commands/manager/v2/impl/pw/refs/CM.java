@@ -279,18 +279,6 @@ public class CM {
                     public static final pojos cmd = new pojos();
 
                 }
-                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.AdminCommands.class,method="syncBanks")
-                public static class syncBanks extends CommandRef {
-                    public static final syncBanks cmd = new syncBanks();
-                public syncBanks alliance(String value) {
-                    return set("alliance", value);
-                }
-
-                public syncBanks timestamp(String value) {
-                    return set("timestamp", value);
-                }
-
-                }
                 @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.AdminCommands.class,method="syncMetrics")
                 public static class syncMetrics extends CommandRef {
                     public static final syncMetrics cmd = new syncMetrics();

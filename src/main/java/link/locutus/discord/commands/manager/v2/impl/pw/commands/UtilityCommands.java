@@ -977,7 +977,6 @@ public class UtilityCommands {
 
         result.append("Total: `" + ResourceType.resourcesToString(total) + "`" +
                 "\nWorth: $" + MathMan.format(ResourceType.convertedTotal(total)));
-        result.append("\n\nUse " + CM.transfer.bulk.cmd.toSlashMention());
         result.append("\nOr press \uD83C\uDFE6 to run " + cmd.toSlashCommand() + "");
 
         String title = "Nation Interest";

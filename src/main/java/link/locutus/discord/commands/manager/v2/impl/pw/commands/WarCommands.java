@@ -1891,8 +1891,8 @@ public class WarCommands {
         if (!off && !def) {
             throw new IllegalArgumentException("At least one of `off` or `def` must be true");
         }
-        long startTurn = TimeUtil.getTurn(start_time);
-        long endTurn = TimeUtil.getTurn(end_time);
+        long startHour = TimeUtil.getHour(start_time);
+        long endHour = TimeUtil.getHour(end_time);
 
         long endDay = TimeUtil.getDay(end_time) + 1;
         long startDay = TimeUtil.getDay(start_time);
@@ -1901,11 +1901,11 @@ public class WarCommands {
         if (numDays > 365) {
             throw new IllegalArgumentException("Too many days: `" + numDays + " (max 365)");
         }
-        if (endTurn <= startTurn) {
-            throw new IllegalArgumentException("End time must be after start time (2h)");
+        if (startHour <= endHour) {
+            throw new IllegalArgumentException("End time must be after start time (1h)");
         }
-        if (by_turn && endTurn - startTurn > 365) {
-            throw new IllegalArgumentException("Too many turns: `" + (endTurn - startTurn + 1) + " (max 365)");
+        if (by_turn && endHour - startHour > 365) {
+            throw new IllegalArgumentException("Too many hours: `" + (endHour - startHour + 1) + " (max 365)");
         }
 
         Set<Integer> nationIds = new IntOpenHashSet(nations.stream().map(DBNation::getNation_id).collect(Collectors.toSet()));
@@ -1914,7 +1914,7 @@ public class WarCommands {
 
         Map<Integer, Map<Long, Integer>> offWarsByTime = new Int2ObjectOpenHashMap<>();
         Map<Integer, Map<Long, Integer>> defWarsByTime = new Int2ObjectOpenHashMap<>();
-        Function<DBWar, Long> toTime = by_turn ? war -> TimeUtil.getTurn(war.getDate()) : war -> TimeUtil.getDay(war.getDate());
+        Function<DBWar, Long> toTime = by_turn ? war -> TimeUtil.getHour(war.getDate()) : war -> TimeUtil.getDay(war.getDate());
         for (DBWar war : wars) {
             long time = toTime.apply(war);
             if (allowNation.test(war.getAttacker_id()) && off) {
@@ -1929,12 +1929,12 @@ public class WarCommands {
             sheet = SpreadSheet.create(db, by_turn ? SheetKey.ACTIVITY_SHEET_TURN : SheetKey.ACTIVITY_SHEET_DAY);
         }
 
-        long startUnit = by_turn ? startTurn : startDay;
-        long endUnit = by_turn ? endTurn : endDay;
+        long startUnit = by_turn ? startHour : startDay;
+        long endUnit = by_turn ? endHour : endDay;
 
-        List<String> header = new ArrayList<>(Arrays.asList("nation", "alliance", "cities"));
+        List<String> header = new ArrayList<>(Arrays.asList("nation", "alliance", "infra"));
         for (long timeUnit = startUnit; timeUnit <= endUnit; timeUnit++) {
-            long time = by_turn ? TimeUtil.getTimeFromTurn(timeUnit) : TimeUtil.getTimeFromDay(timeUnit);
+            long time = by_turn ? TimeUtil.getTimeFromHour(timeUnit) : TimeUtil.getTimeFromDay(timeUnit);
             SimpleDateFormat format = by_turn ? TimeUtil.DD_MM_YYYY_HH : TimeUtil.DD_MM_YYYY;
             header.add(format.format(new Date(time)));
         }
@@ -1959,7 +1959,7 @@ public class WarCommands {
             }
             header.set(0, MarkupUtil.sheetUrl(nation.getNation(), nation.getUrl()));
             header.set(1, MarkupUtil.sheetUrl(nation.getAllianceName(), nation.getAllianceUrl()));
-            header.set(2, nation.getCities() + "");
+            header.set(2, nation.getInfra() + "");
             int index = 3;
             for (long timeUnit = startUnit; timeUnit <= endUnit; timeUnit++) {
                 header.set(index, formatFunc.apply(timeUnit));
@@ -1984,8 +1984,8 @@ public class WarCommands {
                                     @Timestamp long end_time,
                                     @Switch("t") boolean by_turn,
                                     @Switch("s") SpreadSheet sheet) throws GeneralSecurityException, IOException {
-        long startTurn = TimeUtil.getTurn(start_time);
-        long endTurn = TimeUtil.getTurn(end_time);
+        long startHour = TimeUtil.getHour(start_time);
+        long endHour = TimeUtil.getHour(end_time);
 
         long endDay = TimeUtil.getDay(end_time) + 1;
         long startDay = TimeUtil.getDay(start_time);
@@ -1994,11 +1994,11 @@ public class WarCommands {
         if (numDays > 365) {
             throw new IllegalArgumentException("Too many days: `" + numDays + " (max 365)");
         }
-        if (endTurn <= startTurn) {
+        if (endHour <= startHour) {
             throw new IllegalArgumentException("End time must be after start time (2h)");
         }
-        if (by_turn && endTurn - startTurn > 365) {
-            throw new IllegalArgumentException("Too many turns: `" + (endTurn - startTurn + 1) + " (max 365)");
+        if (by_turn && endHour - startHour > 365) {
+            throw new IllegalArgumentException("Too many turns: `" + (endHour - startHour + 1) + " (max 365)");
         }
 
         Set<Integer> nationIds = new IntOpenHashSet(nations.stream().map(DBNation::getNation_id).collect(Collectors.toSet()));
@@ -2007,21 +2007,21 @@ public class WarCommands {
         NationDB natDb = Locutus.imp().getNationDB();
         Map<Integer, Set<Long>> activityByTime;
         if (by_turn) {
-            activityByTime = natDb.getActivityByTurn(startTurn, endTurn, allowNation);
+            activityByTime = natDb.getActivityByTurn(startHour, endHour, allowNation);
         } else {
-            activityByTime = natDb.getActivityByDay(TimeUtil.getTimeFromTurn(startTurn), TimeUtil.getTimeFromTurn(endTurn + 23), allowNation);
+            activityByTime = natDb.getActivityByDay(TimeUtil.getTimeFromHour(startHour), TimeUtil.getTimeFromHour(endHour + 23), allowNation);
         }
 
         if (sheet == null) {
             sheet = SpreadSheet.create(db, by_turn ? SheetKey.ACTIVITY_SHEET_TURN : SheetKey.ACTIVITY_SHEET_DAY);
         }
 
-        long startUnit = by_turn ? startTurn : startDay;
-        long endUnit = by_turn ? endTurn : endDay;
+        long startUnit = by_turn ? startHour : startDay;
+        long endUnit = by_turn ? endHour : endDay;
 
-        List<String> header = new ArrayList<>(Arrays.asList("nation", "alliance", "cities"));
+        List<String> header = new ArrayList<>(Arrays.asList("nation", "alliance", "infra"));
         for (long timeUnit = startUnit; timeUnit <= endUnit; timeUnit++) {
-            long time = by_turn ? TimeUtil.getTimeFromTurn(timeUnit) : TimeUtil.getTimeFromDay(timeUnit);
+            long time = by_turn ? TimeUtil.getTimeFromHour(timeUnit) : TimeUtil.getTimeFromDay(timeUnit);
             SimpleDateFormat format = by_turn ? TimeUtil.DD_MM_YYYY_HH : TimeUtil.DD_MM_YYYY;
             header.add(format.format(new Date(time)));
         }
@@ -2031,7 +2031,7 @@ public class WarCommands {
             Set<Long> activity = activityByTime.get(nation.getNation_id());
             header.set(0, MarkupUtil.sheetUrl(nation.getNation(), nation.getUrl()));
             header.set(1, MarkupUtil.sheetUrl(nation.getAllianceName(), nation.getAllianceUrl()));
-            header.set(2, nation.getCities() + "");
+            header.set(2, nation.getInfra() + "");
             int index = 3;
             for (long timeUnit = startUnit; timeUnit <= endUnit; timeUnit++) {
                 header.set(index, activity != null && activity.contains(timeUnit) ? "1" : "");
