@@ -106,8 +106,8 @@ public enum Roles {
     ENEMY_ALERT_OPT_OUT(25, "Opt out of received war target alerts", GuildKey.ENEMY_ALERT_CHANNEL),
     ENEMY_ALERT_OFFLINE(42, "Able to receive enemy alerts when offline or invisible on discord (unless opt out, or player setting overrides)", GuildKey.ENEMY_ALERT_CHANNEL),
 
-    PROTECTION_ALERT(22, "Gets pinged when a nation leaves protection (in their score range), and they have a slot free", GuildKey.PROTECTION_ALERT_CHANNEL),
-    PROTECTION_ALERT_OPT_OUT(25, "Opt out of received war target alerts", GuildKey.PROTECTION_ALERT_CHANNEL),
+    PROTECTION_ALERT(23, "Gets pinged when a nation leaves protection (in their score range), and they have a slot free", GuildKey.PROTECTION_ALERT_CHANNEL),
+    PROTECTION_ALERT_OPT_OUT(24, "Opt out of received war target alerts", GuildKey.PROTECTION_ALERT_CHANNEL),
 
     AUDIT_ALERT_OPT_OUT(26, "Opt out of received audit alerts", GuildKey.MEMBER_AUDIT_ALERTS),
 
