@@ -75,11 +75,17 @@ public class NationDB extends DBMainV2 implements SyncableDatabase {
         {
             executeStmt(SQLUtil.addColumn(new NationPrivate(), "totalSlots", int.class, "0"), true);
             executeStmt(SQLUtil.addColumn(new NationPrivate(), "usedSlots", int.class, "0"), true);
-            // add these
-            // result.put("effectBuildings", byte[].class);
-            //        result.put("outdatedEffects", long.class);
             executeStmt(SQLUtil.addColumn(new NationPrivate(), "effectBuildings", byte[].class, null), true);
             executeStmt(SQLUtil.addColumn(new NationPrivate(), "outdatedEffects", long.class, "0"), true);
+            executeStmt(SQLUtil.addColumn(new NationPrivate(), "developmentCostPercent", double.class, "0"), true);
+            executeStmt(SQLUtil.addColumn(new NationPrivate(), "landCostPercent", double.class, "0"), true);
+            executeStmt(SQLUtil.addColumn(new NationPrivate(), "buildingCostPercent", double.class, "0"), true);
+            executeStmt(SQLUtil.addColumn(new NationPrivate(), "projectCostPercent", double.class, "0"), true);
+            executeStmt(SQLUtil.addColumn(new NationPrivate(), "repairCostPercent", double.class, "0"), true);
+            executeStmt(SQLUtil.addColumn(new NationPrivate(), "politicalSupportCostPercent", double.class, "0"), true);
+            executeStmt(SQLUtil.addColumn(new NationPrivate(), "techCostPercent", double.class, "0"), true);
+            executeStmt(SQLUtil.addColumn(new NationPrivate(), "liftCostPercent", double.class, "0"), true);
+
         }
         executeStmt(SQLUtil.createTable(new AlliancePrivate()));
         {

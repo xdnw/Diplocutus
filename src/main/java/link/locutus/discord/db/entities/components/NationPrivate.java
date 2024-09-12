@@ -66,6 +66,55 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
     private final AtomicLong outdatedInventory = new AtomicLong(-1);
     private final AtomicLong outdatedEffects = new AtomicLong(-1);
 
+    private double developmentCostPercent;
+    private double landCostPercent;
+    private double buildingCostPercent;
+    private double projectCostPercent;
+    private double repairCostPercent;
+    private double politicalSupportCostPercent;
+    private double techCostPercent;
+    private double liftCostPercent;
+
+    public double getDevelopmentCostPercent(long timestamp) {
+        getEffectBuildings(timestamp);
+        return developmentCostPercent;
+    }
+
+    public double getLandCostPercent(long timestamp) {
+        getEffectBuildings(timestamp);
+        return landCostPercent;
+    }
+
+    public double getBuildingCostPercent(long timestamp) {
+        getEffectBuildings(timestamp);
+        return buildingCostPercent;
+    }
+
+    public double getProjectCostPercent(long timestamp) {
+        getEffectBuildings(timestamp);
+        return projectCostPercent;
+    }
+
+    public double getRepairCostPercent(long timestamp) {
+        getEffectBuildings(timestamp);
+        return repairCostPercent;
+    }
+
+    public double getPoliticalSupportCostPercent(long timestamp) {
+        getEffectBuildings(timestamp);
+        return politicalSupportCostPercent;
+    }
+
+    public double getTechCostPercent(long timestamp) {
+        getEffectBuildings(timestamp);
+        return techCostPercent;
+    }
+
+    public double getLiftCostPercent(long timestamp) {
+        getEffectBuildings(timestamp);
+        return liftCostPercent;
+    }
+
     public AtomicLong getOutdatedProjects() {
         return outdatedProjects;
     }
@@ -132,7 +181,15 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
                     totalSlots,
                     OpenSlots,
                     ArrayUtil.writeEnumMap(effectBuildings),
-                    outdatedEffects.get()
+                    outdatedEffects.get(),
+                    developmentCostPercent,
+                    landCostPercent,
+                    buildingCostPercent,
+                    projectCostPercent,
+                    repairCostPercent,
+                    politicalSupportCostPercent,
+                    techCostPercent,
+                    liftCostPercent
             };
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -208,6 +265,15 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
 
             if (raw[19] != null) effectBuildings.putAll(ArrayUtil.readEnumMap((byte[]) raw[19], Building.class));
             outdatedEffects.set(SQLUtil.castLong(raw[20]));
+
+            this.developmentCostPercent = (double) raw[21];
+            this.landCostPercent = (double) raw[22];
+            this.buildingCostPercent = (double) raw[23];
+            this.projectCostPercent = (double) raw[24];
+            this.repairCostPercent = (double) raw[25];
+            this.politicalSupportCostPercent = (double) raw[26];
+            this.techCostPercent = (double) raw[27];
+            this.liftCostPercent = (double) raw[28];
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -237,6 +303,14 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
         result.put("usedSlots", int.class);
         result.put("effectBuildings", byte[].class);
         result.put("outdatedEffects", long.class);
+        result.put("developmentCostPercent", double.class);
+        result.put("landCostPercent", double.class);
+        result.put("buildingCostPercent", double.class);
+        result.put("projectCostPercent", double.class);
+        result.put("repairCostPercent", double.class);
+        result.put("politicalSupportCostPercent", double.class);
+        result.put("techCostPercent", double.class);
+        result.put("liftCostPercent", double.class);
         return result;
     }
 
@@ -270,6 +344,15 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
 
         result.effectBuildings.putAll(effectBuildings);
         result.outdatedEffects.set(outdatedEffects.get());
+
+        result.developmentCostPercent = developmentCostPercent;
+        result.landCostPercent = landCostPercent;
+        result.buildingCostPercent = buildingCostPercent;
+        result.projectCostPercent = projectCostPercent;
+        result.repairCostPercent = repairCostPercent;
+        result.politicalSupportCostPercent = politicalSupportCostPercent;
+        result.techCostPercent = techCostPercent;
+        result.liftCostPercent = liftCostPercent;
         return result;
     }
 
@@ -307,14 +390,7 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             NationsEffectsSummary result = aa.updateEffectsOfNation(parentId);
             if (result != null) {
                 long now = System.currentTimeMillis();
-                effectBuildings.clear();
-                for (Building building : Building.values) {
-                    int value = building.get(result);
-                    if (value > 0) {
-                        effectBuildings.put(building, value);
-                    }
-                }
-                outdatedEffects.set(now);
+                update(result, now);
                 return true;
             }
             return false;
@@ -429,6 +505,16 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             this.effectBuildings.put(building, newValue);
             dirty = true;
         }
+        this.developmentCostPercent = effects.developmentCostPercent;
+        this.landCostPercent = effects.landCostPercent;
+        this.buildingCostPercent = effects.buildingCostPercent;
+        this.projectCostPercent = effects.projectCostPercent;
+        this.repairCostPercent = effects.percentRepairCost;
+        this.politicalSupportCostPercent = effects.politicalSupportCostReduction;
+        this.techCostPercent = effects.techCostPercent;
+        this.liftCostPercent = effects.liftCostPercent;
+
+
         this.outdatedEffects.set(timestamp);
         if (dirty) Locutus.imp().getNationDB().saveNationPrivate(this);
     }

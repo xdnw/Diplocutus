@@ -252,6 +252,8 @@ public class CommandManager2 {
         getCommands().registerMethod(new WarCommands(), List.of("sheets_ia"), "WarDecSheetDate", "declares_date");
         getCommands().registerMethod(new UtilityCommands(), List.of("nation"), "development", "development");
         getCommands().registerMethod(new BuildCommands(), List.of("build"), "getBuild", "get");
+        getCommands().registerMethod(new BuildCommands(), List.of("project"), "projectCost", "cost");
+        getCommands().registerMethod(new BuildCommands(), List.of("building"), "buildingCost", "cost");
 
 
 //        getCommands().registerMethod(new GrantCommands(), List.of("grant"), "costBulk", "cost");

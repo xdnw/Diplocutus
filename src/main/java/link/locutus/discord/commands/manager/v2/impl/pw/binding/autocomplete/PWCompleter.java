@@ -70,6 +70,11 @@ public class PWCompleter extends BindingHelper {
         return StringMan.completeEnum(input, NationMeta.class);
     }
     @Autocomplete
+    @Binding(types={Building.class})
+    public List<String> Building(String input) {
+        return StringMan.completeEnum(input, Building.class);
+    }
+    @Autocomplete
     @Binding(types={Font.class})
     public List<String> Font(String input) {
         String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();

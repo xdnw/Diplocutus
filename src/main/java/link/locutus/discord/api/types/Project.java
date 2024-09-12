@@ -4,6 +4,7 @@ import link.locutus.discord.api.generated.NationProjects;
 import link.locutus.discord.api.generated.ResourceType;
 import link.locutus.discord.commands.manager.v2.binding.annotation.Command;
 
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
@@ -325,54 +326,99 @@ DEPARTMENT_OF_ARCHAEOLOGY(ProjectCategory.MISCELLANEOUS, Map.of(ResourceType.CAS
 //Cost: 4000 * (Development + Land/20) * (1+Project Level^2)
 //Increases your transportation index by 4 per level
 //Increases your transportation index by 1% per level
-    TRANSPORTATION_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 4000.0, ResourceType.MINERALS, 1.0), f -> f.TransportationInvestment),
+    TRANSPORTATION_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 4000.0), f -> f.TransportationInvestment) {
+    @Override
+    public Map<ResourceType, Double> getCost(double development, double land, int projectLevel) {
+        return Map.of(ResourceType.CASH, 4000.0 * (development + land / 20) * (1 + projectLevel * projectLevel));
+    }
+},
 //Power Investment
 //Cost: 4000 * (Development + Land/20) * (1+Project Level^2)
 //Increases your transportation index by 5 per level
 //Increases your transportation index by 1% per level
-    POWER_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 4000.0, ResourceType.MINERALS, 1.0), f -> f.PowerInvestment),
+    POWER_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 4000.0), f -> f.PowerInvestment) {
+    @Override
+    public Map<ResourceType, Double> getCost(double development, double land, int projectLevel) {
+        return Map.of(ResourceType.CASH, 4000.0 * (development + land / 20) * (1 + projectLevel * projectLevel));
+    }
+},
 //Education Investment
 //Cost: 4750 * (Development + Land/20) * (1+Project Level^2)
 //Increases your transportation index by 4 per level
 //Increases your transportation index by 1% per level
-    EDUCATION_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 4750.0, ResourceType.MINERALS, 1.0), f -> f.EducationInvestment),
+    EDUCATION_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 4750.0), f -> f.EducationInvestment) {
+    @Override
+    public Map<ResourceType, Double> getCost(double development, double land, int projectLevel) {
+        return Map.of(ResourceType.CASH, 4750.0 * (development + land / 20) * (1 + projectLevel * projectLevel));
+    }
+},
 //Commercial Investment
 //Cost: 3500 * (Development + Land/20) * (1+Project Level^2)
 //Increases your commercial index by 5 per level
 //Increases your commercial index by 1% per level
-    COMMERCIAL_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 3500.0, ResourceType.MINERALS, 1.0), f -> f.CommercialInvestment),
+    COMMERCIAL_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 3500.0), f -> f.CommercialInvestment) {
+    @Override
+    public Map<ResourceType, Double> getCost(double development, double land, int projectLevel) {
+        return Map.of(ResourceType.CASH, 3500.0 * (development + land / 20) * (1 + projectLevel * projectLevel));
+    }
+},
 //Military Investment
 //Cost: 5400 * (Development + Land/20) * (1+Project Level^2)
 //Increases your military capacity by 1%
-    MILITARY_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 5400.0, ResourceType.MINERALS, 1.0), f -> f.MilitaryInvestment),
+    MILITARY_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 5400.0), f -> f.MilitaryInvestment) {
+    @Override
+    public Map<ResourceType, Double> getCost(double development, double land, int projectLevel) {
+        return Map.of(ResourceType.CASH, 5400.0 * (development + land / 20) * (1 + projectLevel * projectLevel));
+    }
+},
 //City Investment
 //Cost: 2700 * (Development + Land/20) * (1+Project Level^2)
 //Increases your building slots by 10
 //Increases your building slots by 0.5%
-    CITY_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 2700.0, ResourceType.MINERALS, 1.0), f -> f.CityInvestment),
+    CITY_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 2700.0), f -> f.CityInvestment) {
+    @Override
+    public Map<ResourceType, Double> getCost(double development, double land, int projectLevel) {
+        return Map.of(ResourceType.CASH, 2700.0 * (development + land / 20) * (1 + projectLevel * projectLevel));
+    }
+},
 //Residential Investment
 //Cost: 1350* (Development + Land/20) * (1+Project Level^2)
 //Increases your population by 200,000
 //Increases your population by 1%
 //Increases your commerce index by 2
-    RESIDENTIAL_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 1350.0, ResourceType.MINERALS, 1.0), f -> f.ResidentialInvestment),
+    RESIDENTIAL_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 1350.0), f -> f.ResidentialInvestment) {
+    @Override
+    public Map<ResourceType, Double> getCost(double development, double land, int projectLevel) {
+        return Map.of(ResourceType.CASH, 1350.0 * (development + land / 20) * (1 + projectLevel * projectLevel));
+    }
+},
 //Technology Investment
 //Cost: 4000* (Development + Land/20) * (1+Project Level^2)
 //Increases your tech production by 300
 //Increases your tech production by 1%
 //Reduces tech cost by 1%
-    TECHNOLOGY_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 4000.0, ResourceType.MINERALS, 1.0), f -> f.TechnologyInvestment) {
+    TECHNOLOGY_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 4000.0), f -> f.TechnologyInvestment) {
     @Override
     public void apply(NationModifier modifier, int level) {
         modifier.TECH_OUTPUT += 300 * level;
         modifier.TECH_OUTPUT_PERCENT += 1d * level;
+    }
+
+    @Override
+    public Map<ResourceType, Double> getCost(double development, double land, int projectLevel) {
+        return Map.of(ResourceType.CASH, 4000.0 * (development + land / 20) * (1 + projectLevel * projectLevel));
     }
 },
 //Healthcare Investment
 //Cost: 4000* (Development + Land/20) * (1+Project Level^2)
 //Increases your stability index by 5
 //Increases your stability index by 1% per level
-    HEALTHCARE_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 4000.0, ResourceType.MINERALS, 1.0), f -> f.HealthcareInvestment),
+    HEALTHCARE_INVESTMENT(ProjectCategory.NATIONAL_INVESTMENT, Map.of(ResourceType.CASH, 4000.0), f -> f.HealthcareInvestment) {
+    @Override
+    public Map<ResourceType, Double> getCost(double development, double land, int projectLevel) {
+        return Map.of(ResourceType.CASH, 4000.0 * (development + land / 20) * (1 + projectLevel * projectLevel));
+    }
+},
     ;
 
     public static Project[] values = values();
@@ -385,6 +431,10 @@ DEPARTMENT_OF_ARCHAEOLOGY(ProjectCategory.MISCELLANEOUS, Map.of(ResourceType.CAS
         this.category = category;
         this.baseCost = baseCost;
         this.get = get;
+    }
+
+    public boolean isInvestment() {
+        return name().endsWith("_INVESTMENT");
     }
 
     @Command
@@ -405,11 +455,28 @@ DEPARTMENT_OF_ARCHAEOLOGY(ProjectCategory.MISCELLANEOUS, Map.of(ResourceType.CAS
         }
     }
 
+    public Map<ResourceType, Double> getCost(int start, int endLevel, double development, double land) {
+        Map<ResourceType, Double> cost = new LinkedHashMap<>();
+        for (int i = start; i <= endLevel; i++) {
+            cost = ResourceType.add(cost, getCost(development, land, i));
+        }
+        return cost;
+    }
+
+    public Map<ResourceType, Double> getCost(double development, double land, int projectLevel) {
+        return getBaseCost();
+    }
+
     public void apply(NationModifier modifier, int level) {
 
     }
 
     public int get(NationProjects projects) {
         return get.apply(projects);
+    }
+
+    @Command
+    public String getName() {
+        return name();
     }
 }

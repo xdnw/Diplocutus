@@ -872,20 +872,15 @@ public class UtilityCommands {
                         .append(" | " + String.format("%16s", nation.getNation()))
                         .append(" | " + String.format("%16s", nation.getAllianceName()))
                         .append("\n```")
-                        // TODO FIXME :||remove who !!important
-//                            .append(String.format("%5s", (int) nation.getScore())).append(" ns").append(" | ")
-//                        .append(String.format("%2s", nation.getCities())).append(" \uD83C\uDFD9").append(" | ")
-//                        .append(String.format("%5s", nation.getAvg_infra())).append(" \uD83C\uDFD7").append(" | ")
-//                        .append(String.format("%6s", nation.getSoldiers())).append(" \uD83D\uDC82").append(" | ")
-//                        .append(String.format("%5s", nation.getTanks())).append(" \u2699").append(" | ")
-//                        .append(String.format("%5s", nation.getAircraft())).append(" \u2708").append(" | ")
-//                        .append(String.format("%4s", nation.getShips())).append(" \u26F5").append(" | ")
+                        .append(String.format("%5s", (int) nation.getScore())).append(" ns").append(" | ")
+                        .append(String.format("%2s", nation.getInfra())).append(" dev").append(" | ")
+                        .append(String.format("%2s", nation.getLand())).append(" land").append(" | ")
+                        .append(String.format("%2s", nation.getWarIndex())).append(" warIndex").append(" | ")
                         .append(String.format("%1s", nation.getOff())).append(" \uD83D\uDDE1").append(" | ")
                         .append(String.format("%1s", nation.getDef())).append(" \uD83D\uDEE1").append(" | ")
-//                        .append(String.format("%2s", nation.getSpies())).append(" \uD83D\uDD0D").append(" | ")
                         ;
 //                Activity activity = nation.getActivity(14 * 24);
-//                double loginChance = activity.loginChance((int) Math.max(1, (24 - (currentTurn % 12))), true);
+//                double loginChance = activity.loginChance((int) Math.max(1, (24 - (currentHour % 24))), true);
 //                int loginPct = (int) (loginChance * 100);
 //                response.append("login=" + loginPct + "%").append(" | ");
                 entry.append("```");

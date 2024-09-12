@@ -1046,6 +1046,11 @@ public class PWBindings extends BindingHelper {
     }
 
     @Binding
+    public Building building(String input) {
+        return emum(Building.class, input);
+    }
+
+    @Binding
     public WarCostByDayMode WarCostByDayMode(String input) {
         return emum(WarCostByDayMode.class, input);
     }
