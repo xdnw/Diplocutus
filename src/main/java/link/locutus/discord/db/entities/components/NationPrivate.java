@@ -54,7 +54,8 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
     private final Map<TimedPolicy, Long> policyLastRan = new ConcurrentHashMap<>();
     private final List<AllianceMemberInventory> memberInventory = new ArrayList<>();
     private int totalSlots = 0;
-    private int usedSlots = 0;
+    private int OpenSlots = 0;
+    private final Map<Building, Integer> effectBuildings = new ConcurrentHashMap<>();
 
     private final AtomicLong outdatedProjects = new AtomicLong(-1);
     private final AtomicLong outdatedMilitary = new AtomicLong(-1);
@@ -63,6 +64,7 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
     private final AtomicLong outdatedStockpile = new AtomicLong(-1);
     private final AtomicLong outdatedPolicyLastRan = new AtomicLong(-1);
     private final AtomicLong outdatedInventory = new AtomicLong(-1);
+    private final AtomicLong outdatedEffects = new AtomicLong(-1);
 
     public AtomicLong getOutdatedProjects() {
         return outdatedProjects;
@@ -90,6 +92,10 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
 
     public AtomicLong getOutdatedInventory() {
         return outdatedInventory;
+    }
+
+    public AtomicLong getOutdatedEffects() {
+        return outdatedEffects;
     }
 
     @Override
@@ -124,7 +130,9 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
                     ArrayUtil.writeEnumMap(militaryCapacity),
                     ArrayUtil.writeEnumMapDouble(militaryQuality),
                     totalSlots,
-                    usedSlots,
+                    OpenSlots,
+                    ArrayUtil.writeEnumMap(effectBuildings),
+                    outdatedEffects.get()
             };
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -173,6 +181,7 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             memberInventory.clear();
             militaryCapacity.clear();
             militaryQuality.clear();
+            effectBuildings.clear();
 
             parentId = (int) raw[0];
             if (raw[1] != null) projects.putAll(ArrayUtil.readEnumMap((byte[]) raw[1], Project.class));
@@ -190,12 +199,15 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             outdatedPolicyLastRan.set(SQLUtil.castLong(raw[12]));
 
             if (raw[13] != null) readMemberInventory((byte[]) raw[13]);
-            if (raw[14] != null) outdatedInventory.set(SQLUtil.castLong(raw[14]));
+            outdatedInventory.set(SQLUtil.castLong(raw[14]));
             if (raw[15] != null) militaryCapacity.putAll(ArrayUtil.readEnumMap((byte[]) raw[15], MilitaryUnitType.class));
             if (raw[16] != null) militaryQuality.putAll(ArrayUtil.readEnumMapDouble((byte[]) raw[16], MilitaryUnit.class));
 
             totalSlots = (int) raw[17];
-            usedSlots = (int) raw[18];
+            OpenSlots = (int) raw[18];
+
+            if (raw[19] != null) effectBuildings.putAll(ArrayUtil.readEnumMap((byte[]) raw[19], Building.class));
+            outdatedEffects.set(SQLUtil.castLong(raw[20]));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -223,6 +235,8 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
         result.put("militaryQuality", byte[].class);
         result.put("totalSlots", int.class);
         result.put("usedSlots", int.class);
+        result.put("effectBuildings", byte[].class);
+        result.put("outdatedEffects", long.class);
         return result;
     }
 
@@ -252,7 +266,10 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
         result.militaryQuality.putAll(militaryQuality);
 
         result.totalSlots = totalSlots;
-        result.usedSlots = usedSlots;
+        result.OpenSlots = OpenSlots;
+
+        result.effectBuildings.putAll(effectBuildings);
+        result.outdatedEffects.set(outdatedEffects.get());
         return result;
     }
 
@@ -270,6 +287,7 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             return false;
         });
     }
+
     // private final Map<MilitaryUnit, Integer> military = new ConcurrentHashMap<>();
     public Map<MilitaryUnit, Integer> getMilitary(long timestamp) {
         return withApi(outdatedMilitary, timestamp, military, () -> {
@@ -278,6 +296,25 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             if (result != null) {
                 long now = System.currentTimeMillis();
                 update(result, now);
+                return true;
+            }
+            return false;
+        });
+    }
+    public Map<Building, Integer> getEffectBuildings(long timestamp) {
+        return withApi(outdatedEffects, timestamp, effectBuildings, () -> {
+            DBAlliance aa = getAlliance();
+            NationsEffectsSummary result = aa.updateEffectsOfNation(parentId);
+            if (result != null) {
+                long now = System.currentTimeMillis();
+                effectBuildings.clear();
+                for (Building building : Building.values) {
+                    int value = building.get(result);
+                    if (value > 0) {
+                        effectBuildings.put(building, value);
+                    }
+                }
+                outdatedEffects.set(now);
                 return true;
             }
             return false;
@@ -324,18 +361,28 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
         });
     }
     //    private final Map<Building, Integer> building = new ConcurrentHashMap<>();
-    public Map<Building, Integer> getBuildings(long timestamp) {
-        return localCall(timestamp, outdatedBuilding, building, this::getAllianceApi, () -> parentId, DnsApi::nationBuildings, this::update);
+    public Map<Building, Integer> getBuildings(long timestamp, boolean includeEffects) {
+        Map<Building, Integer> buildings = localCall(timestamp, outdatedBuilding, building, this::getAllianceApi, () -> parentId, DnsApi::nationBuildings, this::update);
+        if (includeEffects) {
+            buildings = new ConcurrentHashMap<>(buildings);
+            Map<Building, Integer> effects = getEffectBuildings(timestamp);
+            for (Map.Entry<Building, Integer> entry : effects.entrySet()) {
+                Building building = entry.getKey();
+                int newValue = buildings.getOrDefault(building, 0) + entry.getValue();
+                buildings.put(building, newValue);
+            }
+        }
+        return buildings;
     }
 
     public int getTotalSlots(long timestamp) {
-        getBuildings(timestamp);
+        getBuildings(timestamp, false);
         return totalSlots;
     }
 
-    public int getUsedSlots(long timestamp) {
-        getBuildings(timestamp);
-        return usedSlots;
+    public int getOpenSlots(long timestamp) {
+        getBuildings(timestamp, false);
+        return OpenSlots;
     }
 
     //    private final Map<ResourceType, Double> stockpile = new ConcurrentHashMap<>();
@@ -370,6 +417,19 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             dirty = true;
         }
         this.outdatedProjects.set(timestamp);
+        if (dirty) Locutus.imp().getNationDB().saveNationPrivate(this);
+    }
+
+    public void update(NationsEffectsSummary effects, long timestamp) {
+        boolean dirty = false;
+        for (Building building : Building.values) {
+            int existing = this.effectBuildings.getOrDefault(building, 0);
+            int newValue = building.get(effects);
+            if (newValue == existing) continue;
+            this.effectBuildings.put(building, newValue);
+            dirty = true;
+        }
+        this.outdatedEffects.set(timestamp);
         if (dirty) Locutus.imp().getNationDB().saveNationPrivate(this);
     }
 
@@ -450,8 +510,8 @@ public class NationPrivate implements DBEntity<Void, NationPrivate> {
             this.totalSlots = buildings.TotalSlots;
             dirty = true;
         }
-        if (buildings.OpenSlots != this.usedSlots) {
-            this.usedSlots = buildings.OpenSlots;
+        if (buildings.OpenSlots != this.OpenSlots) {
+            this.OpenSlots = buildings.OpenSlots;
             dirty = true;
         }
         this.outdatedBuilding.set(timestamp);

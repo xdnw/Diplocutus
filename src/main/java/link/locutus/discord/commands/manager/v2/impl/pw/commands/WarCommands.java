@@ -2157,7 +2157,7 @@ public class WarCommands {
         for (DBNation nation : nations) {
             NationPrivate privateData = nation.getPrivateData();
             System.out.println("Get buildings");
-            Map<Building, Integer> buildings = privateData.getBuildings(now);
+            Map<Building, Integer> buildings = privateData.getBuildings(now, false);
             Map<MilitaryUnit, Integer> military = privateData.getMilitary(now);
             Map<MilitaryUnit, Double> quality = privateData.getMilitaryQuality(now);
             Map<MilitaryUnitType, Integer> capacity = privateData.getMilitaryCapacity(now);

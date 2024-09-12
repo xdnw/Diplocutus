@@ -115,8 +115,8 @@ public class SQLUtil {
         }
     }
 
-    public static String addColumn(DBEntity<?, ?> entity, String columnName, Class<Integer> integerClass, String def) {
+    public static String addColumn(DBEntity<?, ?> entity, String columnName, Class<?> type, String def) {
         String tableName = entity.getTableName();
-        return "ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + toSqlType(integerClass) + " DEFAULT " + def;
+        return "ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + toSqlType(type) + " DEFAULT " + def;
     }
 }

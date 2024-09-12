@@ -1255,7 +1255,7 @@ public class UtilityCommands {
 
     @Command
     @RolePermission(Roles.MEMBER)
-    public String development(@Me GuildDB db, @Me User user, @Me DBNation me, DBNation nation, @Switch("u") boolean update) {
+    public String development(@Me GuildDB db, @Me User user, @Me DBNation me, DBNation nation, @Switch("u") boolean update, @Switch("n") boolean full_numbers) {
         boolean canViewPrivate = me.getId() == nation.getId() || (Roles.INTERNAL_AFFAIRS.has(user, db.getGuild()) && db.isAllianceId(nation.getAlliance_id()));
         NationPrivate data = canViewPrivate ? nation.getPrivateData() : null;
         long now = System.currentTimeMillis() - (update ? 0 : TimeUnit.HOURS.toMillis(1));
@@ -1268,19 +1268,24 @@ public class UtilityCommands {
         general.put("Population", nation.getPopulation());
 
         if (data != null) {
-            Map<Building, Integer> buildings = data.getBuildings(now);
+            Map<Building, Integer> buildings = data.getBuildings(now, false);
+            Map<Building, Integer> effectBuilding = data.getEffectBuildings(now);
+
             int slots = data.getTotalSlots(now);
-            int openSlots = data.getUsedSlots(now);
+            int openSlots = data.getOpenSlots(now);
+
             int jobs = Building.getJobs(buildings);
-            general.put("Employment", jobs);
-            long unfilled = Math.round(jobs - nation.getPopulation());
+            int effectJobs = Building.getJobs(effectBuilding);
+            int totalJobs = jobs + effectJobs;
+            general.put("Employment", MathMan.format(totalJobs) + "(" + MathMan.format(effectJobs) + " from effects)");
+            long unfilled = Math.round(totalJobs - nation.getPopulation());
             if (unfilled > 0) {
-                general.put("Unfilled Jobs", unfilled);
+                general.put("Unfilled Jobs", MathMan.format(unfilled));
             } else if (unfilled < 0) {
-                general.put("Unemployment", -unfilled);
+                general.put("Unemployment", MathMan.format(-unfilled));
             }
-            general.put("Total Building Slots", slots);
-            general.put("Open Building Slots", openSlots);
+            general.put("Total Building Slots", MathMan.format(slots));
+            general.put("Open Building Slots", MathMan.format(openSlots));
         }
         indexes.put("Military Index", nation.getWarIndex());
         indexes.put("Stability Index", nation.getStabilityIndex());
@@ -1298,7 +1303,7 @@ public class UtilityCommands {
         daily.put("Minerals Income", nation.getMineralOutput());
         daily.put("Fuel Income", nation.getFuelOutput());
         if (data != null) {
-            Map<Building, Integer> buildings = data.getBuildings(now);
+            Map<Building, Integer> buildings = data.getBuildings(now, true);
             Map<Project, Integer> projects = data.getProjects(now);
             Map<Technology, Integer> tech = data.getTechnology(now);
             NationModifier modifier = DNS.getNationModifier(nation.getInfra(), buildings, projects, tech);
@@ -1310,9 +1315,10 @@ public class UtilityCommands {
         daily.put("Rare Metal Income", nation.getRareMetalOutput());
         daily.put("Political Support Gain", nation.getPoliticalPowerOutput());
 
+        Function<Double, String> formatNum = full_numbers ? MathMan::format : MathMan::formatSig;
         Function<Map.Entry<String, Object>, String> toString = f -> {
             Object value = f.getValue();
-            return "" + f.getKey() + ": `" + ((value instanceof Number n) ? (MathMan.formatSig(n.doubleValue())) : (StringMan.getString(value))) + "`";
+            return "" + f.getKey() + ": `" + ((value instanceof Number n) ? (formatNum.apply(n.doubleValue())) : (StringMan.getString(value))) + "`";
         };
         StringBuilder response = new StringBuilder("## " + nation.getMarkdownUrl() + " Development\n");
         response.append("### General Information\n");

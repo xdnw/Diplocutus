@@ -1331,7 +1331,7 @@ public class GuildDB extends DBMainV2 implements NationOrAllianceOrGuild, GuildO
             NationFilter nationMatcher = entry.getKey().recalculate(60_000);
             if (nationMatcher.test(nation)) {
                 if (myMMR == null) {
-                    Map<Building, Integer> buildings = nation.getPrivateData().getBuildings(updateMs);
+                    Map<Building, Integer> buildings = nation.getPrivateData().getBuildings(updateMs, false);
                     myMMR = buildings.get(Building.ARMY_BASES) + "/" + buildings.get(Building.AIR_BASES) + "/" + buildings.get(Building.NAVAL_BASES);
                 }
                 MMRMatcher required = entry.getValue();
@@ -1728,7 +1728,7 @@ public class GuildDB extends DBMainV2 implements NationOrAllianceOrGuild, GuildO
     }
 
     public Set<Integer> getAllies(boolean fetchTreaties) {
-        Set<Integer> allies = getCoalition(Coalition.ALLIES);
+        Set<Integer> allies = new HashSet<>(getCoalition(Coalition.ALLIES));
         Set<Integer> aaIds = getAllianceIds();
         if (!aaIds.isEmpty()) {
             allies.addAll(aaIds);

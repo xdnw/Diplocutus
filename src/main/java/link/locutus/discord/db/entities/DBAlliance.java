@@ -929,6 +929,11 @@ public class DBAlliance implements NationList, NationOrAlliance, GuildOrAlliance
         return withApi(nationId, NationPrivate::getOutdatedMilitary, DnsApi::allianceMilitary, f -> f.NationId, NationPrivate::update);
     }
 
+    // AllianceEffects result = aa.updateEffectsOfNation(parentId);
+    public NationsEffectsSummary updateEffectsOfNation(int nationId) {
+        return withApi(nationId, NationPrivate::getOutdatedEffects, DnsApi::nationsEffectsSummary, f -> f.nationID, NationPrivate::update);
+    }
+
     public AllianceTech updateTechOfNation(int nationId) {
         return withApi(nationId, NationPrivate::getOutdatedTechnology, DnsApi::allianceTech, f -> f.nationID, NationPrivate::update);
     }

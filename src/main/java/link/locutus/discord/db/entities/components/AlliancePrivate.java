@@ -66,10 +66,11 @@ public class AlliancePrivate implements DBEntity<Void, AlliancePrivate> {
     public void load(Object[] raw) {
         stockpile.clear();
         memberDeposited.clear();
+
         this.parentId = (int) raw[0];
-        if (raw[1] != null) stockpile.putAll(ResourceType.resourcesToMap(ArrayUtil.toDoubleArray((byte[]) raw[0])));
-        if (raw[2] != null) memberDeposited.putAll(ResourceType.resourcesToMap(ArrayUtil.toDoubleArray((byte[]) raw[1])));
-        outdatedStockpileAndDeposits.set(SQLUtil.castLong(raw[2]));
+        if (raw[1] != null) stockpile.putAll(ResourceType.resourcesToMap(ArrayUtil.toDoubleArray((byte[]) raw[1])));
+        if (raw[2] != null) memberDeposited.putAll(ResourceType.resourcesToMap(ArrayUtil.toDoubleArray((byte[]) raw[2])));
+        outdatedStockpileAndDeposits.set(SQLUtil.castLong(raw[3]));
     }
 
     @Override
