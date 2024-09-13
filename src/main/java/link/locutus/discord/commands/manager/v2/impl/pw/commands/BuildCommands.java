@@ -168,7 +168,7 @@ public class BuildCommands {
     }
 
     @Command(desc = "View the technologies for a nation")
-    public String viewTechnologies(@Me DBNation me, @Me User user, @Me GuildDB db, @Me DBNation nation, @Switch("u") boolean force_update) {
+    public String viewTechnologies(@Me DBNation me, @Me User user, @Me GuildDB db, DBNation nation, @Switch("u") boolean force_update) {
         if (me.getId() != nation.getId() && (!Roles.INTERNAL_AFFAIRS.has(user, db.getGuild()) || !db.isAllianceId(nation.getAlliance_id()))) {
             throw new IllegalArgumentException("You can't view another nation's build.");
         }
