@@ -166,7 +166,6 @@ public class SettingCommands {
         } else {
             valueObj = key.parse(db, value);
             valueObj = key.validate(db, author, valueObj);
-
             if (valueObj == null) {
                 return "Invalid value for key `" + key.name() + "`";
             }

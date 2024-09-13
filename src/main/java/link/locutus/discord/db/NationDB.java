@@ -520,13 +520,17 @@ public class NationDB extends DBMainV2 implements SyncableDatabase {
     }
 
     public void updateAllNations(Consumer<Event> eventConsumer) {
+        DnsApi api = Locutus.imp().getV3();
+        updateAllNations(api, eventConsumer);
+    }
+
+    public void updateAllNations(DnsApi api, Consumer<Event> eventConsumer) {
         long now = System.currentTimeMillis();
         Set<Integer> expectedIds;
         synchronized (nationsById) {
             expectedIds = new IntOpenHashSet(nationsById.keySet());
         }
-        DnsApi v3 = Locutus.imp().getV3();
-        List<Nation> nations = v3.nation().call();
+        List<Nation> nations = api.nation().call();
         Set<Integer> updated = updateNations(nations, eventConsumer, now);
         expectedIds.removeAll(updated);
         deleteNations(expectedIds, eventConsumer);
@@ -1708,8 +1712,12 @@ public class NationDB extends DBMainV2 implements SyncableDatabase {
     }
 
     public boolean updateNation(DBNation nation, Consumer<Event> eventConsumer) {
-        DnsApi v3 = Locutus.imp().getV3();
-        List<Nation> record = v3.nation(nation.getId()).call();
+        DnsApi api = Locutus.imp().getV3();
+        return updateNation(api, nation, eventConsumer);
+    }
+
+    public boolean updateNation(DnsApi api, DBNation nation, Consumer<Event> eventConsumer) {
+        List<Nation> record = api.nation(nation.getId()).call();
         if (record != null && !record.isEmpty()) {
             Nation nationRecord = record.get(0);
             boolean changed = nation.update(this, nationRecord, eventConsumer);

@@ -2,6 +2,8 @@ package link.locutus.discord.commands.manager.v2.impl.pw.commands;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import link.locutus.discord.Locutus;
+import link.locutus.discord.api.endpoints.DnsApi;
 import link.locutus.discord.api.generated.ResourceType;
 import link.locutus.discord.api.types.Building;
 import link.locutus.discord.api.types.Project;
@@ -89,7 +91,8 @@ public class BuildCommands {
             buildingCostReduction = 0d;
         }
         double cost = building.cost(start_amount, end_amount, total_slots, 1 - (buildingCostReduction * 0.01));
-        return "Purchasing `" + building.getName() + "` from `" + start_amount + "` to `" + end_amount + "` would cost $" + MathMan.format(cost);
+        return "Purchasing `" + building.getName() + "` from `" + start_amount + "` to `" + end_amount + "` would cost $" + MathMan.format(cost) + "\n" +
+                "(Building Cost Reduction: " + buildingCostReduction + "%)";
     }
 
     @Command
@@ -145,8 +148,9 @@ public class BuildCommands {
         response.append("Purchasing `" + project.getName() + "` from `" + start_amount + "` to `" + end_amount + "` would cost:\n");
         response.append("```\n" + ResourceType.resourcesToString(costReduced) + "\n``` worth: ~$" + MathMan.format(ResourceType.convertedTotal(costReduced)));
         if (factor != 1) {
-            response.append("\nProject cost factor of: `" + (factor * 100) + "%`");
+            response.append("\n(Project cost reduction: `" + ((1 - factor) * 100) + "%`)");
         }
+
         return response.toString();
     }
 
@@ -193,7 +197,7 @@ public class BuildCommands {
                            @Default Integer sci_level,
                            @Default Integer ai_level,
                            @Default Double techCostReduction, @Switch("u") boolean force_update) {
-        if (me.getId() != nation.getId() && (!Roles.INTERNAL_AFFAIRS.has(user, db.getGuild()) || !db.isAllianceId(nation.getAlliance_id()))) {
+        if (nation != null && (me.getId() != nation.getId() && (!Roles.INTERNAL_AFFAIRS.has(user, db.getGuild()) || !db.isAllianceId(nation.getAlliance_id())))) {
             throw new IllegalArgumentException("You can't view another nation's build.");
         }
         long now = System.currentTimeMillis() - (force_update ? 0 : TimeUnit.HOURS.toMillis(1));
@@ -218,7 +222,7 @@ public class BuildCommands {
                 ai_level = nation.getPrivateData().getTechnology(now).getOrDefault(Technology.ARTIFICIAL_INTELLIGENCE, 0);
             }
             if (acquired_technologies == null) {
-                acquired_technologies = nation.getPrivateData().getTechnology(now).size();
+                acquired_technologies = nation.getPrivateData().getTechnology(now).values().stream().mapToInt(Integer::intValue).sum();
             }
         }
 
@@ -228,7 +232,73 @@ public class BuildCommands {
 
         double techFactor = 1 - (techCostReduction * 0.01);
         long cost = technology.getCost(techFactor, acquired_technologies, sci_level, ai_level, start_level, end_level);
-        return "Purchasing `" + technology.getName() + "` from `" + start_level + "` to `" + end_level + "` would cost $" + MathMan.format(cost);
+        return "Purchasing `" + technology.getName() + "` from `" + start_level + "` to `" + end_level + "` would cost `tech:" + MathMan.format(cost) + "`\n" +
+                "(Tech Cost Reduction: " + techCostReduction + "%)";
+    }
+
+    @Command(desc = "Get cost of purchasing an amount of land")
+    public String landCost(@Me User user, @Me GuildDB db, @Me DBNation me, double buy_up_to, @Default DBNation nation, @Default Double current_land, @Default Double development, @Default Double land_cost_reduction, @Switch("u") boolean force_update) {
+        if (nation == null && (current_land == null || development == null)) {
+            throw new IllegalArgumentException("You must provide a `nation` or BOTH OF `current_land`, `development`.");
+        }
+        if (nation == null && land_cost_reduction == null) {
+            throw new IllegalArgumentException("You must provide a `nation` or `land_cost_reduction`.");
+        }
+        if (current_land == null) {
+            current_land = nation.getLand();
+        }
+        if (development == null) {
+            development = nation.getInfra();
+        }
+        if (force_update) {
+            if (nation == null) throw new IllegalArgumentException("You must provide a `nation` to force update.");
+            Locutus.imp().runEventsAsync(events -> Locutus.imp().getNationDB().updateNation(db.getApiOrThrow(), nation, events));
+        }
+        if (land_cost_reduction == null) {
+            land_cost_reduction = 0d;
+            if (nation != null) {
+                long now = System.currentTimeMillis() - (force_update ? 0 : TimeUnit.HOURS.toMillis(1));
+                if (me.getId() != nation.getId() && (!Roles.INTERNAL_AFFAIRS.has(user, db.getGuild()) || !db.isAllianceId(nation.getAlliance_id()))) {
+                    throw new IllegalArgumentException("You can't view another nation's build.");
+                }
+                land_cost_reduction = nation.getPrivateData().getLandCostPercent(now);
+            }
+        }
+        double costReductionFactor = 1 - (land_cost_reduction * 0.01);
+        double cost = DNS.Land.getCost(costReductionFactor, development, current_land, buy_up_to);
+        return "Purchasing `" + MathMan.format(buy_up_to) + "` land would cost `$" + MathMan.format(cost) + "`\n" +
+                "(Land Cost Reduction: " + land_cost_reduction + "%)";
+    }
+
+    @Command
+    public String devCost(@Me User user, @Me GuildDB db, @Me DBNation me, double buy_up_to, @Default DBNation nation, @Default Double current_dev, @Default Double dev_cost_reduction, @Switch("u") boolean force_update) {
+        if (nation == null && (current_dev == null)) {
+            throw new IllegalArgumentException("You must provide a `nation` or BOTH OF `current_dev`, `land`.");
+        }
+        if (nation == null && dev_cost_reduction == null) {
+            throw new IllegalArgumentException("You must provide a `nation` or `dev_cost_reduction`.");
+        }
+        if (current_dev == null) {
+            current_dev = nation.getInfra();
+        }
+        if (force_update) {
+            if (nation == null) throw new IllegalArgumentException("You must provide a `nation` to force update.");
+            Locutus.imp().runEventsAsync(events -> Locutus.imp().getNationDB().updateNation(db.getApiOrThrow(), nation, events));
+        }
+        if (dev_cost_reduction == null) {
+            dev_cost_reduction = 0d;
+            if (nation != null) {
+                long now = System.currentTimeMillis() - (force_update ? 0 : TimeUnit.HOURS.toMillis(1));
+                if (me.getId() != nation.getId() && (!Roles.INTERNAL_AFFAIRS.has(user, db.getGuild()) || !db.isAllianceId(nation.getAlliance_id()))) {
+                    throw new IllegalArgumentException("You can't view another nation's build.");
+                }
+                dev_cost_reduction = nation.getPrivateData().getDevelopmentCostPercent(now);
+            }
+        }
+        double costReductionFactor = 1 - (dev_cost_reduction * 0.01);
+        double cost = DNS.Development.getCost(costReductionFactor, current_dev, buy_up_to);
+        return "Purchasing `" + MathMan.format(buy_up_to) + "` development would cost `$" + MathMan.format(cost) + "`\n" +
+                "(Dev Cost Reduction: " + dev_cost_reduction + "%)";
     }
 
 

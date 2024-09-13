@@ -136,8 +136,13 @@ public class ApiKeyPool {
             return this;
         }
 
-        public SimpleBuilder addKeys(List<String> keys) {
+        public SimpleBuilder addKeysUnsafe(List<String> keys) {
             for (String key : keys) addKeyUnsafe(key);
+            return this;
+        }
+
+        public SimpleBuilder addKeys(List<ApiKey> keys) {
+            for (ApiKey key : keys) addKey(key);
             return this;
         }
 

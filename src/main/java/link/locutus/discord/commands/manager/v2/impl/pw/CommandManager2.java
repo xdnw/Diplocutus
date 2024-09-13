@@ -259,6 +259,8 @@ public class CommandManager2 {
         getCommands().registerMethod(new BuildCommands(), List.of("nation", "list"), "viewProjects", "projects");
         getCommands().registerMethod(new BuildCommands(), List.of("nation", "list"), "viewTechnologies", "tech");
         getCommands().registerMethod(new BuildCommands(), List.of("technology"), "techCost", "cost");
+        getCommands().registerMethod(new BuildCommands(), List.of("land"), "landCost", "cost");
+        getCommands().registerMethod(new BuildCommands(), List.of("development"), "devCost", "cost");
 
 
 //        getCommands().registerMethod(new GrantCommands(), List.of("grant"), "costBulk", "cost");

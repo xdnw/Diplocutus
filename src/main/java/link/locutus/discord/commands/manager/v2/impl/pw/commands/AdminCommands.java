@@ -1595,10 +1595,10 @@ public class AdminCommands {
     }
 
     @Command()
-    @RolePermission(value = Roles.ADMIN, root = true)
-    public String syncNations(NationDB db) throws IOException, ParseException {
+    @RolePermission(value = Roles.ADMIN)
+    public String syncNations(@Me GuildDB guildDB, NationDB db) throws IOException, ParseException {
         List<Event> events = new ArrayList<>();
-        db.updateAllNations(events::add);
+        db.updateAllNations(guildDB.getApiOrThrow(), events::add);
         if (events.size() > 0) {
             Locutus.imp().getExecutor().submit(() -> {
                 for (Event event : events) event.post();;

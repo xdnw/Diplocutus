@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.IntArraySet;
 import link.locutus.discord.Locutus;
 import link.locutus.discord.Logg;
 import link.locutus.discord.api.ApiKeyPool;
+import link.locutus.discord.api.endpoints.DnsApi;
 import link.locutus.discord.api.generated.BankType;
 import link.locutus.discord.api.generated.TreatyType;
 import link.locutus.discord.api.types.Building;
@@ -304,6 +305,15 @@ public class GuildDB extends DBMainV2 implements NationOrAllianceOrGuild, GuildO
 
     public Guild getGuild() {
         return guild;
+    }
+
+    public DnsApi getApiOrThrow() {
+        List<ApiKeyPool.ApiKey> keys = getOrThrow(GuildKey.API_KEY);
+        if (keys.isEmpty()) {
+            throw new UnsupportedOperationException("Please set an api key: " + CM.settings_default.registerApiKey.cmd.toSlashMention());
+        }
+        ApiKeyPool pool = ApiKeyPool.builder().addKeys(keys).build();
+        return new DnsApi(pool);
     }
 
     public ApiKeyPool getApiKey(int allianceId, boolean requireLeader) {

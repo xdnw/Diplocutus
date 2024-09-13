@@ -345,8 +345,29 @@ public enum Technology {
 
     @Command(desc = "Calculate the cost of the technology based on tech cost reduction, base tech cost, and tech level")
     public long getCost(double techCostReduction, int numberOfAquiredTechnologies, int sciTheoryLevel, int artificialIntelligence, int techLevel) {
-        int baseTechCost = getBaseTechCost(numberOfAquiredTechnologies, sciTheoryLevel, artificialIntelligence);
-        return Math.round(techCostReduction * (baseTechCost + initialCost * (int) Math.pow(1.5, techLevel)));
+        double baseTechCost = getBaseTechCost(numberOfAquiredTechnologies, sciTheoryLevel, artificialIntelligence);
+        return Math.round(techCostReduction * (baseTechCost + initialCost * (double) Math.pow(1.5, techLevel)));
+    }
+
+    public static void main(String[] args) {
+        double techCostReduction = 1 - (2.97 * 0.01);
+//        Level: 8
+        // Level: 1
+        // Level: 13
+        //     Level: 16
+        // Level: 11
+        // Level: 6
+        //   Level: 1
+        //  Level: 3
+        // Level: 7
+        // 66
+        // 5000 =  100 * numberOfAquiredTechnologies - (8) * 200
+        int numberOfAquiredTechnologies = 66;
+        int sciTheoryLevel = 8;
+        int artificialIntelligence = 0;
+        int startLevel = 8;
+        int endLevel = 9;
+        System.out.println("COST " + Technology.SCIENTIFIC_THEORY.getCost(techCostReduction, numberOfAquiredTechnologies, sciTheoryLevel, artificialIntelligence, startLevel, endLevel));
     }
 
     public long getCost(double techCostReduction, int numberOfAquiredTechnologies, int sciTheoryLevel, int artificialIntelligence, int startLevel, int endLevel) {

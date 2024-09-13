@@ -381,10 +381,7 @@ public class GuildKey {
                     throw new IllegalArgumentException("Nation not found for id: " + nationId + "(out of sync?)");
                 }
                 if (!aaIds.contains(nation.getAlliance_id())) {
-                    Locutus.imp().runEventsAsync(events -> Locutus.imp().getNationDB().updateNation(nation, events));
-                    if (!aaIds.contains(nation.getAlliance_id())) {
-                        throw new IllegalArgumentException("Nation " + nation.getName() + " is not in your alliance: " + StringMan.getString(aaIds));
-                    }
+                    throw new IllegalArgumentException("Nation " + nation.getName() + " is not in your alliance: " + StringMan.getString(aaIds) + ". Note: Force an update using " + CM.admin.sync.syncNations.cmd.toSlashMention());
                 }
                 try {
                     new DnsApi(ApiKeyPool.builder().addKey(key).build()).alliance().call();

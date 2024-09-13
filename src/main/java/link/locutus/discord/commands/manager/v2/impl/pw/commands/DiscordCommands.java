@@ -467,7 +467,7 @@ public class DiscordCommands {
         try {
             String pnwDiscordName = nation.getUsername();
             if (pnwDiscordName == null || pnwDiscordName.isEmpty()) {
-                Locutus.imp().runEventsAsync(events -> Locutus.imp().getNationDB().updateNation(nation, events));
+                Locutus.imp().runEventsAsync(events -> Locutus.imp().getNationDB().updateNation(db.getApiOrThrow(), nation, events));
             }
             pnwDiscordName = nation.getUsername();
             if (pnwDiscordName == null || pnwDiscordName.isEmpty()) {

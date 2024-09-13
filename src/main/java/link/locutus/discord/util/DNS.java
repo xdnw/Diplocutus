@@ -57,12 +57,39 @@ import java.util.regex.Pattern;
 
 public final class DNS {
     public static class Development {
-        // {\displaystyle DevelopmentCost=DevelopmentCostReduction*DevelopmentBeingBought{\Bigl (}{\frac {TotalDevelopment}{100}}{\Bigr )}^{2}}
+        public static double getCost(double developmentCostReduction, double developmentBeingBought, double totalDevelopment) {
+            return developmentCostReduction * Math.pow(developmentBeingBought * (totalDevelopment / 100), 2);
+        }
     }
 
     public static class Land {
-        // {\displaystyle DevelopmentCostReductionFromLand={\Bigl (}{\frac {Development}{Land}}{\Bigr )}^{2}}
-        // {\displaystyle LandCost={\frac {LandCostReduction*LandBeingBought{\Bigl (}{\frac {TotalLand}{100}}{\Bigr )}^{2}}{2}}}
+        public static double getCostReductionFromLand(double development, double land) {
+            return Math.pow(development / land, 2);
+        }
+
+        public static double getCost(double costReduction, double development, double totalLand, double landBeingBought) {
+            if (landBeingBought > 1_000_000) {
+                throw new IllegalArgumentException("Land being bought is too high (max: 1,000,000, provided: " + MathMan.format(landBeingBought) + ")");
+            }
+            double increment = 10000;
+            if (landBeingBought > increment) {
+                // buy in increments of 10k
+                double total = 0;
+                for (int i = 0; i < landBeingBought / increment; i++) {
+                    double amount = Math.min(increment, landBeingBought - i * increment);
+                    total += getCostSingle(costReduction, development, totalLand, amount);
+                    totalLand += amount;
+                }
+                return total;
+            } else {
+                return getCostSingle(costReduction, development, totalLand, landBeingBought);
+            }
+        }
+
+        private static double getCostSingle(double costReduction, double development, double totalLand, double landBeingBought) {
+            costReduction = getCostReductionFromLand(development, totalLand) * costReduction;
+            return costReduction * Math.pow(landBeingBought * (totalLand / 100), 2) / 2;
+        }
     }
 
     public static NationModifier getNationModifier(double development, Map<Building, Integer> buildings, Map<Project, Integer> projects, Map<Technology, Integer> tech) {
