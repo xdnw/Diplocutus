@@ -57,8 +57,34 @@ import java.util.regex.Pattern;
 
 public final class DNS {
     public static class Development {
-        public static double getCost(double developmentCostReduction, double developmentBeingBought, double totalDevelopment) {
-            return developmentCostReduction * Math.pow(developmentBeingBought * (totalDevelopment / 100), 2);
+        public static double getCost(double costReduction, double development, double land, double amount) {
+            if (amount > 1_000_000) {
+                throw new IllegalArgumentException("Land being bought is too high (max: 1,000,000, provided: " + MathMan.format(amount) + ")");
+            }
+            int increment = 50;
+            if (amount > increment) {
+                double total = 0;
+                double finalCostReduction = Land.getCostReductionFromLand(development, land) * costReduction;
+                int counter = 0;
+                for (int i = 0; i < amount / increment; i++) {
+                    double amountCapped = Math.min(increment, amount - i * increment);
+                    total += getCostSingle(finalCostReduction, development, amountCapped);
+                    development += amountCapped;
+                    counter += increment;
+                    if (counter >= 10000) {
+                        finalCostReduction = Land.getCostReductionFromLand(development, land) * costReduction;
+                        counter = 0;
+                    }
+                }
+                return Math.floor(total);
+            } else {
+                double finalCostReduction = Land.getCostReductionFromLand(development, land) * costReduction;
+                return Math.floor(getCostSingle(finalCostReduction, development, amount));
+            }
+        }
+
+        private static double getCostSingle(double costReduction, double development, double amount) {
+            return costReduction * amount * Math.pow((development / 100), 2);
         }
     }
 
@@ -67,28 +93,26 @@ public final class DNS {
             return Math.pow(development / land, 2);
         }
 
-        public static double getCost(double costReduction, double development, double totalLand, double landBeingBought) {
-            if (landBeingBought > 1_000_000) {
-                throw new IllegalArgumentException("Land being bought is too high (max: 1,000,000, provided: " + MathMan.format(landBeingBought) + ")");
+        public static double getCost(double costReduction, double totalLand, double amount) {
+            if (amount > 1_000_000) {
+                throw new IllegalArgumentException("Land being bought is too high (max: 1,000,000, provided: " + MathMan.format(amount) + ")");
             }
-            double increment = 10000;
-            if (landBeingBought > increment) {
-                // buy in increments of 10k
+            int increment = 50;
+            if (amount > increment) {
                 double total = 0;
-                for (int i = 0; i < landBeingBought / increment; i++) {
-                    double amount = Math.min(increment, landBeingBought - i * increment);
-                    total += getCostSingle(costReduction, development, totalLand, amount);
-                    totalLand += amount;
+                for (int i = 0; i < amount / increment; i++) {
+                    double amountCapped = Math.min(increment, amount - i * increment);
+                    total += getCostSingle(costReduction, totalLand, amountCapped);
+                    totalLand += amountCapped;
                 }
-                return total;
+                return Math.floor(total);
             } else {
-                return getCostSingle(costReduction, development, totalLand, landBeingBought);
+                return Math.floor(getCostSingle(costReduction, totalLand, amount));
             }
         }
 
-        private static double getCostSingle(double costReduction, double development, double totalLand, double landBeingBought) {
-            costReduction = getCostReductionFromLand(development, totalLand) * costReduction;
-            return costReduction * Math.pow(landBeingBought * (totalLand / 100), 2) / 2;
+        private static double getCostSingle(double costReduction, double totalLand, double landBeingBought) {
+            return costReduction * landBeingBought * Math.pow((totalLand / 100), 2) / 2;
         }
     }
 

@@ -237,9 +237,9 @@ public class BuildCommands {
     }
 
     @Command(desc = "Get cost of purchasing an amount of land")
-    public String landCost(@Me User user, @Me GuildDB db, @Me DBNation me, double buy_up_to, @Default DBNation nation, @Default Double current_land, @Default Double development, @Default Double land_cost_reduction, @Switch("u") boolean force_update) {
-        if (nation == null && (current_land == null || development == null)) {
-            throw new IllegalArgumentException("You must provide a `nation` or BOTH OF `current_land`, `development`.");
+    public String landCost(@Me User user, @Me GuildDB db, @Me DBNation me, double buy_up_to, @Default DBNation nation, @Default Double current_land, @Default Double land_cost_reduction, @Switch("u") boolean force_update) {
+        if (nation == null && (current_land == null)) {
+            throw new IllegalArgumentException("You must provide a `nation` or `current_land`.");
         }
         if (nation == null && land_cost_reduction == null) {
             throw new IllegalArgumentException("You must provide a `nation` or `land_cost_reduction`.");
@@ -247,8 +247,8 @@ public class BuildCommands {
         if (current_land == null) {
             current_land = nation.getLand();
         }
-        if (development == null) {
-            development = nation.getInfra();
+        if (buy_up_to < current_land) {
+            throw new IllegalArgumentException("The value for `buy_up_to` (" + MathMan.format(buy_up_to) + ") must be greater than `current_land` (" + MathMan.format(current_land) + ")");
         }
         if (force_update) {
             if (nation == null) throw new IllegalArgumentException("You must provide a `nation` to force update.");
@@ -265,21 +265,27 @@ public class BuildCommands {
             }
         }
         double costReductionFactor = 1 - (land_cost_reduction * 0.01);
-        double cost = DNS.Land.getCost(costReductionFactor, development, current_land, buy_up_to);
+        double cost = DNS.Land.getCost(costReductionFactor, current_land, buy_up_to - current_land);
         return "Purchasing `" + MathMan.format(buy_up_to) + "` land would cost `$" + MathMan.format(cost) + "`\n" +
                 "(Land Cost Reduction: " + land_cost_reduction + "%)";
     }
 
     @Command
-    public String devCost(@Me User user, @Me GuildDB db, @Me DBNation me, double buy_up_to, @Default DBNation nation, @Default Double current_dev, @Default Double dev_cost_reduction, @Switch("u") boolean force_update) {
-        if (nation == null && (current_dev == null)) {
-            throw new IllegalArgumentException("You must provide a `nation` or BOTH OF `current_dev`, `land`.");
+    public String devCost(@Me User user, @Me GuildDB db, @Me DBNation me, double buy_up_to, @Default DBNation nation, @Default Double current_dev, @Default Double current_land, @Default Double dev_cost_reduction, @Switch("u") boolean force_update) {
+        if (nation == null && (current_dev == null || current_land == null)) {
+            throw new IllegalArgumentException("You must provide a `nation` or BOTH OF `current_dev`, `current_land`.");
         }
         if (nation == null && dev_cost_reduction == null) {
             throw new IllegalArgumentException("You must provide a `nation` or `dev_cost_reduction`.");
         }
         if (current_dev == null) {
             current_dev = nation.getInfra();
+        }
+        if (current_land == null) {
+            current_land = nation.getLand();
+        }
+        if (buy_up_to < current_dev) {
+            throw new IllegalArgumentException("The value for `buy_up_to` (" + MathMan.format(buy_up_to) + ") must be greater than `current_land` (" + MathMan.format(current_dev) + ")");
         }
         if (force_update) {
             if (nation == null) throw new IllegalArgumentException("You must provide a `nation` to force update.");
@@ -296,7 +302,7 @@ public class BuildCommands {
             }
         }
         double costReductionFactor = 1 - (dev_cost_reduction * 0.01);
-        double cost = DNS.Development.getCost(costReductionFactor, current_dev, buy_up_to);
+        double cost = DNS.Development.getCost(costReductionFactor, current_dev, current_land, buy_up_to);
         return "Purchasing `" + MathMan.format(buy_up_to) + "` development would cost `$" + MathMan.format(cost) + "`\n" +
                 "(Dev Cost Reduction: " + dev_cost_reduction + "%)";
     }
