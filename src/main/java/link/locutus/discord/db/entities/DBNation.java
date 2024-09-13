@@ -2463,4 +2463,6 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
     public void setNationPrivate(NationPrivate np) {
         this.privateData = np;
     }
+
+    // TODO FIXME :||remove costs for projects, buildings, units, tech
 }

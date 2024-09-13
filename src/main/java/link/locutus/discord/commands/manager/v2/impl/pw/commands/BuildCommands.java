@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import link.locutus.discord.api.generated.ResourceType;
 import link.locutus.discord.api.types.Building;
 import link.locutus.discord.api.types.Project;
+import link.locutus.discord.api.types.Technology;
 import link.locutus.discord.commands.manager.v2.binding.annotation.Command;
 import link.locutus.discord.commands.manager.v2.binding.annotation.Default;
 import link.locutus.discord.commands.manager.v2.binding.annotation.Me;
@@ -16,8 +17,10 @@ import link.locutus.discord.db.entities.components.NationPrivate;
 import link.locutus.discord.user.Roles;
 import link.locutus.discord.util.DNS;
 import link.locutus.discord.util.MathMan;
+import link.locutus.discord.util.math.ArrayUtil;
 import net.dv8tion.jda.api.entities.User;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -60,8 +63,8 @@ public class BuildCommands {
         response.append("Buildings: `" + num + "`\n");
         response.append("Worth: `$" + MathMan.format(cost) + "`\n");
 
-        String realJson = gson.toJson(buildings);
-        String effectJson = gson.toJson(effectBuildings);
+        String realJson = gson.toJson(ArrayUtil.sortMapKeys(buildings, Comparator.comparing(Building::getName)));
+        String effectJson = gson.toJson(ArrayUtil.sortMapKeys(effectBuildings, Comparator.comparing(Building::getName)));
         response.append("\n### Purchased:\n```json\n" + realJson + "\n```");
         if (!effectBuildings.isEmpty()) {
             response.append("\n### From Effects:\n```json\n" + effectJson + "\n```");
@@ -147,8 +150,93 @@ public class BuildCommands {
         return response.toString();
     }
 
+    @Command(desc = "View the projects for a nation")
+    public String viewProjects(@Me DBNation me, @Me User user, @Me GuildDB db, @Me DBNation nation, @Switch("u") boolean force_update) {
+        if (me.getId() != nation.getId() && (!Roles.INTERNAL_AFFAIRS.has(user, db.getGuild()) || !db.isAllianceId(nation.getAlliance_id()))) {
+            throw new IllegalArgumentException("You can't view another nation's build.");
+        }
+        long now = System.currentTimeMillis() - (force_update ? 0 : TimeUnit.HOURS.toMillis(1));
+        Map<Project, Integer> projects = nation.getPrivateData().getProjects(now);
+        if (projects.isEmpty()) {
+            return "No projects.";
+        }
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        StringBuilder response = new StringBuilder("### Projects for " + nation.getMarkdownUrl() + ":\n");
+        String realJson = gson.toJson(ArrayUtil.sortMapKeys(projects, Comparator.comparing(Project::getName)));
+        response.append("```json\n" + realJson + "\n```");
+        return response.toString();
+    }
+
+    @Command(desc = "View the technologies for a nation")
+    public String viewTechnologies(@Me DBNation me, @Me User user, @Me GuildDB db, @Me DBNation nation, @Switch("u") boolean force_update) {
+        if (me.getId() != nation.getId() && (!Roles.INTERNAL_AFFAIRS.has(user, db.getGuild()) || !db.isAllianceId(nation.getAlliance_id()))) {
+            throw new IllegalArgumentException("You can't view another nation's build.");
+        }
+        long now = System.currentTimeMillis() - (force_update ? 0 : TimeUnit.HOURS.toMillis(1));
+        Map<Technology, Integer> technology = nation.getPrivateData().getTechnology(now);
+        if (technology.isEmpty()) {
+            return "No technologies.";
+        }
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        StringBuilder response = new StringBuilder("### Technology for " + nation.getMarkdownUrl() + ":\n");
+        String realJson = gson.toJson(ArrayUtil.sortMapKeys(technology, Comparator.comparing(Technology::getName)));
+        response.append("```json\n" + realJson + "\n```");
+        return response.toString();
+    }
+
+    @Command
+    public String techCost(@Me User user, @Me GuildDB db, @Me DBNation me, Technology technology,
+                           @Default DBNation nation,
+                           @Default Integer start_level,
+                           @Default Integer end_level,
+                           @Default Integer acquired_technologies,
+                           @Default Integer sci_level,
+                           @Default Integer ai_level,
+                           @Default Double techCostReduction, @Switch("u") boolean force_update) {
+        if (me.getId() != nation.getId() && (!Roles.INTERNAL_AFFAIRS.has(user, db.getGuild()) || !db.isAllianceId(nation.getAlliance_id()))) {
+            throw new IllegalArgumentException("You can't view another nation's build.");
+        }
+        long now = System.currentTimeMillis() - (force_update ? 0 : TimeUnit.HOURS.toMillis(1));
+        if (techCostReduction == null) {
+            if (nation != null) {
+                techCostReduction = nation.getPrivateData().getTechCostPercent(now);
+            } else {
+                techCostReduction = 0d;
+            }
+        }
+        if (nation == null && (start_level == null || sci_level == null || ai_level == null || acquired_technologies == null)) {
+            throw new IllegalArgumentException("You must provide a `nation` or ALL OF `start_level`, `acquired_technologies`, `sci_level`, and `ai_level`.");
+        }
+        if (nation != null) {
+            if (start_level == null) {
+                start_level = nation.getPrivateData().getTechnology(now).getOrDefault(technology, 0);
+            }
+            if (sci_level == null) {
+                sci_level = nation.getPrivateData().getTechnology(now).getOrDefault(Technology.SCIENTIFIC_THEORY, 0);
+            }
+            if (ai_level == null) {
+                ai_level = nation.getPrivateData().getTechnology(now).getOrDefault(Technology.ARTIFICIAL_INTELLIGENCE, 0);
+            }
+            if (acquired_technologies == null) {
+                acquired_technologies = nation.getPrivateData().getTechnology(now).size();
+            }
+        }
+
+        if (end_level == null) {
+            end_level = start_level + 1;
+        }
+
+        double techFactor = 1 - (techCostReduction * 0.01);
+        long cost = technology.getCost(techFactor, acquired_technologies, sci_level, ai_level, start_level, end_level);
+        return "Purchasing `" + technology.getName() + "` from `" + start_level + "` to `" + end_level + "` would cost $" + MathMan.format(cost);
+    }
+
+
+
     // dev cost
     // land cost
     // project cost
     // bulk build cost
+    // inventory
+    // mmr
 }

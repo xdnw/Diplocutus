@@ -255,6 +255,11 @@ public class CommandManager2 {
         getCommands().registerMethod(new BuildCommands(), List.of("project"), "projectCost", "cost");
         getCommands().registerMethod(new BuildCommands(), List.of("building"), "buildingCost", "cost");
 
+        getCommands().registerMethod(new BuildCommands(), List.of("nation", "list"), "getBuild", "buildings");
+        getCommands().registerMethod(new BuildCommands(), List.of("nation", "list"), "viewProjects", "projects");
+        getCommands().registerMethod(new BuildCommands(), List.of("nation", "list"), "viewTechnologies", "tech");
+        getCommands().registerMethod(new BuildCommands(), List.of("technology"), "techCost", "cost");
+
 
 //        getCommands().registerMethod(new GrantCommands(), List.of("grant"), "costBulk", "cost");
 //        getCommands().registerMethod(new StatCommands(), List.of("alliance", "stats"), "militarizationTime", "militarization_time");
