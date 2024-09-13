@@ -1051,6 +1051,11 @@ public class PWBindings extends BindingHelper {
     }
 
     @Binding
+    public Technology Technology(String input) {
+        return emum(Technology.class, input);
+    }
+
+    @Binding
     public WarCostByDayMode WarCostByDayMode(String input) {
         return emum(WarCostByDayMode.class, input);
     }
