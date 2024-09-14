@@ -1596,13 +1596,13 @@ public class AdminCommands {
 
     @Command()
     @RolePermission(value = Roles.ADMIN)
-    public String syncNations(@Me GuildDB guildDB, NationDB db) throws IOException, ParseException {
+    public String syncNations(@Me User user, @Me GuildDB guildDB, NationDB db) throws IOException, ParseException {
         List<Event> events = new ArrayList<>();
-        db.updateAllNations(guildDB.getApiOrThrow(), events::add);
+        DnsApi api = (user.getIdLong() == Settings.INSTANCE.ADMIN_USER_ID) ?
+            Locutus.imp().getV3() : guildDB.getApiOrThrow();
+        db.updateAllNations(api, events::add);
         if (events.size() > 0) {
-            Locutus.imp().getExecutor().submit(() -> {
-                for (Event event : events) event.post();;
-            });
+            for (Event event : events) event.post();
         }
         return "Updated ALL nations. " + events.size() + " changes detected";
     }

@@ -121,7 +121,7 @@ ORBITAL_RESEARCH_STATION(ProjectCategory.EDUCATION, Map.of(ResourceType.CASH, 12
     @Override
     public void apply(NationModifier modifier, int level) {
         modifier.TECH_OUTPUT += 10_000 * level;
-        modifier.TECH_OUTPUT_PERCENT += 10 * level;
+        modifier.TECH_OUTPUT_PERCENT *= (1 + 0.1 * level);
     }
 },
 //Commerce Projects
@@ -401,7 +401,7 @@ DEPARTMENT_OF_ARCHAEOLOGY(ProjectCategory.MISCELLANEOUS, Map.of(ResourceType.CAS
     @Override
     public void apply(NationModifier modifier, int level) {
         modifier.TECH_OUTPUT += 300 * level;
-        modifier.TECH_OUTPUT_PERCENT += 1d * level;
+        modifier.TECH_OUTPUT_PERCENT *= (1 + 0.01 * level);
     }
 
     @Override

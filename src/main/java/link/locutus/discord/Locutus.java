@@ -106,7 +106,7 @@ public final class Locutus extends ListenerAdapter {
         if (INSTANCE != null) throw new IllegalStateException("Already running.");
         INSTANCE = this;
         long start = System.currentTimeMillis();
-        this.executor = new ThreadPoolExecutor(0, 256, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
+        this.executor = new ThreadPoolExecutor(0, 256, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
         this.scheduler = new ScheduledThreadPoolExecutor(256, Executors.defaultThreadFactory());
         this.taskTrack = new RepeatingTasks(scheduler);
         Logg.text("Created Executors (" + (((-start)) + (start = System.currentTimeMillis())) + "ms)");

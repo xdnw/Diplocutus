@@ -136,6 +136,18 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         return update(Locutus.imp().getNationDB(), entity, eventConsumer);
     }
 
+    @Command(desc = "Get the level of a technology")
+    public int getTechnology(@Me GuildDB db, Technology technology) {
+        if (!db.isAllianceId(getAlliance_id())) throw new IllegalArgumentException("Not in alliance " + db.getAllianceIds() + " for " + db.getGuild());
+        return getPrivateData().getTechnology(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(15)).getOrDefault(technology, 0);
+    }
+
+    @Command(desc = "Get number of a project or investment")
+    public int getProject(@Me GuildDB db, Project project) {
+        if (!db.isAllianceId(getAlliance_id())) throw new IllegalArgumentException("Not in alliance " + db.getAllianceIds() + " for " + db.getGuild());
+        return getPrivateData().getProjects(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(15)).getOrDefault(project, 0);
+    }
+
     public boolean update(NationDB db, Nation entity, Consumer<Event> eventConsumer) {
         DBNation copy = null;
         if (entity.NationId != NationId) {

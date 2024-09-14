@@ -22,7 +22,7 @@ public enum Technology {
     @Override
     public void apply(NationModifier modifier, int level) {
         modifier.TECH_OUTPUT += 100 * level;
-        modifier.TECH_OUTPUT_PERCENT += 1 * level;
+        modifier.TECH_OUTPUT_PERCENT *= (1 + 0.01 * level);
     }
 },
 //Espionage

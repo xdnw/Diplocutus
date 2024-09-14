@@ -82,5 +82,4 @@ public class Nation {
     public Integer OffWars;
 
     public String DiscordName;
-
 }

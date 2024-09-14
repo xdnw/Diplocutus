@@ -476,7 +476,6 @@ public class NationDB extends DBMainV2 implements SyncableDatabase {
         if (alliances.isEmpty()) return Collections.emptySet();
 
         List<DBAlliance> dirtyAlliances = new ArrayList<>();
-        Set<DBNation> saveNations = new HashSet<>();
 
         List<DBAlliance> createdAlliances = new ArrayList<>();
         for (Alliance alliance : alliances) {
@@ -514,8 +513,6 @@ public class NationDB extends DBMainV2 implements SyncableDatabase {
         if (!dirtyAlliances.isEmpty()) {
             save(dirtyAlliances);
         }
-        if (!saveNations.isEmpty()) save(new ArrayList<>(saveNations));
-
         return alliances.stream().map(f -> f.AllianceId).collect(Collectors.toSet());
     }
 
@@ -531,25 +528,27 @@ public class NationDB extends DBMainV2 implements SyncableDatabase {
             expectedIds = new IntOpenHashSet(nationsById.keySet());
         }
         List<Nation> nations = api.nation().call();
+        if (nations.isEmpty()) {
+            System.out.println("No nations fetched");
+            return;
+        }
         Set<Integer> updated = updateNations(nations, eventConsumer, now);
         expectedIds.removeAll(updated);
+        System.out.println("Delete nations " + expectedIds + " | updated " + updated.size());
         deleteNations(expectedIds, eventConsumer);
     }
 
     public Set<Integer> updateNations(Collection<Nation> nations, Consumer<Event> eventConsumer, long timestamp) {
-        Map<DBNation, DBNation> nationChanges = new LinkedHashMap<>();
+        List<DBNation> toSave = new ArrayList<>();
         Set<Integer> nationsIdsFetched = new HashSet<>();
-        Set<DBNation> nationsFetched = new HashSet<>();
         for (Nation nation : nations) {
             if (nation.NationId != null) {
                 nationsIdsFetched.add(nation.NationId);
             }
-            updateNation(nation, eventConsumer, nationChanges::put, timestamp);
-            DBNation dbNat = getNation(nation.NationId);
-            if (dbNat != null) {
-                nationsFetched.add(dbNat);
-            }
+            updateNation(nation, eventConsumer, (a, b) -> toSave.add(b), timestamp);
         }
+        System.out.println("Save " + toSave.size());
+        save(toSave);
         return nationsIdsFetched;
 
     }
@@ -572,7 +571,7 @@ public class NationDB extends DBMainV2 implements SyncableDatabase {
         if (isDirty.get()) {
             nationsToSave.accept(existing, newNation);
         }
-        if (existing == null && eventConsumer != null) {
+        if (existing == null && eventConsumer != null && newNation.getAgeDays() <= 1) {
             eventConsumer.accept(new NationCreateEvent(null, newNation));
         }
     }

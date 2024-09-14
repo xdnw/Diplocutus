@@ -283,60 +283,6 @@ public class UtilityCommands {
         return null;
     }
 
-    // TODO FIXME :||remove infra cost !!important
-//    @Command(desc = "Calculate the costs of purchasing infra (from current to max)", aliases = {"InfraCost", "infrastructurecost", "infra", "infrastructure", "infracosts"})
-//    public String InfraCost(@Range(min=0, max=40000) int currentInfra, @Range(min=0, max=40000) int maxInfra,
-//                            @Default("false") boolean urbanization,
-//                            @Default("false") boolean center_for_civil_engineering,
-//                            @Default("false") boolean advanced_engineering_corps,
-//                            @Default("false") boolean government_support_agency,
-//                            @Switch("c") @Default("1") int cities) {
-//        if (maxInfra > 40000) throw new IllegalArgumentException("Max infra 40000");
-//        double total = DNS.City.Infra.calculateInfra(currentInfra, maxInfra);
-//
-//        double discountFactor = 1;
-//        if (urbanization) {
-//            discountFactor -= 0.05;
-//            if (government_support_agency) {
-//                discountFactor -= 0.025;
-//            }
-//        }
-//        if (center_for_civil_engineering) discountFactor -= 0.05;
-//        if (advanced_engineering_corps) discountFactor -= 0.05;
-//
-//        total = total * discountFactor * cities;
-//
-//        return "$" + MathMan.format(total);
-//    }
-
-    // TODO FIXME :||remove land cost !!important
-//    @Command(desc = "Calculate the costs of purchasing land (from current to max)", aliases = {"LandCost", "land", "landcosts"})
-//    public String LandCost(@Range(min=0, max=40000) int currentLand,
-//                           @Range(min=0, max=40000) int maxLand,
-//                           @Default("false") boolean rapidExpansion,
-//                           @Default("false") boolean arable_land_agency,
-//                           @Default("false") boolean advanced_engineering_corps,
-//                           @Default("false") boolean government_support_agency,
-//                           @Switch("c") @Default("1") int cities) {
-//        if (maxLand > 40000) throw new IllegalArgumentException("Max land 40000");
-//
-//        double total = 0;
-//
-//        total = DNS.City.Land.calculateLand(currentLand, maxLand);
-//
-//        double discountFactor = 1;
-//        if (rapidExpansion) {
-//            discountFactor -= 0.05;
-//            if (government_support_agency) discountFactor -= 0.025;
-//        }
-//        if (arable_land_agency) discountFactor -= 0.05;
-//        if (advanced_engineering_corps) discountFactor -= 0.05;
-//
-//        total = total * discountFactor * cities;
-//
-//        return "$" + MathMan.format(total);
-//    }
-
     @Command(desc = "Calculate the score of various things. Each argument is option, and can go in any order")
     public String score(@Default DBNation nation,
                         @Default Double EducationIndex,
@@ -372,136 +318,6 @@ public class UtilityCommands {
                 "Can be Attacked By: " + MathMan.format(score / DNS.WAR_RANGE_MAX_MODIFIER_ACTIVE) + "- " + MathMan.format(score / DNS.WAR_RANGE_MIN_MODIFIER_ACTIVE) + "\n" +
                 "Spy range: " + MathMan.format(score * DNS.ESPIONAGE_RANGE_MIN_MODIFIER) + "- " + MathMan.format(score * DNS.ESPIONAGE_RANGE_MAX_MODIFIER);
     }
-
-
-    // TODO FIXME :||remove project cost !!important
-//    @Command(desc = "Shows the cost of a project")
-//    public String ProjectCost(@Me GuildDB db, @Me IMessageIO channel,
-//                              Set<Project> projects,
-//                              @Default("false") boolean technologicalAdvancement,
-//                              @Default("false") boolean governmentSupportAgency,
-//                              @Switch("n") Set<DBNation> nations,
-//                              @Switch("s") SpreadSheet sheet,
-//                              @Switch("p") boolean ignoreProjectSlots,
-//                              @Switch("r") boolean ignoreRequirements,
-//                              @Switch("c") boolean ignoreProjectCity) throws GeneralSecurityException, IOException {
-//        if (sheet != null && nations == null) throw new IllegalArgumentException("You must specify `nations` for `sheet` option to be used");
-//        if ((ignoreProjectSlots || ignoreRequirements || ignoreProjectCity) && nations == null) throw new IllegalArgumentException("You must specify `nations` for `ignore` options to be used");
-//        List<Project> projectsList = new ArrayList<>(projects);
-//        double[] costs =  ResourceType.getBuffer();
-//        StringBuilder response = new StringBuilder();
-//        if (nations == null) {
-//            for (Project project : projectsList) {
-//                double[] cost = ResourceType.resourcesToArray(project.cost());
-//                if (technologicalAdvancement) {
-//                    double factor = 0.05;
-//                    if (governmentSupportAgency) {
-//                        factor *= 1.5;
-//                    }
-//                    cost = DNS.multiply(cost, 1 - factor);
-//                }
-//                costs = ResourceType.add(costs, cost);
-//                response.append(project.name() + ":\n```" + ResourceType.resourcesToString(cost) + "```\nworth: ~$" + MathMan.format(ResourceType.convertedTotal(cost)) + "\n");
-//            }
-//            if (projectsList.size() > 1) {
-//                response.append("Total:\n```" + ResourceType.resourcesToString(costs) + "```\nworth: ~$" + MathMan.format(ResourceType.convertedTotal(costs)) + "\n");
-//            }
-//            return response.toString();
-//        } else {
-//            if (sheet == null) {
-//                sheet = SpreadSheet.create(db, SheetKey.PROJECT_SHEET);
-//            }
-//            List<String> header = new ArrayList<>(Arrays.asList(
-//                    "nation",
-//                    "alliance",
-//                    "cities",
-//                    "technological_advancement",
-//                    "government_support_agency",
-//                    "cost",
-//                    "cost_raw",
-//                    "errors"
-//            ));
-//            int indexOffset = header.size();
-//            for (Project project : projectsList) {
-//                header.add(project.name());
-//            }
-//            sheet.setHeader(header);
-//
-//            Map<Project, Integer> counts = new LinkedHashMap<>();
-//            Map<Project, double[]> costByProject = new LinkedHashMap<>();
-//            for (DBNation nation : nations) {
-//                DBNation nationCopy = new DBNation(nation);
-//                double[] nationCost = ResourceType.getBuffer();
-//                List<String> errors = new ArrayList<>();
-//                List<Integer> buy = new ArrayList<>();
-//
-//                if (technologicalAdvancement)
-//                    nationCopy.setDomesticPolicy(DomesticPolicy.TECHNOLOGICAL_ADVANCEMENT);
-//                if (governmentSupportAgency) nationCopy.setProject(Projects.GOVERNMENT_SUPPORT_AGENCY);
-//
-//                for (Project project : projectsList) {
-//                    boolean canBuy = false;
-//                    if (nation.hasProject(project)) {
-//                        errors.add("already has:" + project.name());
-//                    } else if (!ignoreProjectCity && nation.getCities() < project.requiredCities()) {
-//                        errors.add("cities:" + project.requiredCities() + " < " + nation.getCities() + " for " + project.name());
-//                    } else if (!ignoreProjectCity && nation.getCities() > project.maxCities()) {
-//                        errors.add("cities:" + project.maxCities() + " < " + nation.getCities() + " for " + project.name());
-//                    } else if (!ignoreProjectSlots && nation.getFreeProjectSlots() <= 0) {
-//                        errors.add("no free project slots");
-//                    } else if (!ignoreRequirements && !nation.hasProjects(project.requiredProjects(), false)) {
-//                        errors.add("missing required projects for " + project.name());
-//                    } else {
-//                        canBuy = true;
-//                        counts.merge(project, 1, Integer::sum);
-//                        double[] cost = nation.projectCost(project);
-//                        nationCost = ResourceType.add(nationCost, cost);
-//                        ResourceType.add(costByProject.computeIfAbsent(project, p -> ResourceType.getBuffer()), cost);
-//                    }
-//                    buy.add(canBuy ? 1 : 0);
-//                }
-//                costs = ResourceType.add(costs, nationCost);
-//
-//                header.set(0, MarkupUtil.sheetUrl(nation.getName(), nation.getUrl()));
-//                header.set(1, MarkupUtil.sheetUrl(nation.getAllianceName(), nation.getAllianceUrl()));
-//                header.set(2, String.valueOf(nation.getCities()));
-//                header.set(3, nationCopy.getDomesticPolicy() == DomesticPolicy.TECHNOLOGICAL_ADVANCEMENT ? "true" : "false");
-//                header.set(4, nationCopy.hasProject(Projects.GOVERNMENT_SUPPORT_AGENCY) ? "true" : "false");
-//                header.set(5, ResourceType.resourcesToString(nationCost));
-//                header.set(6, MathMan.format(ResourceType.convertedTotal(nationCost)));
-//                header.set(7, StringMan.join(errors, ","));
-//                for (int i = 0; i < projectsList.size(); i++) {
-//                    header.set(i + indexOffset, String.valueOf(buy.get(i)));
-//                }
-//                sheet.addRow(header);
-//            }
-//
-//            sheet.updateClearCurrentTab();
-//            sheet.updateWrite();
-//            IMessageBuilder msg = channel.create();
-//            sheet.attach(msg, "projects");
-//
-//            counts = ArrayUtil.sortMap(counts, false);
-//            response.append("\nTotal:\n```" + ResourceType.resourcesToString(costs) + "```\nworth: ~$" + MathMan.format(ResourceType.convertedTotal(costs)) + "\n");
-//            // append counts
-//            response.append("# Bought: `" + StringMan.getString(counts) + "`\n");
-//            // Add total cost
-//            if (projects.size() > 1) {
-//                Map<Project, Double> costByProjectValue = new LinkedHashMap<>();
-//                for (Map.Entry<Project, double[]> entry : costByProject.entrySet()) {
-//                    costByProjectValue.put(entry.getKey(), ResourceType.convertedTotal(entry.getValue()));
-//                }
-//                ArrayUtil.sortMap(costByProjectValue, false);
-//                for (Map.Entry<Project, Double> entry : costByProjectValue.entrySet()) {
-//                    if (entry.getValue() == 0) continue;
-//                    response.append(entry.getKey().name() + ": ~$" + MathMan.format(entry.getValue()) + "\n- `" + ResourceType.resourcesToString(costByProject.get(entry.getKey())) + "`\n");
-//                }
-//            }
-//            response.append("\nSee " + CM.transfer.bulk.cmd.toSlashMention());
-//            msg.append(response.toString()).send();
-//            return null;
-//        }
-//    }
 
     @Command(desc = "Add or remove the configured auto roles to all users in this discord guild")
     @RolePermission(Roles.INTERNAL_AFFAIRS)
@@ -1079,7 +895,6 @@ public class UtilityCommands {
         return null;
     }
 
-    // TODO FIXME :||remove unit cost !!important
 //    @Command(desc = "Get the cost of military units and their upkeep")
 //    public String unitCost(Map<MilitaryUnit, Long> units,
 //                           @Arg("Show the upkeep during war time")
@@ -1108,8 +923,8 @@ public class UtilityCommands {
 //            response.append("Worth: ~$" + MathMan.format(ResourceType.convertedTotal(cost))).append("\n");
 //        }
 //        response.append("\nUpkeep:\n```" + ResourceType.resourcesToString(upkeep) + "``` ");
-//        if (ResourceType.resourcesToMap(upkeep).size() > 1) {
-//            response.append("Worth: ~$" + MathMan.format(ResourceType.convertedTotal(upkeep))).append("\n");
+//        if (ResourceType.resourcesToMap(upkeep).size(athMan.for) > 1) {
+////            response.append("Worth: ~$" + Mmat(ResourceType.convertedTotal(upkeep))).append("\n");
 //        }
 //
 //        return response.toString();
@@ -1199,34 +1014,6 @@ public class UtilityCommands {
 //        channel.create().embed(title, response.toString()).send();
 //        return null;
 //    }
-
-    // TODO FIXME :||remove building cost !!important
-//    @Command(desc = "Get the cost a specific amount of buildings")
-//    public static String buildingCost(CityBuild build) {
-//        JavaCity jc = new JavaCity(build);
-//        jc.setInfra(0d);
-//        jc.setLand(0d);
-//
-//        JavaCity origin = new JavaCity();
-//        double[] cost = jc.calculateCost(origin);
-//
-//        StringBuilder response = new StringBuilder();
-//        // buildings
-//        Map<Building, Integer> buildings = new LinkedHashMap<>();
-//        for (Building building : Buildings.values()) {
-//            int amt = jc.getBuilding(building);
-//            if (amt > 0) {
-//                buildings.put(building, amt);
-//            }
-//        }
-//        // Append buildings
-//        response.append("**Buildings:**\n```json\n" + buildings + "\n```");
-//        // append cost
-//        response.append("\n**Cost:** ~$" + MathMan.format(ResourceType.convertedTotal(cost)));
-//        response.append("\n```json\n" + ResourceType.resourcesToString(cost) + "\n```");
-//        return response.toString();
-//    }
-
 
     @Command(desc = "Add a watermark to a discord image\n" +
             "Use \\n to add a new line\n" +

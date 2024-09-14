@@ -7,10 +7,7 @@ import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import link.locutus.discord.Locutus;
-import link.locutus.discord.api.generated.AllianceMemberInventory;
-import link.locutus.discord.api.generated.InventoryType;
-import link.locutus.discord.api.generated.ResourceType;
-import link.locutus.discord.api.generated.TreatyType;
+import link.locutus.discord.api.generated.*;
 import link.locutus.discord.api.types.Building;
 import link.locutus.discord.api.types.MilitaryUnit;
 import link.locutus.discord.api.types.MilitaryUnitType;
@@ -2785,126 +2782,102 @@ public class WarCommands {
 //        return null;
 //    }
 
-    // TODO FIXME :||remove war sheet !!important
-//    @Command(desc = "Generate a sheet of active wars between two coalitions (allies, enemies)\n" +
-//            "Add `-i` to list concluded wars",
-//    groups = {
-//            "Additional War Options"
-//    })
-//    @RolePermission(Roles.MILCOM)
-//    public String warSheet(@Me IMessageIO io, @Me GuildDB db,
-//                           Set<DBNation> allies,
-//                           Set<DBNation> enemies,
-//                           @Arg(value = "Cutoff date for wars (default 5 days ago)", group = 0)
-//                           @Default("5d") @Timestamp long startTime,
-//                           @Switch("e") @Timestamp Long endTime,
-//                           @Arg(value = "If concluded wars within the timeframe should be included", group = 0)
-//                           @Switch("i") boolean includeConcludedWars,
-//                           @Switch("s") SpreadSheet sheet) throws GeneralSecurityException, IOException {
-//        if (endTime == null) endTime = System.currentTimeMillis();
-//        WarParser parser1 = WarParser.ofAANatobj(null, allies, null, enemies, startTime, endTime);
-//
-//        Set<DBWar> allWars = new HashSet<>();
-//        allWars.addAll(parser1.getWars().values());
-//
-//        if (!includeConcludedWars) allWars.removeIf(f -> !f.isActive());
-//        allWars.removeIf(f -> {
-//            DBNation att = f.getNation(true);
-//            DBNation def = f.getNation(false);
-//            return (!allies.contains(att) && !enemies.contains(att)) || (!allies.contains(def) && !enemies.contains(def));
-//        });
-//
-//        if (sheet == null) {
-//            sheet = SpreadSheet.create(db, SheetKey.WAR_SHEET);
-//        }
-//
-//        List<Object> headers = new ArrayList<>(Arrays.asList(
-//                "id",
-//                "type",
-//                "counter",
-//                "GS",
-//                "AS",
-//                "B",
-//                "ships",
-//                "planes",
-//                "tanks",
-//                "soldiers",
-//                "cities",
-//                "MAP",
-//                "Resistance",
-//                "Attacker",
-//                "Att AA",
-//                "Turns",
-//                "Def AA",
-//                "Defender",
-//                "Resistance",
-//                "MAP",
-//                "Cities",
-//                "Soldiers",
-//                "Tanks",
-//                "Planes",
-//                "Ships",
-//                "GS",
-//                "AS",
-//                "B"
-//        ));
-//
-//        sheet.setHeader(headers);
-//
-//        for (DBWar war : allWars) {
-//            DBNation att = war.getNation(true);
-//            DBNation def = war.getNation(false);
-//
-//            if (att == null || def == null) continue;
-//
-//            WarType type = war.getWarType();
-//            WarCard card = new WarCard(war, true, false);
-//
-//
-//            headers.set(0, MarkupUtil.sheetUrl(war.getWarId() + "", war.toUrl()));
-//            headers.set(1, war.getWarType().name());
-//            CounterStat counterStat = card.getCounterStat();
-//            headers.set(2, counterStat == null ? "" : counterStat.type.name());
-//            headers.set(3, card.groundControl == war.getAttacker_id() ? "Y" : "N");
-//            headers.set(4, card.airSuperiority == war.getAttacker_id() ? "Y" : "N");
-//            headers.set(5, card.blockaded == war.getAttacker_id() ? "Y" : "N");
-//            headers.set(6, att.getShips());
-//            headers.set(7, att.getAircraft());
-//            headers.set(8, att.getTanks());
-//            headers.set(9, att.getSoldiers());
-//            headers.set(10, att.getCities());
-//            headers.set(11, card.attackerMAP);
-//            headers.set(12, card.attackerResistance);
-//            headers.set(13, MarkupUtil.sheetUrl(att.getNation(), att.getUrl()));
-//            headers.set(14, MarkupUtil.sheetUrl(att.getAllianceName(), att.getAllianceUrl()));
-//
-//            long turnStart = TimeUtil.getTurn(war.getDate());
-//            long turns = 60 - (TimeUtil.getTurn() - turnStart);
-//            headers.set(15, turns);
-//
-//            headers.set(16, MarkupUtil.sheetUrl(def.getAllianceName(), def.getAllianceUrl()));
-//            headers.set(17, MarkupUtil.sheetUrl(def.getNation(), def.getUrl()));
-//            headers.set(18, card.defenderResistance);
-//            headers.set(19, card.defenderMAP);
-//            headers.set(20, def.getCities());
-//            headers.set(21, def.getSoldiers());
-//            headers.set(22, def.getTanks());
-//            headers.set(23, def.getAircraft());
-//            headers.set(24, def.getShips());
-//            headers.set(25, card.groundControl == war.getDefender_id() ? "Y" : "N");
-//            headers.set(26, card.airSuperiority == war.getDefender_id() ? "Y" : "N");
-//            headers.set(27, card.blockaded == war.getDefender_id() ? "Y" : "N");
-//
-//            sheet.addRow(headers);
-//        }
-//
-//        sheet.updateClearCurrentTab();
-//        sheet.updateWrite();
-//
-//        sheet.attach(io.create(), "wars").send();
-//        return null;
-//    }
+    @Command(desc = "Generate a sheet of active wars between two coalitions (allies, enemies)\n" +
+            "Add `-i` to list concluded wars",
+    groups = {
+            "Additional War Options"
+    })
+    @RolePermission(Roles.MILCOM)
+    public String warSheet(@Me IMessageIO io, @Me GuildDB db,
+                           Set<DBNation> allies,
+                           Set<DBNation> enemies,
+                           @Arg(value = "Cutoff date for wars (default 5 days ago)", group = 0)
+                           @Default("5d") @Timestamp long startTime,
+                           @Switch("e") @Timestamp Long endTime,
+                           @Arg(value = "If concluded wars within the timeframe should be included", group = 0)
+                           @Switch("i") boolean includeConcludedWars,
+                           @Switch("s") SpreadSheet sheet) throws GeneralSecurityException, IOException {
+        if (endTime == null) endTime = System.currentTimeMillis();
+        WarParser parser1 = WarParser.ofAANatobj(null, allies, null, enemies, startTime, endTime);
 
+        Set<DBWar> allWars = new HashSet<>();
+        allWars.addAll(parser1.getWars().values());
+
+        if (!includeConcludedWars) allWars.removeIf(f -> !f.isActive());
+        allWars.removeIf(f -> {
+            DBNation att = f.getNation(true);
+            DBNation def = f.getNation(false);
+            return (!allies.contains(att) && !enemies.contains(att)) || (!allies.contains(def) && !enemies.contains(def));
+        });
+
+        if (sheet == null) {
+            sheet = SpreadSheet.create(db, SheetKey.WAR_SHEET);
+        }
+
+        List<Object> headers = new ArrayList<>(Arrays.asList(
+                "id",
+                "type",
+                "counter",
+                "Dev",
+                "Land",
+                "Score",
+                "WarIndex",
+                "Resistance",
+                "Attacker",
+                "Att AA",
+                "Remaining",
+                "Def AA",
+                "Defender",
+                "Resistance",
+                "WarIndex",
+                "Score",
+                "Land",
+                "Dev"
+        ));
+
+        sheet.setHeader(headers);
+        long now = System.currentTimeMillis();
+
+        for (DBWar war : allWars) {
+            DBNation att = war.getNation(true);
+            DBNation def = war.getNation(false);
+
+            if (att == null || def == null) continue;
+            WarType type = war.getWarType();
+            WarCard card = new WarCard(war, true);
+
+            headers.set(0, MarkupUtil.sheetUrl(war.getWarId() + "", war.toUrl()));
+            headers.set(1, type.name());
+            CounterStat counterStat = card.getCounterStat();
+            headers.set(2, counterStat == null ? "" : counterStat.type.name());
+            headers.set(3, MathMan.format(att.getInfra()));
+            headers.set(4, MathMan.format(att.getLand()));
+            headers.set(5, MathMan.format(att.getScore()));
+            headers.set(6, MathMan.format(att.getWarIndex()));
+            headers.set(7, card.attackerResistance);
+            headers.set(8, MarkupUtil.sheetUrl(att.getNation(), att.getUrl()));
+            headers.set(9, MarkupUtil.sheetUrl(att.getAllianceName(), att.getAllianceUrl()));
+            String endStr = war.possibleEndDate() > now ? "" : "Concluded:" + TimeUtil.secToTime(TimeUnit.MILLISECONDS, Math.abs(war.possibleEndDate() - now));
+            headers.set(10, endStr);
+            headers.set(11, MarkupUtil.sheetUrl(def.getAllianceName(), def.getAllianceUrl()));
+            headers.set(12, MarkupUtil.sheetUrl(def.getNation(), def.getUrl()));
+            headers.set(13, card.defenderResistance);
+            headers.set(14, MathMan.format(def.getWarIndex()));
+            headers.set(15, MathMan.format(def.getScore()));
+            headers.set(16, MathMan.format(def.getLand()));
+            headers.set(17, MathMan.format(def.getInfra()));
+
+            sheet.addRow(headers);
+        }
+
+        sheet.updateClearCurrentTab();
+        sheet.updateWrite();
+
+        sheet.attach(io.create(), "wars").send();
+        return null;
+    }
+
+//    TODO FIXME :||remove list war rooms !!important
 //    @RolePermission(value = Roles.MILCOM)
 //    @Command(desc = "List war rooms")
 //    public String listWarRooms(@Me GuildDB db, NationFilter filter) {

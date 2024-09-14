@@ -302,16 +302,12 @@ public class BuildCommands {
             }
         }
         double costReductionFactor = 1 - (dev_cost_reduction * 0.01);
-        double cost = DNS.Development.getCost(costReductionFactor, current_dev, current_land, buy_up_to);
+        double cost = DNS.Development.getCost(costReductionFactor, current_dev, current_land, buy_up_to - current_dev);
         return "Purchasing `" + MathMan.format(buy_up_to) + "` development would cost `$" + MathMan.format(cost) + "`\n" +
                 "(Dev Cost Reduction: " + dev_cost_reduction + "%)";
     }
 
-
-
-    // dev cost
-    // land cost
-    // project cost
+    // Maybe unit cost (minerals, prod) and training cash amounts
     // bulk build cost
     // inventory
     // mmr
