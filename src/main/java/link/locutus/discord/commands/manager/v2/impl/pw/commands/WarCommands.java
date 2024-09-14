@@ -14,6 +14,7 @@ import link.locutus.discord.api.types.MilitaryUnitType;
 import link.locutus.discord.api.types.tx.Transaction2;
 import link.locutus.discord.commands.WarCategory;
 import link.locutus.discord.commands.manager.v2.impl.discord.permission.IsAlliance;
+import link.locutus.discord.commands.manager.v2.impl.pw.NationFilter;
 import link.locutus.discord.commands.manager.v2.impl.pw.binding.NationAttributeDouble;
 import link.locutus.discord.api.ApiKeyPool;
 import link.locutus.discord.commands.manager.v2.binding.annotation.Arg;
@@ -2817,6 +2818,7 @@ public class WarCommands {
         List<Object> headers = new ArrayList<>(Arrays.asList(
                 "id",
                 "type",
+                "status",
                 "counter",
                 "Dev",
                 "Land",
@@ -2848,24 +2850,25 @@ public class WarCommands {
 
             headers.set(0, MarkupUtil.sheetUrl(war.getWarId() + "", war.toUrl()));
             headers.set(1, type.name());
+            headers.set(2, war.getStatus().name());
             CounterStat counterStat = card.getCounterStat();
-            headers.set(2, counterStat == null ? "" : counterStat.type.name());
-            headers.set(3, MathMan.format(att.getInfra()));
-            headers.set(4, MathMan.format(att.getLand()));
-            headers.set(5, MathMan.format(att.getScore()));
-            headers.set(6, MathMan.format(att.getWarIndex()));
-            headers.set(7, card.attackerResistance);
-            headers.set(8, MarkupUtil.sheetUrl(att.getNation(), att.getUrl()));
-            headers.set(9, MarkupUtil.sheetUrl(att.getAllianceName(), att.getAllianceUrl()));
+            headers.set(3, counterStat == null ? "" : counterStat.type.name());
+            headers.set(4, MathMan.format(att.getInfra()));
+            headers.set(5, MathMan.format(att.getLand()));
+            headers.set(6, MathMan.format(att.getScore()));
+            headers.set(7, MathMan.format(att.getWarIndex()));
+            headers.set(8, card.attackerResistance);
+            headers.set(9, MarkupUtil.sheetUrl(att.getNation(), att.getUrl()));
+            headers.set(10, MarkupUtil.sheetUrl(att.getAllianceName(), att.getAllianceUrl()));
             String endStr = war.possibleEndDate() > now ? "" : "Concluded:" + TimeUtil.secToTime(TimeUnit.MILLISECONDS, Math.abs(war.possibleEndDate() - now));
-            headers.set(10, endStr);
-            headers.set(11, MarkupUtil.sheetUrl(def.getAllianceName(), def.getAllianceUrl()));
-            headers.set(12, MarkupUtil.sheetUrl(def.getNation(), def.getUrl()));
-            headers.set(13, card.defenderResistance);
-            headers.set(14, MathMan.format(def.getWarIndex()));
-            headers.set(15, MathMan.format(def.getScore()));
-            headers.set(16, MathMan.format(def.getLand()));
-            headers.set(17, MathMan.format(def.getInfra()));
+            headers.set(11, endStr);
+            headers.set(12, MarkupUtil.sheetUrl(def.getAllianceName(), def.getAllianceUrl()));
+            headers.set(13, MarkupUtil.sheetUrl(def.getNation(), def.getUrl()));
+            headers.set(14, card.defenderResistance);
+            headers.set(15, MathMan.format(def.getWarIndex()));
+            headers.set(16, MathMan.format(def.getScore()));
+            headers.set(17, MathMan.format(def.getLand()));
+            headers.set(18, MathMan.format(def.getInfra()));
 
             sheet.addRow(headers);
         }
@@ -2876,21 +2879,6 @@ public class WarCommands {
         sheet.attach(io.create(), "wars").send();
         return null;
     }
-
-//    TODO FIXME :||remove list war rooms !!important
-//    @RolePermission(value = Roles.MILCOM)
-//    @Command(desc = "List war rooms")
-//    public String listWarRooms(@Me GuildDB db, NationFilter filter) {
-//        WarCategory warCat = db.getWarChannel(true);
-//        for (Map.Entry<Integer, WarCategory.WarRoom> entry : warCat.getWarRoomMap().entrySet()) {
-//            WarCategory.WarRoom room = entry.getValue();
-//            DBNation target = room.target;
-//            for (DBWar war : target.getActiveWars()) {
-//                DBNation other = war.getNation(!war.isAttacker(target));
-//            }
-//        }
-//
-//    }
 
     // TODO FIXME :||remove counter sheet !!important
 //    @RolePermission(value = Roles.MILCOM)
@@ -3149,219 +3137,220 @@ public class WarCommands {
         return null;
     }
 
-    // TODO FIXME :||remove counter !!important
-//    @RolePermission(value = {Roles.MEMBER, Roles.MILCOM}, any = true)
-//    @Command(desc="Get a list of nations to counter a war\n" +
-//            "Add `-o` to ignore nations with 5 offensive slots\n" +
-//            "Add `-w` to filter out weak attackers\n" +
-//            "Add `-a` to only list active nations (past hour)")
-//    public String counterWar(@Me DBNation me, @Me GuildDB db,
-//                             DBWar war,
-//                             @Arg("Nations to counter with\n" +
-//                                     "Default: This guild's alliance nations")
-//                             @Default Set<DBNation> counterWith,
-//                             @Arg("Show counters from nations at max offensive wars\n" +
-//                                     "i.e. They can counter when they finish a war")
-//                             @Switch("o") boolean allowAttackersWithMaxOffensives,
-//                             @Arg("Remove countering nations weaker than the enemy")
-//                             @Switch("w") boolean filterWeak,
-//                             @Arg("Remove countering nations that are inactive (2 days)")
-//                             @Switch("a") boolean onlyActive,
-//                             @Arg("Remove countering nations NOT registered with Locutus")
-//                             @Switch("d") boolean requireDiscord,
-//                             @Arg("Include counters from the same alliance as the defender")
-//                             @Switch("s") boolean allowSameAlliance,
-//                             @Switch("i") boolean includeInactive,
-//                             @Switch("m") boolean includeNonMembers,
-//                             @Arg("Include the discord mention of countering nations")
-//                             @Switch("p") boolean ping) {
-//        Set<Integer> allies = db.getAllies(true);
-//        int enemyId = allies.contains(war.getAttacker_aa()) ? war.getDefender_id() : war.getAttacker_id();
-//        DBNation enemy = DBNation.getById(enemyId);
-//        if (enemy == null) throw new IllegalArgumentException("No nation found for id `" + enemyId + "`");
-//        return counter(me, db, enemy, counterWith, allowAttackersWithMaxOffensives, filterWeak, onlyActive, requireDiscord, allowSameAlliance, includeInactive, includeNonMembers, ping);
-//    }
-//
-//    @RolePermission(value = Roles.MILCOM)
-//    @Command(desc="Get a list of nations to counter an enemy",
-//            groups = {
-//                "Counter Options",
-//                "Display Info",
-//            },
-//            groupDescs = {
-//                "By default active alliance members with free war slots will be used",
-//                ""
-//            }
-//    )
-//    public static String counter(@Me DBNation me, @Me GuildDB db,
-//                                 DBNation target,
-//                          @Arg(value = "Nations to counter with\n" +
-//                                  "Default: This guild's alliance nations", group = 0)
-//                          @Default Set<DBNation> counterWith,
-//                          @Arg("Show counters from nations at max offensive wars\n" +
-//                                  "i.e. They can counter when they finish a war")
-//                          @Switch("o") boolean allowMaxOffensives,
-//                          @Arg(value = "Remove countering nations weaker than the enemy", group = 0)
-//                          @Switch("w") boolean filterWeak,
-//                          @Arg(value = "Remove countering nations that are inactive (2 days)", group = 0)
-//                          @Switch("a") boolean onlyOnline,
-//                          @Arg(value = "Remove countering nations NOT registered with Locutus", group = 0)
-//                          @Switch("d") boolean requireDiscord,
-//                          @Arg(value = "Don't filter out counters from the same alliance as the defender", group = 0)
-//                          @Switch("s") boolean allowSameAlliance,
-//                          @Switch("i") boolean includeInactive,
-//                          @Switch("m") boolean includeNonMembers,
-//                          @Arg(value = "Include the discord mention of countering nations", group = 1)
-//                          @Switch("p") boolean ping
-//
-//
-//    ) {
-//        if (counterWith == null) {
-//            Set<Integer> aaIds = db.getAllianceIds();
-//            if (aaIds.isEmpty()) {
-//                Set<Integer> allies = db.getAllies(true);
-//                if (allies.isEmpty()) {
-//                    if (me.getAlliance_id() == 0) {
-//                        return "No alliance or allies are set.\n" +
-//                                GuildKey.ALLIANCE_ID.getCommandMention() +
-//                                "\nOR\n " +
-//                                CM.coalition.create.cmd.coalitionName(Coalition.ALLIES.name());
-//                    }
-//                    aaIds = new HashSet<>(Arrays.asList(me.getAlliance_id()));
-//                    counterWith = new HashSet<>(new AllianceList(aaIds).getNations(true, 0, true));
-//                } else {
-//                    counterWith = new HashSet<>(Locutus.imp().getNationDB().getNations(allies));
-//                }
-//            } else {
-//                counterWith = new HashSet<>(new AllianceList(aaIds).getNations(true, 0, true));
-//            }
-//        }
-//        counterWith.removeIf(nation -> nation.getAlliance_id() == 0);
-//        counterWith.removeIf(f -> f.isVacation());
-//        double score = target.getScore();
-//        double scoreMin = score / DNS.WAR_RANGE_MAX_MODIFIER;
-//        double scoreMax = score / 0.75;
-//        counterWith.removeIf(nation -> nation.getScore() < scoreMin || nation.getScore() > scoreMax);
-//        if (counterWith.isEmpty()) {
-//            return "No nations available to counter";
-//        }
-//
-//        int size = counterWith.size();
-//        List<String> errors = new ArrayList<>();
-//        if (requireDiscord) {
-//            counterWith.removeIf(f -> f.getUser() == null);
-//            if (size > counterWith.size()) {
-//                errors.add("Removed `" + (size - counterWith.size()) + "` nations without discord");
-//                size = counterWith.size();
-//            }
-//        }
-//
-//        for (DBWar activeWar : target.getActiveWars()) {
-//            counterWith.remove(activeWar.getNation(!activeWar.isAttacker(target)));
-//        }
-//        if (size > counterWith.size()) {
-//            errors.add("Removed `" + (size - counterWith.size()) + "` nations in active wars");
-//            size = counterWith.size();
-//        }
-//
-//        if (onlyOnline) {
-//            counterWith.removeIf(f -> !f.isOnline());
-//            if (size > counterWith.size()) {
-//                errors.add("Removed `" + (size - counterWith.size()) + "` nations not currently online on discord (or in-game)");
-//                size = counterWith.size();
-//            }
-//        }
-//        if (!allowMaxOffensives) {
-//            counterWith.removeIf(nation -> nation.getOff() >= nation.getMaxOff());
-//            if (size > counterWith.size()) {
-//                errors.add("Removed `" + (size - counterWith.size()) + "` nations with max offensives as `allowMaxOffensives` is false");
-//                size = counterWith.size();
-//            }
-//        }
-//        if (filterWeak) {
-//            counterWith.removeIf(nation -> nation.getWarIndex() < target.getWarIndex());
-//            if (size > counterWith.size()) {
-//                errors.add("Removed `" + (size - counterWith.size()) + "` nations weaker than the target");
-//                size = counterWith.size();
-//            }
-//        }
-//        if (!includeInactive) {
-//            counterWith.removeIf(nation -> nation.active_m() > (nation.getCities() < 10 ? 4880 : 10080));
-//            if (size > counterWith.size()) {
-//                errors.add("Removed `" + (size - counterWith.size()) + "` inactive nations as `includeInactive` is false");
-//                size = counterWith.size();
-//            }
-//        }
-//        if (!includeNonMembers) {
-//            counterWith.removeIf(nation -> nation.getPosition() <= Rank.APPLICANT.id);
-//            if (size > counterWith.size()) {
-//                errors.add("Removed `" + (size - counterWith.size()) + "` non-members as `includeNonMembers` is false");
-//                size = counterWith.size();
-//            }
-//        }
-//        Set<Integer> counterWithAlliances = counterWith.stream().map(DBNation::getAlliance_id).collect(Collectors.toSet());
-//        if (counterWithAlliances.size() == 1 && !allowSameAlliance && counterWithAlliances.contains(target.getAlliance_id())) {
-//            return "Please enable `allowSameAlliance` to counter with the same alliance";
-//        }
-//        if (!allowSameAlliance) {
-//            counterWith.removeIf(nation -> nation.getAlliance_id() == target.getAlliance_id());
-//            if (size > counterWith.size()) {
-//                errors.add("Removed `" + (size - counterWith.size()) + "` nations in the same alliance as `allowSameAlliance` is false");
-//                size = counterWith.size();
-//            }
-//        }
-//
-//        List<DBNation> attackersSorted = new ArrayList<>(counterWith);
-//        if (filterWeak) {
-//            attackersSorted = CounterGenerator.generateCounters(db, target, attackersSorted, allowMaxOffensives);
-//        } else {
-//            attackersSorted = CounterGenerator.generateCounters(db, target, attackersSorted, allowMaxOffensives, false);
-//        }
-//
-//        if (attackersSorted.isEmpty()) {
-//            String errorStr = errors.isEmpty() ? "" : "\n- " + StringMan.join(errors, "\n- ");
-//            return "No nations available to counter" + errorStr;
-//        }
-//
-//        StringBuilder response = new StringBuilder();
-//        response.append("**Enemy: **").append(target.toMarkdown()).append("\n**Counters**\n");
-//
-//        int count = 0;
-//        int maxResults = 25;
-//        for (DBNation nation : attackersSorted) {
-//            if (count++ == maxResults) break;
-//
-//            String statusStr = "";
-//
-//            User user = nation.getUser();
-//            if (user != null) {
-//                List<Guild> mutual = user.getMutualGuilds();
-//                if (!mutual.isEmpty()) {
-//                    Guild guild = mutual.get(0);
-//                    Member member = guild.getMember(user);
-//                    if (member != null) {
-//                        OnlineStatus status = member.getOnlineStatus();
-//                        if (status != OnlineStatus.OFFLINE && status != OnlineStatus.UNKNOWN) {
-//                            statusStr = status.name() + " | ";
-//                        }
-//                    }
-//                }
-//            }
-//            if (user != null) {
-//                response.append(statusStr);
-//                response.append(user.getName() + " / ");
-//                if (ping) response.append(user.getAsMention());
-//                else response.append("`" + user.getAsMention() + "` ");
-//            }
-//            response.append(nation.toMarkdown()).append('\n');
-//        }
-//        if (!errors.isEmpty()) {
-//            response.append("\n\n__**note:**__\n- ");
-//            response.append(StringMan.join(errors, "\n- "));
-//        }
-//
-//        return response.toString();
-//    }
+    @RolePermission(value = {Roles.MEMBER, Roles.MILCOM}, any = true)
+    @Command(desc="Get a list of nations to counter a war\n" +
+            "Add `-o` to ignore nations with 5 offensive slots\n" +
+            "Add `-w` to filter out weak attackers\n" +
+            "Add `-a` to only list active nations (past hour)")
+    public String counterWar(@Me DBNation me, @Me GuildDB db,
+                             DBWar war,
+                             @Arg("Nations to counter with\n" +
+                                     "Default: This guild's alliance nations")
+                             @Default Set<DBNation> counterWith,
+                             @Arg("Show counters from nations at max offensive wars\n" +
+                                     "i.e. They can counter when they finish a war")
+                             @Switch("o") boolean allowAttackersWithMaxOffensives,
+                             @Arg("Remove countering nations weaker than the enemy")
+                             @Switch("w") boolean filterWeak,
+                             @Arg("Remove countering nations that are inactive (2 days)")
+                             @Switch("a") boolean onlyActive,
+                             @Arg("Remove countering nations NOT registered with Locutus")
+                             @Switch("d") boolean requireDiscord,
+                             @Arg("Include counters from the same alliance as the defender")
+                             @Switch("s") boolean allowSameAlliance,
+                             @Switch("i") boolean includeInactive,
+                             @Switch("m") boolean includeNonMembers,
+                             @Arg("Include the discord mention of countering nations")
+                             @Switch("p") boolean ping) {
+        Set<Integer> allies = db.getAllies(true);
+        int enemyId = allies.contains(war.getAttacker_aa()) ? war.getDefender_id() : war.getAttacker_id();
+        DBNation enemy = DBNation.getById(enemyId);
+        if (enemy == null) throw new IllegalArgumentException("No nation found for id `" + enemyId + "`");
+        return counter(me, db, enemy, counterWith, allowAttackersWithMaxOffensives, filterWeak, onlyActive, requireDiscord, allowSameAlliance, includeInactive, includeNonMembers, ping);
+    }
+
+    @RolePermission(value = Roles.MILCOM)
+    @Command(desc="Get a list of nations to counter an enemy",
+            groups = {
+                "Counter Options",
+                "Display Info",
+            },
+            groupDescs = {
+                "By default active alliance members with free war slots will be used",
+                ""
+            }
+    )
+    public static String counter(@Me DBNation me, @Me GuildDB db,
+                                 DBNation target,
+                          @Arg(value = "Nations to counter with\n" +
+                                  "Default: This guild's alliance nations", group = 0)
+                          @Default Set<DBNation> counterWith,
+                          @Arg("Show counters from nations at max offensive wars\n" +
+                                  "i.e. They can counter when they finish a war")
+                          @Switch("o") boolean allowMaxOffensives,
+                          @Arg(value = "Remove countering nations weaker than the enemy", group = 0)
+                          @Switch("w") boolean filterWeak,
+                          @Arg(value = "Remove countering nations that are inactive (2 days)", group = 0)
+                          @Switch("a") boolean onlyOnline,
+                          @Arg(value = "Remove countering nations NOT registered with Locutus", group = 0)
+                          @Switch("d") boolean requireDiscord,
+                          @Arg(value = "Don't filter out counters from the same alliance as the defender", group = 0)
+                          @Switch("s") boolean allowSameAlliance,
+                          @Switch("i") boolean includeInactive,
+                          @Switch("m") boolean includeNonMembers,
+                          @Arg(value = "Include the discord mention of countering nations", group = 1)
+                          @Switch("p") boolean ping
+
+
+    ) {
+        if (counterWith == null) {
+            Set<Integer> aaIds = db.getAllianceIds();
+            if (aaIds.isEmpty()) {
+                Set<Integer> allies = db.getAllies(true);
+                if (allies.isEmpty()) {
+                    if (me.getAlliance_id() == 0) {
+                        return "No alliance or allies are set.\n" +
+                                GuildKey.ALLIANCE_ID.getCommandMention() +
+                                "\nOR\n " +
+                                CM.coalition.create.cmd.coalitionName(Coalition.ALLIES.name());
+                    }
+                    aaIds = new HashSet<>(Arrays.asList(me.getAlliance_id()));
+                    counterWith = new HashSet<>(new AllianceList(aaIds).getNations(true, 0, true));
+                } else {
+                    counterWith = new HashSet<>(Locutus.imp().getNationDB().getNations(allies));
+                }
+            } else {
+                counterWith = new HashSet<>(new AllianceList(aaIds).getNations(true, 0, true));
+            }
+        }
+        counterWith.removeIf(nation -> nation.getAlliance_id() == 0);
+        counterWith.removeIf(f -> f.isVacation());
+        double score = target.getScore();
+        double minModifier = target.isInactiveForWar() ? DNS.WAR_RANGE_MIN_MODIFIER_INACTIVE : DNS.WAR_RANGE_MIN_MODIFIER_ACTIVE;
+        double maxModifier = target.isInactiveForWar() ? DNS.WAR_RANGE_MAX_MODIFIER_INACTIVE : DNS.WAR_RANGE_MAX_MODIFIER_ACTIVE;
+        double scoreMin = score / maxModifier;
+        double scoreMax = score / minModifier;
+        counterWith.removeIf(nation -> nation.getScore() < scoreMin || nation.getScore() > scoreMax);
+        if (counterWith.isEmpty()) {
+            return "No nations available to counter";
+        }
+
+        int size = counterWith.size();
+        List<String> errors = new ArrayList<>();
+        if (requireDiscord) {
+            counterWith.removeIf(f -> f.getUser() == null);
+            if (size > counterWith.size()) {
+                errors.add("Removed `" + (size - counterWith.size()) + "` nations without discord");
+                size = counterWith.size();
+            }
+        }
+
+        for (DBWar activeWar : target.getActiveWars()) {
+            counterWith.remove(activeWar.getNation(!activeWar.isAttacker(target)));
+        }
+        if (size > counterWith.size()) {
+            errors.add("Removed `" + (size - counterWith.size()) + "` nations in active wars");
+            size = counterWith.size();
+        }
+
+        if (onlyOnline) {
+            counterWith.removeIf(f -> !f.isOnline());
+            if (size > counterWith.size()) {
+                errors.add("Removed `" + (size - counterWith.size()) + "` nations not currently online on discord (or in-game)");
+                size = counterWith.size();
+            }
+        }
+        if (!allowMaxOffensives) {
+            counterWith.removeIf(nation -> nation.getOff() >= nation.getMaxOff());
+            if (size > counterWith.size()) {
+                errors.add("Removed `" + (size - counterWith.size()) + "` nations with max offensives as `allowMaxOffensives` is false");
+                size = counterWith.size();
+            }
+        }
+        if (filterWeak) {
+            counterWith.removeIf(nation -> nation.getWarIndex() < target.getWarIndex() * 0.75);
+            if (size > counterWith.size()) {
+                errors.add("Removed `" + (size - counterWith.size()) + "` nations weaker than 0.75x the target's war index");
+                size = counterWith.size();
+            }
+        }
+        if (!includeInactive) {
+            counterWith.removeIf(nation -> nation.active_m() > (nation.getInfra() < 10000 ? 4880 : 10080));
+            if (size > counterWith.size()) {
+                errors.add("Removed `" + (size - counterWith.size()) + "` inactive nations as `includeInactive` is false");
+                size = counterWith.size();
+            }
+        }
+        if (!includeNonMembers) {
+            counterWith.removeIf(nation -> nation.getPosition() <= Rank.APPLICANT.id);
+            if (size > counterWith.size()) {
+                errors.add("Removed `" + (size - counterWith.size()) + "` non-members as `includeNonMembers` is false");
+                size = counterWith.size();
+            }
+        }
+        Set<Integer> counterWithAlliances = counterWith.stream().map(DBNation::getAlliance_id).collect(Collectors.toSet());
+        if (counterWithAlliances.size() == 1 && !allowSameAlliance && counterWithAlliances.contains(target.getAlliance_id())) {
+            return "Please enable `allowSameAlliance` to counter with the same alliance";
+        }
+        if (!allowSameAlliance) {
+            counterWith.removeIf(nation -> nation.getAlliance_id() == target.getAlliance_id());
+            if (size > counterWith.size()) {
+                errors.add("Removed `" + (size - counterWith.size()) + "` nations in the same alliance as `allowSameAlliance` is false");
+                size = counterWith.size();
+            }
+        }
+
+        List<DBNation> attackersSorted = new ArrayList<>(counterWith);
+        if (filterWeak) {
+            attackersSorted = CounterGenerator.generateCounters(db, target, attackersSorted, allowMaxOffensives);
+        } else {
+            attackersSorted = CounterGenerator.generateCounters(db, target, attackersSorted, allowMaxOffensives, false);
+        }
+
+        if (attackersSorted.isEmpty()) {
+            String errorStr = errors.isEmpty() ? "" : "\n- " + StringMan.join(errors, "\n- ");
+            return "No nations available to counter" + errorStr;
+        }
+
+        StringBuilder response = new StringBuilder();
+        response.append("**Enemy: **").append(target.toMarkdown()).append("\n**Counters**\n");
+
+        int count = 0;
+        int maxResults = 25;
+        for (DBNation nation : attackersSorted) {
+            if (count++ == maxResults) break;
+
+            String statusStr = "";
+
+            User user = nation.getUser();
+            if (user != null) {
+                List<Guild> mutual = user.getMutualGuilds();
+                if (!mutual.isEmpty()) {
+                    Guild guild = mutual.get(0);
+                    Member member = guild.getMember(user);
+                    if (member != null) {
+                        OnlineStatus status = member.getOnlineStatus();
+                        if (status != OnlineStatus.OFFLINE && status != OnlineStatus.UNKNOWN) {
+                            statusStr = status.name() + " | ";
+                        }
+                    }
+                }
+            }
+            if (user != null) {
+                response.append(statusStr);
+                response.append(user.getName() + " / ");
+                if (ping) response.append(user.getAsMention());
+                else response.append("`" + user.getAsMention() + "` ");
+            }
+            response.append(nation.toMarkdown()).append('\n');
+        }
+        if (!errors.isEmpty()) {
+            response.append("\n\n__**note:**__\n- ");
+            response.append(StringMan.join(errors, "\n- "));
+        }
+
+        return response.toString();
+    }
 
     // TODO FIXME :||remove auto counter
 //    @RolePermission(value = Roles.MILCOM)

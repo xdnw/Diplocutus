@@ -87,6 +87,8 @@ public class PreLoader implements ILoader {
         this.nationDB = add("Nation Database", () -> new NationDB().load());
 
         this.warDb = add("War Database", () -> new WarDB().load());
+        add("War Counts", () -> warDb.get().loadWarCounts());
+
         this.bankDb = add("Bank Database", () -> new BankDB());
         this.commandManager = add("Command Handler", () -> new CommandManager(scheduler));
         if (Settings.INSTANCE.NATION_ID <= 0) {

@@ -263,6 +263,16 @@ public class NationCommands {
         }
 
         }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getCashOutput")
+        public static class getCashOutput extends CommandRef {
+            public static final getCashOutput cmd = new getCashOutput();
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getCommerceIndex")
+        public static class getCommerceIndex extends CommandRef {
+            public static final getCommerceIndex cmd = new getCommerceIndex();
+
+        }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getCorporationIncome")
         public static class getCorporationIncome extends CommandRef {
             public static final getCorporationIncome cmd = new getCorporationIncome();
@@ -314,9 +324,24 @@ public class NationCommands {
         }
 
         }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getDevastation")
+        public static class getDevastation extends CommandRef {
+            public static final getDevastation cmd = new getDevastation();
+
+        }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getDiscordUser")
         public static class getDiscordUser extends CommandRef {
             public static final getDiscordUser cmd = new getDiscordUser();
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getEducationIndex")
+        public static class getEducationIndex extends CommandRef {
+            public static final getEducationIndex cmd = new getEducationIndex();
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getEmploymentIndex")
+        public static class getEmploymentIndex extends CommandRef {
+            public static final getEmploymentIndex cmd = new getEmploymentIndex();
 
         }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getEnemies")
@@ -466,6 +491,11 @@ public class NationCommands {
             public static final getOtherIncome cmd = new getOtherIncome();
 
         }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getPoliticalPowerOutput")
+        public static class getPoliticalPowerOutput extends CommandRef {
+            public static final getPoliticalPowerOutput cmd = new getPoliticalPowerOutput();
+
+        }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getPopulation")
         public static class getPopulation extends CommandRef {
             public static final getPopulation cmd = new getPopulation();
@@ -481,6 +511,24 @@ public class NationCommands {
             public static final getPositionEnum cmd = new getPositionEnum();
 
         }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getPowerIndex")
+        public static class getPowerIndex extends CommandRef {
+            public static final getPowerIndex cmd = new getPowerIndex();
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getProductionOutput")
+        public static class getProductionOutput extends CommandRef {
+            public static final getProductionOutput cmd = new getProductionOutput();
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getProject")
+        public static class getProject extends CommandRef {
+            public static final getProject cmd = new getProject();
+        public getProject project(String value) {
+            return set("project", value);
+        }
+
+        }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getProtectionEnds")
         public static class getProtectionEnds extends CommandRef {
             public static final getProtectionEnds cmd = new getProtectionEnds();
@@ -489,6 +537,11 @@ public class NationCommands {
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getProtectionRemainingMs")
         public static class getProtectionRemainingMs extends CommandRef {
             public static final getProtectionRemainingMs cmd = new getProtectionRemainingMs();
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getRareMetalOutput")
+        public static class getRareMetalOutput extends CommandRef {
+            public static final getRareMetalOutput cmd = new getRareMetalOutput();
 
         }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getRelativeStrength")
@@ -531,6 +584,11 @@ public class NationCommands {
             public static final getScore cmd = new getScore();
 
         }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getStabilityIndex")
+        public static class getStabilityIndex extends CommandRef {
+            public static final getStabilityIndex cmd = new getStabilityIndex();
+
+        }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getStrongestEnemy")
         public static class getStrongestEnemy extends CommandRef {
             public static final getStrongestEnemy cmd = new getStrongestEnemy();
@@ -568,6 +626,34 @@ public class NationCommands {
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getTaxIncome")
         public static class getTaxIncome extends CommandRef {
             public static final getTaxIncome cmd = new getTaxIncome();
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getTechIndex")
+        public static class getTechIndex extends CommandRef {
+            public static final getTechIndex cmd = new getTechIndex();
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getTechnology")
+        public static class getTechnology extends CommandRef {
+            public static final getTechnology cmd = new getTechnology();
+        public getTechnology technology(String value) {
+            return set("technology", value);
+        }
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getTier")
+        public static class getTier extends CommandRef {
+            public static final getTier cmd = new getTier();
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getTransportationIndex")
+        public static class getTransportationIndex extends CommandRef {
+            public static final getTransportationIndex cmd = new getTransportationIndex();
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getUraniumOutput")
+        public static class getUraniumOutput extends CommandRef {
+            public static final getUraniumOutput cmd = new getUraniumOutput();
 
         }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getUrl")

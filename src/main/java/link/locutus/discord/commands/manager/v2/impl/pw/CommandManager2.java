@@ -47,6 +47,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -892,6 +894,7 @@ public class CommandManager2 {
                 e.printStackTrace();
             }
         };
+        System.out.println("Submitting task " + fullCmdStr);
         if (async) Locutus.imp().getExecutor().submit(task);
         else task.run();
     }
@@ -953,7 +956,12 @@ public class CommandManager2 {
                 e.printStackTrace();
             }
         };
-        if (async) Locutus.imp().getExecutor().submit(task);
+        System.out.println("Submitting task (2) " + path);
+        if (async) {
+            ThreadPoolExecutor executor = Locutus.imp().getExecutor();
+            System.out.println("Executor stats: " + executor.getActiveCount() + " / " + executor.getCorePoolSize() + " / " + executor.getMaximumPoolSize() + " | " + executor.getQueue().size() + " | " + executor.getCompletedTaskCount());
+            executor.submit(task);
+        }
         else task.run();
     }
 

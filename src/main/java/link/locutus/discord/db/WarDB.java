@@ -472,18 +472,30 @@ public class WarDB extends DBMainV2 {
         updateWars(false, eventConsumer);
     }
 
-    private Map<Integer, Integer> activeWarCache = new ConcurrentHashMap<>();
+    private final Map<Integer, Integer> activeWarCache = new ConcurrentHashMap<>();
+    private volatile boolean loadedWarCounts = false;
+
+    public boolean loadWarCounts() {
+        for (DBAlliance alliance : Locutus.imp().getNationDB().getAlliances()) {
+            activeWarCache.put(alliance.getId(), alliance.getNumWars());
+        }
+        loadedWarCounts = true;
+        return true;
+    }
 
     public void updateWars(boolean pullAll, Consumer<Event> eventConsumer) {
-        Set<DBAlliance> alliances = new HashSet<>();
-        for (DBAlliance alliance : alliances) {
+        for (DBAlliance alliance : Locutus.imp().getNationDB().getAlliances()) {
             Integer expected = activeWarCache.get(alliance.getId());
+            boolean fetch = false;
             if (expected == null) {
                 expected = alliance.getNumWars();
                 activeWarCache.put(alliance.getId(), expected);
+                if (expected != 0 && loadedWarCounts) {
+                    fetch = true;
+                }
             }
             int currWars = alliance.getNumWars();
-            if (expected != currWars) {
+            if (expected != currWars || fetch) {
                 activeWarCache.put(alliance.getId(), currWars);
                 if (expected > 0) {
                     fetchWars(pullAll, alliance, eventConsumer);
@@ -492,22 +504,24 @@ public class WarDB extends DBMainV2 {
         }
     }
 
-
-
     public void fetchWars(boolean pullAll, DBAlliance alliance, Consumer<Event> eventConsumer) {
         DnsApi v3 = Locutus.imp().getV3();
-        List<WarHistory> wars = new ArrayList<>();
         DnsQuery<WarHistory> fetched = v3.allianceWarHistory(alliance.getId(), pullAll ? true : null, null, null, null, null);
-        wars.addAll(fetched.call());
+        List<WarHistory> wars = new ArrayList<>(fetched.call());
+        System.out.println("Fetched " + wars.size() + " wars for " + alliance.getName());
 
         List<DBWar> dbWars = wars.stream().map(f -> {
             DBWar war = new DBWar();
             war.update(f, null);
             return war;
         }).toList();
+
         Set<Integer> activeWarIds = getActiveWars().stream()
                 .filter(f -> f.getAttacker_aa() == alliance.getId() || f.getDefender_aa() == alliance.getId())
                 .map(DBWar::getWarId).collect(Collectors.toSet());
+
+        System.out.println("Update wars " + dbWars.size() + " for " + alliance.getName() + " | " + activeWarIds.size() + " active wars");
+
         updateWars(dbWars, activeWarIds, eventConsumer, eventConsumer != null);
     }
 

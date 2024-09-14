@@ -48,6 +48,11 @@ public class AllianceCommands {
             public static final getDateCreated cmd = new getDateCreated();
 
         }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBAlliance.class,method="getDef")
+        public static class getDef extends CommandRef {
+            public static final getDef cmd = new getDef();
+
+        }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBAlliance.class,method="getId")
         public static class getId extends CommandRef {
             public static final getId cmd = new getId();
@@ -58,12 +63,22 @@ public class AllianceCommands {
             public static final getName cmd = new getName();
 
         }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBAlliance.class,method="getNumWars")
+        public static class getNumWars extends CommandRef {
+            public static final getNumWars cmd = new getNumWars();
+
+        }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBAlliance.class,method="getNumWarsSince")
         public static class getNumWarsSince extends CommandRef {
             public static final getNumWarsSince cmd = new getNumWarsSince();
         public getNumWarsSince date(String value) {
             return set("date", value);
         }
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBAlliance.class,method="getOff")
+        public static class getOff extends CommandRef {
+            public static final getOff cmd = new getOff();
 
         }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBAlliance.class,method="getRank")

@@ -29,7 +29,7 @@ public class WikiGenHandler {
 
     public List<BotWikiGen> getIntroPages() {
         List<BotWikiGen> pages = new ArrayList<>();
-//        pages.add(new WikiSetupPage(manager));// TODO FIXME :||remove
+        pages.add(new WikiSetupPage(manager));
         pages.add(new WikiHostingLocutus(manager));
         return pages;
     }
@@ -37,9 +37,9 @@ public class WikiGenHandler {
     public List<BotWikiGen> getCommandPages() {
         List<BotWikiGen> pages = new ArrayList<>();
         pages.add(new WikiCommandsPage(manager));
-//        pages.add(new WikiSettingsPage(manager));// TODO FIXME :||remove
+        pages.add(new WikiSettingsPage(manager));
         pages.add(new WikiArgumentsPage(manager));
-//        pages.add(new WikiPermsPage(manager));// TODO FIXME :||remove
+        pages.add(new WikiPermsPage(manager));
         return pages;
     }
 
@@ -57,12 +57,8 @@ public class WikiGenHandler {
 //        pages.add(new WikiBankFlows(manager)); DONT UNCOMMENT ATM TODO FIXME :||remove
 ////        //Setup an offshore or bank
 //        pages.add(new WikiBankPage(manager)); DONT UNCOMMENT ATM TODO FIXME :||remove
-        // Grant templates
-        pages.add(new WikiGrantTemplate(manager));
 //        //Interview System
         pages.add(new WikiInterviewPage(manager));
-        //Recruitment System
-//        pages.add(new WikiRecruitmentPage(manager)); DONT UNCOMMENT ATM TODO FIXME :||remove
 //        //DNR system
         pages.add(new WikiDNRPage(manager));
 //        //Coalitions system
@@ -83,12 +79,6 @@ public class WikiGenHandler {
 //        pages.add(new WikiSendTargetsPage(manager)); DONT UNCOMMENT ATM TODO FIXME :||remove
 //        //Spy war
         pages.add(new WikiSpyWarPage(manager)); // <--- easy 5
-//        //Blockade System
-//        pages.add(new WikiBlockadePage(manager));
-////        //Beige cycling tutorial
-//        pages.add(new WikiBeigeCyclingPage(manager));
-//        //Loan System
-        pages.add(new WikiLoanPage(manager));
 //        //Report System
         pages.add(new WikiReportPage(manager));
 //        //Anti Leak System
@@ -128,26 +118,22 @@ public class WikiGenHandler {
         pages.addAll(getIntroPages());
         pages.addAll(getCommandPages());
         pages.addAll(getTopicPages());
-        // TODO FIXME :||remove
-//        pages.removeIf(f -> f instanceof WikiPermsPage);
+        pages.removeIf(f -> f instanceof WikiPermsPage);
         // Placeholders
         List<BotWikiGen> placeholderPages = getPlaceholderPages();
-        // TODO FIXME :||remove
-//        WikiPermsPage permsPage = new WikiPermsPage(manager);
-//        WikiHelpPage help = new WikiHelpPage(manager, pages, placeholderPages, permsPage);
-//        pages.add(help);// TODO FIXME :||remove
+        WikiPermsPage permsPage = new WikiPermsPage(manager);
+        WikiHelpPage help = new WikiHelpPage(manager, pages, placeholderPages, permsPage);
+        pages.add(help);
 
         ArrayList<BotWikiGen> allPages = new ArrayList<>();
         allPages.addAll(placeholderPages);
         allPages.addAll(pages);
-        // TODO FIXME :||remove
-//        allPages.add(permsPage);
+        allPages.add(permsPage);
         for (BotWikiGen page : allPages) {
             writePage(page);
         }
 
-        // Unlisted
-//        writePage(new WikiConflictsPage(manager));// TODO FIXME :||remove
+        writePage(new WikiConflictsPage(manager));
     }
 
     private void writePage(BotWikiGen page) throws IOException {
