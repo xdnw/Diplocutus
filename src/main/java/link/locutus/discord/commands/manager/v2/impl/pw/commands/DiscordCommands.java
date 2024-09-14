@@ -14,6 +14,7 @@ import link.locutus.discord.commands.manager.v2.impl.pw.filter.NationPlaceholder
 import link.locutus.discord.config.Settings;
 import link.locutus.discord.db.GuildDB;
 import link.locutus.discord.db.entities.DBNation;
+import link.locutus.discord.event.Event;
 import link.locutus.discord.gpt.GPTUtil;
 import link.locutus.discord.pnw.RegisteredUser;
 import link.locutus.discord.user.Roles;
@@ -422,7 +423,11 @@ public class DiscordCommands {
     }
 
     @Command(desc = "Register your discord user with your Diplomacy and Strife nation.")
-    public String register(@Me GuildDB db, @Me User user, /* @Default("%user%")  */ DBNation nation) throws IOException {
+    public String register(@Me GuildDB db, @Me User author, /* @Default("%user%")  */ DBNation nation, @Default User user) throws IOException {
+        if (user != null && !Roles.ADMIN.hasOnRoot(author)) {
+            return "You do not have permission to register another user. Please leave that argument blank.";
+        }
+        if (user == null) user = author;
         boolean notRegistered = DiscordUtil.getUserByNationId(nation.getNation_id()) == null;
         String fullDiscriminator = DiscordUtil.getFullUsername(user);
 
@@ -467,7 +472,7 @@ public class DiscordCommands {
         try {
             String pnwDiscordName = nation.getUsername();
             if (pnwDiscordName == null || pnwDiscordName.isEmpty()) {
-                Locutus.imp().runEventsAsync(events -> Locutus.imp().getNationDB().updateNation(db.getApiOrThrow(), nation, events));
+                Locutus.imp().getNationDB().updateNation(db.getApiOrThrow(), nation, Event::post);
             }
             pnwDiscordName = nation.getUsername();
             if (pnwDiscordName == null || pnwDiscordName.isEmpty()) {

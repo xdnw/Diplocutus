@@ -631,7 +631,7 @@ public class DBWar implements DBEntity<WarHistory, DBWar> {
 //            double lootValue = enemy.lootTotal();
 //            body.append("$" + MathMan.format((int) lootValue));
 //        }
-//        body.append(enemy.toCityMilMarkedown());
+        body.append(enemy.toCityMilMarkdown());
 
         String attStr = card.condensedSubInfo(isAttacker);
         String defStr = card.condensedSubInfo(!isAttacker);

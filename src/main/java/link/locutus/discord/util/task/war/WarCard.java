@@ -148,8 +148,8 @@ public class WarCard {
         String warUrl = "" + Settings.INSTANCE.DNS_URL() + "/nation/war/timeline/war=" + warId;
         // TODO FIXME :||remove War embed !!important
         CommandRef cmd = CM.war.card.cmd.warId(warId + "");
-        CommandRef counter = CM.war.counter.url.cmd.war(warUrl);
-        CommandRef counterSpy = CM.spy.counter.cmd.enemy(war.getAttacker_id() + "").operations("*");
+//        CommandRef counter = CM.war.counter.url.cmd.war(warUrl);
+//        CommandRef counterSpy = CM.spy.counter.cmd.enemy(war.getAttacker_id() + "").operations("*");
 //
         String pendingEmoji = "Claim";
         CommandRef pending = CM.embed.update.cmd.desc("{description}\nAssigned to {usermention} in {timediff}").requiredRole(Roles.MILCOM.name());

@@ -82,6 +82,20 @@ public class PWBindings extends BindingHelper {
         throw new IllegalArgumentException("Unknown conflict: `" + nameOrId + "`. Options: " + StringMan.getString(manager.getConflictNames()));
     }
 
+    @Binding(value = "A war id or url", examples = {"https://diplomacyandstrife.com/war/1234"})
+    public static DBWar war(String arg0) {
+        if (arg0.contains("/war/")) {
+            arg0 = arg0.split("/war/")[1];
+        }
+        if (!MathMan.isInteger(arg0)) {
+            throw new IllegalArgumentException("Not a valid war number: `" + arg0 + "`");
+        }
+        int warId = Integer.parseInt(arg0);
+        DBWar war = Locutus.imp().getWarDb().getWar(warId);
+        if (war == null) throw new IllegalArgumentException("No war founds for id: `" + warId + "`");
+        return war;
+    }
+
     @Binding(value = "The name of a stored conflict between two coalitions")
     public Set<Conflict> conflicts(ConflictManager manager, ValueStore store, String input) {
         Set<Conflict> result = Locutus.cmd().getV2().getPlaceholders().get(Conflict.class).parseSet(store, input);
@@ -89,7 +103,6 @@ public class PWBindings extends BindingHelper {
             throw new IllegalArgumentException("No conflicts found in: " + input + ". Options: " + manager.getConflictNames());
         }
         return result;
-
     }
 
     @Binding(value = "A treaty between two alliances\n" +

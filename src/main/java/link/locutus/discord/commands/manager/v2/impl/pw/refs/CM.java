@@ -2902,6 +2902,10 @@ public class CM {
             return set("nation", value);
         }
 
+        public register user(String value) {
+            return set("user", value);
+        }
+
         }
         public static class report{
             @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.ReportCommands.class,method="createReport")
@@ -6236,6 +6240,95 @@ public class CM {
                 return set("warId", value);
             }
 
+            public static class counter{
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="counter")
+                public static class nation extends CommandRef {
+                    public static final nation cmd = new nation();
+                public nation target(String value) {
+                    return set("target", value);
+                }
+
+                public nation counterWith(String value) {
+                    return set("counterWith", value);
+                }
+
+                public nation allowMaxOffensives(String value) {
+                    return set("allowMaxOffensives", value);
+                }
+
+                public nation filterWeak(String value) {
+                    return set("filterWeak", value);
+                }
+
+                public nation onlyOnline(String value) {
+                    return set("onlyOnline", value);
+                }
+
+                public nation requireDiscord(String value) {
+                    return set("requireDiscord", value);
+                }
+
+                public nation allowSameAlliance(String value) {
+                    return set("allowSameAlliance", value);
+                }
+
+                public nation includeInactive(String value) {
+                    return set("includeInactive", value);
+                }
+
+                public nation includeNonMembers(String value) {
+                    return set("includeNonMembers", value);
+                }
+
+                public nation ping(String value) {
+                    return set("ping", value);
+                }
+
+                }
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="counterWar")
+                public static class war_id extends CommandRef {
+                    public static final war_id cmd = new war_id();
+                public war_id war(String value) {
+                    return set("war", value);
+                }
+
+                public war_id counterWith(String value) {
+                    return set("counterWith", value);
+                }
+
+                public war_id allowAttackersWithMaxOffensives(String value) {
+                    return set("allowAttackersWithMaxOffensives", value);
+                }
+
+                public war_id filterWeak(String value) {
+                    return set("filterWeak", value);
+                }
+
+                public war_id onlyActive(String value) {
+                    return set("onlyActive", value);
+                }
+
+                public war_id requireDiscord(String value) {
+                    return set("requireDiscord", value);
+                }
+
+                public war_id allowSameAlliance(String value) {
+                    return set("allowSameAlliance", value);
+                }
+
+                public war_id includeInactive(String value) {
+                    return set("includeInactive", value);
+                }
+
+                public war_id includeNonMembers(String value) {
+                    return set("includeNonMembers", value);
+                }
+
+                public war_id ping(String value) {
+                    return set("ping", value);
+                }
+
+                }
             }
             @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.UtilityCommands.class,method="dnr")
             public static class dnr extends CommandRef {

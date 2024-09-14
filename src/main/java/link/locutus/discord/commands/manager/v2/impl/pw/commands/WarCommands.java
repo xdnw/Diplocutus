@@ -2352,7 +2352,7 @@ public class WarCommands {
 //        return "Created " + channels.size() + " for " + targets.size() + " targets";
 //    }
 
-    // TODO FIXME :||remove mailtargets !!important
+    // TODO FIXME :||important
 //    @RolePermission(Roles.MILCOM)
 //    @Command(desc = "Send spy or war blitz sheets to individual nations\n" +
 //            "Blitz Sheet Columns: `nation`, `attacker 1`, `attacker 2`, `attacker 3`")
@@ -2367,34 +2367,12 @@ public class WarCommands {
 //                              @Default Set<DBNation> allowedEnemies,
 //                              @Arg("Text to prepend to the target instructions being sent")
 //                              @Default("") String header,
-//                              @Arg("Send from the api key registered to the guild") @Switch("g") boolean sendFromGuildAccount,
-//                              @Arg("The api key to use to send the mail") @Switch("a") String apiKey,
 //                              @Arg("Hide the default blurb from the message")
 //                              @Switch("b") boolean hideDefaultBlurb,
 //                              @Switch("f") boolean force,
-//                              @Arg("Parse nation leader instead of nation name") @Switch("l") boolean useLeader,
-//                              @Arg("Send instructions as direct message on discord")
-//                              @Switch("d") boolean dm) throws IOException, GeneralSecurityException {
+//                              @Arg("Parse nation leader instead of nation name") @Switch("l") boolean useLeader) throws IOException, GeneralSecurityException {
 //        if(header != null) {
 //            GPTUtil.checkThrowModeration(header);
-//        }
-//
-//        ApiKeyPool.ApiKey myKey = me.getApiKey(false);
-//        ApiKeyPool key = null;
-//        if (apiKey != null) {
-//            Integer nation = Locutus.imp().getDiscordDB().getNationFromApiKey(apiKey);
-//            if (nation == null) return "Invalid API key";
-//            key = ApiKeyPool.create(nation, apiKey);
-//        }
-//        if (key == null) {
-//            if ((sendFromGuildAccount || myKey == null)) {
-//                key = db.getMailKey();
-//            } else {
-//                key = ApiKeyPool.builder().addKey(myKey).build();
-//            }
-//        }
-//        if (key == null){
-//            return "No api key found. Please use" + GuildKey.API_KEY.getCommandMention() + " or specify `sendFromGuildAccount` or `apiKey` in the command";
 //        }
 //
 //        if (header != null && !header.isEmpty() && !Roles.MAIL.has(author, guild)) {
@@ -2406,8 +2384,6 @@ public class WarCommands {
 //
 //        Map<String, Object> blitzSheetSummary = new LinkedHashMap<>();
 //        Map<String, Object> spySheetSummary = new LinkedHashMap<>();
-//
-//        if (dm && !Roles.MAIL.hasOnRoot(author)) return "You do not have permission to dm users";
 //
 //        if (blitzSheet != null) {
 //            warDefAttMap = BlitzGenerator.getTargets(blitzSheet, useLeader, 0, f -> 2, 0.75, DNS.WAR_RANGE_MAX_MODIFIER, true, true, false, f -> true, (a, b) -> {}, (a) -> blitzSheetSummary.putAll(a));
@@ -2593,24 +2569,16 @@ public class WarCommands {
 //            DBNation attacker = entry.getKey();
 //            subject = entry.getValue().getKey();
 //            String body = entry.getValue().getValue();
-//
+//            String markup = MarkupUtil.htmlToMarkdown(body);
 //            try {
-//                attacker.sendMail(key, subject, body, true);
+//                attacker.sendDM("**" + subject + "**:\n" + markup, new Consumer<String>() {
+//                    @Override
+//                    public void accept(String string) {
+//                        dmErrors.put(attacker, string);
+//                    }
+//                });
 //            } catch (Throwable e) {
-//                mailErrors.put(attacker, (e.getMessage() + " ").split("\n")[0]);
-//            }
-//            if (dm) {
-//                String markup = MarkupUtil.htmlToMarkdown(body);
-//                try {
-//                    attacker.sendDM("**" + subject + "**:\n" + markup, new Consumer<String>() {
-//                        @Override
-//                        public void accept(String string) {
-//                            dmErrors.put(attacker, string);
-//                        }
-//                    });
-//                } catch (Throwable e) {
-//                    dmErrors.put(attacker, (e.getMessage() + " ").split("\n")[0]);
-//                }
+//                dmErrors.put(attacker, (e.getMessage() + " ").split("\n")[0]);
 //            }
 //
 //            if (System.currentTimeMillis() - start > 10000) {

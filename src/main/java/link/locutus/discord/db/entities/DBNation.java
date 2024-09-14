@@ -1453,46 +1453,27 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
     }
 
     public String toMarkdown() {
-        return toMarkdown(false);
-    }
-
-    public String toMarkdown(boolean war) {
-        return toMarkdown(war, true, true, true, true);
-    }
-    public String toMarkdown(boolean war, boolean showOff, boolean showSpies, boolean showInfra, boolean spies) {
         StringBuilder response = new StringBuilder();
-        if (war) {
-            response.append("<" + Settings.INSTANCE.DNS_URL() + "/nation/" + getNation_id() + ">");
-        } else {
-            response.append("<" + Settings.INSTANCE.DNS_URL() + "/nation/" + getNation_id() + ">");
+        response.append("<" + Settings.INSTANCE.DNS_URL() + "/nation/" + getNation_id() + ">");
+
+        String beigeStr = null;
+        if (hasProtection()) {
+            beigeStr = DiscordUtil.timestamp(this.getProtectionEnds(), null);
         }
-        // TODO FIXME :||remove marktdown who !!important
-//        String beigeStr = null;
-//        if (color == NationColor.BEIGE) {
-//            int turns = getBeigeTurns();
-//            long diff = TimeUnit.MILLISECONDS.toMinutes(TimeUtil.getTimeFromTurn(TimeUtil.getTurn() + turns) - System.currentTimeMillis());
-//            beigeStr = TimeUtil.secToTime(TimeUnit.MINUTES, diff);
-//        }
-//        int vm = getVm_turns();
-//
-//        response.append(" | " + String.format("%16s", getNation()))
-//                .append(" | " + String.format("%16s", getAllianceName()))
-//                .append(alliance_id != 0 && getPositionEnum() == Rank.APPLICANT ? " applicant" : "")
-//                .append(color == NationColor.BEIGE ? " beige:" + beigeStr : "")
-//                .append(vm > 0 ? " vm=" + TimeUtil.secToTime(TimeUnit.HOURS, vm) : "")
-//                .append("\n```")
-//                .append(String.format("%5s", (int) getScore())).append(" ns").append(" | ")
-//                .append(String.format("%10s", TimeUtil.secToTime(TimeUnit.MINUTES, active_m()))).append(" \uD83D\uDD52").append(" | ")
-//                .append(String.format("%2s", getCities())).append(" \uD83C\uDFD9").append(" | ");
-//                if (showInfra) response.append(String.format("%5s", (int) getAvg_infra())).append(" \uD83C\uDFD7").append(" | ");
-//                response.append(String.format("%6s", getSoldiers())).append(" \uD83D\uDC82").append(" | ")
-//                .append(String.format("%5s", getTanks())).append(" \u2699").append(" | ")
-//                .append(String.format("%5s", getAircraft())).append(" \u2708").append(" | ")
-//                .append(String.format("%4s", getShips())).append(" \u26F5");
-//                if (showOff) response.append(" | ").append(String.format("%1s", getOff())).append(" \uD83D\uDDE1");
-//                response.append(" | ").append(String.format("%1s", getDef())).append(" \uD83D\uDEE1");
-//                if (showSpies) response.append(" | ").append(String.format("%2s", getSpies())).append(" \uD83D\uDD0D");
-//                response.append("```");
+        response.append(" | " + String.format("%16s", getNation()))
+                .append(" | " + String.format("%16s", getAllianceName()))
+                .append(AllianceId != 0 && getPositionEnum() != Rank.MEMBER ? " " + getPositionEnum().name() : "")
+                .append(hasProtection() ? " protection:" + beigeStr : "")
+                .append(isVacation() ? " VM" : "")
+                .append("\n```")
+                .append(String.format("%5s", (int) getScore())).append(" ns").append(" | ")
+                .append(String.format("%10s", TimeUtil.secToTime(TimeUnit.MINUTES, active_m()))).append(" \uD83D\uDD52").append(" | ")
+                .append(String.format("%2s", "dev:" + getInfra())).append(" | ");
+                response.append(String.format("%5s", "land:" + ((int) getLand()))).append(" | ");
+                response.append(String.format("%6s", "WarIndex:" + getWarIndex())).append(" | ");
+                response.append(" | ").append(String.format("%1s", getOff())).append(" \uD83D\uDDE1");
+                response.append(" | ").append(String.format("%1s", getDef())).append(" \uD83D\uDEE1");
+                response.append("```");
         return response.toString();
     }
 
@@ -1665,38 +1646,16 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         response.append(toMarkdown(true, false, true, true, false, false));
         response.append(toMarkdown(true, false, false, false, true, true));
 
-        // TODO FIXME :||remove markdown !!important
-
-
         response.append(" ```")
                 .append(String.format("%6s", isVacation())).append(" \uD83C\uDFD6\ufe0f").append(" | ");
 
-//        if (color == NationColor.BEIGE) {
-//            int turns = getBeigeTurns();
-//            long diff = TimeUnit.MILLISECONDS.toMinutes(TimeUtil.getTimeFromTurn(TimeUtil.getTurn() + turns) - System.currentTimeMillis());
-//            String beigeStr = TimeUtil.secToTime(TimeUnit.MINUTES, diff);
-//            response.append(" beige:" + beigeStr);
-//        } else {
-//            response.append(String.format("%6s", getColor()));
-//        }
-//        response.append(" | ")
-//                .append(String.format("%4s", getAgeDays())).append("day").append(" | ")
-//                .append(String.format("%6s", getContinent()))
-//                .append("```");
-
-
-//        if (nation_id == Settings.INSTANCE.NATION_ID) {
-//            String imageUrl = "https://cdn.discordapp.com/attachments/694201462837739563/710292110494138418/borg.jpg";
-//            GuildMessageChannel channel = Locutus.imp().getDiscordApi().getGuildChannelById(channelId);
-//            DiscordUtil.createEmbedCommand(channel, new Consumer<EmbedBuilder>() {
-//                @Override
-//                public void accept(EmbedBuilder embed) {
-//                    embed.setThumbnail(imageUrl);
-//                    embed.setTitle(title);
-//                    embed.setDescription(response.toString());
-//                }
-//            }, counterEmoji, counterCmd, simEmoji, simCommand);
-//        } else
+        if (hasProtection()) {
+            String beigeStr = DiscordUtil.timestamp(this.getProtectionEnds(), null);
+            response.append(" protection:" + beigeStr);
+        }
+        response.append(" | ")
+                .append(String.format("%4s", getAgeDays())).append("day").append(" | ")
+                .append("```");
         return response.toString();
     }
 
@@ -1849,7 +1808,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         return body.toString();
     }
 
-    public String toMarkdown(boolean embed, boolean war, boolean title, boolean general, boolean military, boolean spies) {
+    public String toMarkdown(boolean embed, boolean war, boolean title, boolean general, boolean military) {
         StringBuilder response = new StringBuilder();
         if (title) {
             String nationUrl;
@@ -2081,9 +2040,19 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
             body.append(getWarInfoEmbed(war, loot));
         }
         body.append(this.getNationUrlMarkup(true));
-//        body.append("\n").append(this.toCityMilMarkdown());
-        // TODO FIXME :||remove war info !!important
+        body.append("\n").append(this.toCityMilMarkdown());
         return body.toString().replaceAll(" \\| ","|");
+    }
+
+    public String toCityMilMarkdown() {
+        StringBuilder body = new StringBuilder();
+        body
+                .append("```")
+                .append(String.format("%2s", "Infra:" + getInfra())).append("|")
+                .append(String.format("%6s", "Land:" + getLand())).append("|")
+                .append(String.format("%5s", "WarIndex:" + getWarIndex())).append("|")
+                .append("```");
+        return body.toString();
     }
 
     @Command(desc = "Get the number of active wars with a list of nations")
