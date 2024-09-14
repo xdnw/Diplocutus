@@ -46,68 +46,66 @@ public class WikiGenHandler {
     public List<BotWikiGen> getTopicPages() {
         List<BotWikiGen> pages = new ArrayList<>();
 // TODO FIXME :||remove
-//        pages.add(new WikiWarAlertsPage(manager));
-////        //Auto masking
-//        pages.add(new WikiAutoMaskingPage(manager));
-//        // Embassies
-//        pages.add(new WikiEmbassyPage(manager));
+        pages.add(new WikiWarAlertsPage(manager));
+//        //Auto masking
+        pages.add(new WikiAutoMaskingPage(manager));
+        // Embassies
+        pages.add(new WikiEmbassyPage(manager));
+        //Deposits System
+//        pages.add(new WikiDepositsPage(manager)); DONT UNCOMMENT ATM TODO FIXME :||remove
 //        //Deposits System
-//        pages.add(new WikiDepositsPage(manager));
-//        //Deposits System
-//        pages.add(new WikiBankFlows(manager));
+//        pages.add(new WikiBankFlows(manager)); DONT UNCOMMENT ATM TODO FIXME :||remove
 ////        //Setup an offshore or bank
-//        pages.add(new WikiBankPage(manager));
-//        // Grant templates
-//        pages.add(new WikiGrantTemplate(manager));
-////        //Interview System
-//        pages.add(new WikiInterviewPage(manager));
-//        //Recruitment System
-//        pages.add(new WikiRecruitmentPage(manager));
-////        //DNR system
-//        pages.add(new WikiDNRPage(manager));
-////        //Coalitions system
-//        pages.add(new WikiCoalitionsPage(manager));
-////        //War Room System
-//        pages.add(new WikiWarRoomPage(manager));
-////        //Countering
-//        pages.add(new WikiCounteringPage(manager));
+//        pages.add(new WikiBankPage(manager)); DONT UNCOMMENT ATM TODO FIXME :||remove
+        // Grant templates
+        pages.add(new WikiGrantTemplate(manager));
+//        //Interview System
+        pages.add(new WikiInterviewPage(manager));
+        //Recruitment System
+//        pages.add(new WikiRecruitmentPage(manager)); DONT UNCOMMENT ATM TODO FIXME :||remove
+//        //DNR system
+        pages.add(new WikiDNRPage(manager));
+//        //Coalitions system
+        pages.add(new WikiCoalitionsPage(manager));
+//        //War Room System
+        pages.add(new WikiWarRoomPage(manager));
+//        //Countering
+//        pages.add(new WikiCounteringPage(manager)); DONT UNCOMMENT ATM TODO FIXME :||remove
 //        //        //Tax Bracket Automation
-//        pages.add(new WikiTaxBracketPage(manager));
-//        //Auditing System / Alliance MMR requirements
-//        pages.add(new WikiAuditingPage(manager));
-////        //Finding Targets / War panels
-//        pages.add(new WikiFindingTargetsPage(manager)); // <--- 2
-////        //Escrow System
-//        pages.add(new WikiEscrowPage(manager));
+//        pages.add(new WikiTaxBracketPage(manager)); DONT UNCOMMENT ATM TODO FIXME :||remove
+        //Auditing System / Alliance MMR requirements
+        pages.add(new WikiAuditingPage(manager));
+//        //Finding Targets / War panels
+//        pages.add(new WikiFindingTargetsPage(manager)); // <--- 2  DONT UNCOMMENT ATM TODO FIXME :||remove
 ////        //Plan a blitz
-//        pages.add(new WikiBlitzPage(manager)); // <--- 3
-////        //Send out targets
-//        pages.add(new WikiSendTargetsPage(manager));
-////        //Spy war
-//        pages.add(new WikiSpyWarPage(manager)); // <--- easy 5
-////        //Blockade System
+//        pages.add(new WikiBlitzPage(manager)); // <--- 3 DONT UNCOMMENT ATM TODO FIXME :||remove
+//        //Send out targets
+//        pages.add(new WikiSendTargetsPage(manager)); DONT UNCOMMENT ATM TODO FIXME :||remove
+//        //Spy war
+        pages.add(new WikiSpyWarPage(manager)); // <--- easy 5
+//        //Blockade System
 //        pages.add(new WikiBlockadePage(manager));
 ////        //Beige cycling tutorial
 //        pages.add(new WikiBeigeCyclingPage(manager));
-////        //Loan System
-//        pages.add(new WikiLoanPage(manager));
-////        //Report System
-//        pages.add(new WikiReportPage(manager));
-////        //Anti Leak System
-//        pages.add(new WikiAntiLeakPage(manager));
-//        //Making custom embeds
-//        pages.add(new WikiCustomEmbeds(manager));
-//        pages.add(new WikiDelegateServers(manager)); // <--- 6
-////        //Making custom spreadsheets
-//        pages.add(new WikiCustomSheetsPage(manager)); // <--- 7
-////        //Statistics System
-//        pages.add(new WikiStatisticsPage(manager)); // <--- 8
-////        //Trade System (use trading guide)
-////        //- Link DocScripts trade tool (cause useful)
-//        pages.add(new WikiTradePage(manager)); // <--- 9
-//        pages.add(new WikiSelfRoles(manager)); // <--- 10
-//
-//        pages.add(new WikiAiTools(manager)); // <--- 10
+//        //Loan System
+        pages.add(new WikiLoanPage(manager));
+//        //Report System
+        pages.add(new WikiReportPage(manager));
+//        //Anti Leak System
+        pages.add(new WikiAntiLeakPage(manager));
+        //Making custom embeds
+        pages.add(new WikiCustomEmbeds(manager));
+        pages.add(new WikiDelegateServers(manager)); // <--- 6
+//        //Making custom spreadsheets
+        pages.add(new WikiCustomSheetsPage(manager)); // <--- 7
+//        //Statistics System
+        pages.add(new WikiStatisticsPage(manager)); // <--- 8
+//        //Trade System (use trading guide)
+//        //- Link DocScripts trade tool (cause useful)
+        pages.add(new WikiTradePage(manager)); // <--- 9
+        pages.add(new WikiSelfRoles(manager)); // <--- 10
+
+        pages.add(new WikiAiTools(manager)); // <--- 10
         return pages;
     }
 

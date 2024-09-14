@@ -11,10 +11,10 @@ public class WikiHostingLocutus extends BotWikiGen {
     @Override
     public String generateMarkdown() {
         return """
-                This guide will walk you through the process of self hosting the Locutus bot. Follow the steps below to obtain the Locutus `.jar` file, run the bot, configure the `config.yaml` file, and set up the credentials for Google Sheets.
+                This guide will walk you through the process of self hosting the Locutus bot (DNS). Follow the steps below to obtain the Locutus `.jar` file, run the bot, configure the `config.yaml` file, and set up the credentials for Google Sheets.
                             
                 # Table of Contents
-                1. [Obtaining a Locutus `.jar` file](#obtaining-a-locutus-jar-file)
+                1. [Obtaining a Diplocutus `.jar` file](#obtaining-a-locutus-jar-file)
                    - [Option 1: Download a precompiled `.jar`](#option-1-download-a-precompiled-jar-option-2)
                    - [Option 2: Building from the source](#option-2-building-from-the-source)
                 2. [Running the jar file](#running-the-jar-file)

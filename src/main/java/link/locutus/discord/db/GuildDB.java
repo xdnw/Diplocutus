@@ -86,7 +86,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The GuildDB class represents a Discord guild database for the Locutus Discord bot written in Java.
- * It is specifically designed for the web browser nation simulation game Politics And War.
+ * It is specifically designed for the web browser nation simulation game Diplomacy and Strife.
  *
  * Responsibilities:
  * - Managing guild-specific settings and configurations.
@@ -97,7 +97,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Relationship to other classes:
  * The GuildDB class interacts with other classes such as Locutus, ApiKeyPool, GrantTemplateManager, AllianceList,
  * DBAlliance, DBNation, CityBuildRange, Transaction2, OffshoreInstance, and more, to perform its functionalities
- * within the Discord bot and the Politics And War game.
+ * within the Discord bot and the Diplomacy and Strife game.
  *
  * Constructor Summary:
  * - GuildDB(Guild guild): Constructs a GuildDB object for the specified Discord guild.

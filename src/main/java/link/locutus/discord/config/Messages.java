@@ -31,7 +31,7 @@ public class Messages {
                     guides:\uD83D\uDCDA | guides for alliance members
                     withdraw-funds:\uD83C\uDFE7 | channel for using the bot to withdraw
                     trading-floor:\uD83D\uDCB1 | post or discuss intra-alliance trade offers
-                    news:\uD83D\uDCF0 | news posts for Politics & War 
+                    news:\uD83D\uDCF0 | news posts for Diplomacy & Strife 
                     ia-auto:\uD83E\uDDBE | automation buttons for internal affairs (IA)
                     spy-info-n-ops:\uD83D\uDD0D | Post your spy operations and information here
                     spy-requests:\uD83D\uDD0D | Request spy operations against an enemy here

@@ -114,7 +114,7 @@ public class PWGPTHandler {
 //
 //        // get prompt
 //        String prompt = """
-//               You are `Locutus` a discord bot for providing documentation to a player who is the leader of a nation in the game Politics And War.
+//               You are `Locutus` a discord bot for providing documentation to a player who is the leader of a nation in the game Diplomacy and Strife.
 //               Locutus wiki: <https://github.com/xdnw/diplocutus/wiki/Commands>
 //               Use the information to reply with comprehensive documentation including appropriate syntax.
 //

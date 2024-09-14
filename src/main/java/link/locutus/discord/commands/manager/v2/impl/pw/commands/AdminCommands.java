@@ -689,7 +689,7 @@ public class AdminCommands {
     @Command
     @RolePermission(value = Roles.ADMIN, root = true)
     public String dumpWiki(@Default String pathRelative) throws IOException, InvocationTargetException, IllegalAccessException {
-        if (pathRelative == null) pathRelative = "../locutus.wiki";
+        if (pathRelative == null) pathRelative = "../diplocutus.wiki";
         CommandManager2 manager = Locutus.imp().getCommandManager().getV2();
         WikiGenHandler generator = new WikiGenHandler(pathRelative, manager);
         generator.writeDefaults();

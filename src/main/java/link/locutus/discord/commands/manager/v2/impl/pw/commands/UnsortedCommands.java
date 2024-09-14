@@ -210,7 +210,7 @@ public class UnsortedCommands {
     @RankPermission(Rank.LEADER)
     @Ephemeral
     public static String login(@Me IMessageIO io, DiscordDB discordDB, @Me DBNation me,
-                               @Arg("Your username (i.e. email) for Politics And War")
+                               @Arg("Your username (i.e. email) for Diplomacy and Strife")
                                String username,
                                String password) {
         IMessageBuilder msg = io.getMessage();

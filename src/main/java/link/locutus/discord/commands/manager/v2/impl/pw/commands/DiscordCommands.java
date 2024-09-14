@@ -421,7 +421,7 @@ public class DiscordCommands {
         return "Unregistered user from " + nation.getUrl();
     }
 
-    @Command(desc = "Register your discord user with your Politics And War nation.")
+    @Command(desc = "Register your discord user with your Diplomacy and Strife nation.")
     public String register(@Me GuildDB db, @Me User user, /* @Default("%user%")  */ DBNation nation) throws IOException {
         boolean notRegistered = DiscordUtil.getUserByNationId(nation.getNation_id()) == null;
         String fullDiscriminator = DiscordUtil.getFullUsername(user);

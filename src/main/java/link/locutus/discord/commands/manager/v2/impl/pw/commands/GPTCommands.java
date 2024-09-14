@@ -256,7 +256,7 @@ public class GPTCommands {
 
     @Command(desc = "This command provides a list of accessible embedding datasets used for prompting GPT.\n" +
             "Embedding datasets consist of vectors representing text strings, allowing for comparison between different strings.\n" +
-            "See: <https://github.com/xdnw/diplocutus/wiki> or <https://politicsandwar.fandom.com/wiki/Politics_and_War_Wiki>\n" +
+            "See: <https://github.com/xdnw/diplocutus/wiki>\n" +
             "To view a specific dataset see: /chat embedding view")
     @RolePermission(value = Roles.AI_COMMAND_ACCESS)
     public String list_documents(PWGPTHandler gpt, @Me IMessageIO io, @Me GuildDB db, @Switch("r") boolean listRoot) {
