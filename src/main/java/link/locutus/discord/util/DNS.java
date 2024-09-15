@@ -115,7 +115,6 @@ public final class DNS {
             return costReduction * landBeingBought * Math.pow((totalLand / 100), 2) / 2;
         }
     }
-
     public static NationModifier getNationModifier(double development, Map<Building, Integer> buildings, Map<Project, Integer> projects, Map<Technology, Integer> tech) {
         NationModifier modifier = new NationModifier();
         modifier.TECH_OUTPUT += (int) Math.floor(development * 0.1);

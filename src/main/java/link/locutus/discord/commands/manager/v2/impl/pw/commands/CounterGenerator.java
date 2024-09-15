@@ -49,7 +49,7 @@ public class CounterGenerator {
         for (DBWar war : enemy.getWars()) {
             DBNation other = war.getNation(!war.isAttacker(enemy));
             if (other != null) {
-                totalStr += Math.pow(other.getWarIndex(), 3);
+                totalStr += Math.pow(other.getStrength(), 3);
                 numWars++;
                 attackersSorted.remove(other);
             }
@@ -59,7 +59,7 @@ public class CounterGenerator {
 
         if (filter) {
             attackersSorted.removeIf(f -> f.getNumWars() > 0 && f.getRelativeStrength() < 1);
-            attackersSorted.removeIf(f -> f.getWarIndex() * 1.25 < enemy.getWarIndex());
+            attackersSorted.removeIf(f -> f.getStrength() * 1.25 < enemy.getStrength());
             attackersSorted.removeIf(f -> {
                 double minModifier = f.isInactiveForWar() ? DNS.WAR_RANGE_MIN_MODIFIER_INACTIVE : DNS.WAR_RANGE_MIN_MODIFIER_ACTIVE;
                 double maxModifier = f.isInactiveForWar() ? DNS.WAR_RANGE_MAX_MODIFIER_INACTIVE : DNS.WAR_RANGE_MAX_MODIFIER_ACTIVE;
@@ -75,7 +75,7 @@ public class CounterGenerator {
 
         for (DBNation att : attackersSorted) {
             double activeFactor = att.isOnline() ? 1.2 : att.active_m() < 1440 ? 1 : (1 - (att.active_m() - 1440d) / 4880);
-            double warFactor = Math.max(0.5, Math.min(3, att.getWarIndex() / enemy.getWarIndex()));
+            double warFactor = Math.max(0.5, Math.min(3, att.getStrength() / enemy.getStrength()));
 
             double maxOffFactor = 1;
             if (allowAttackersWithMaxOffensives && att.getOff() >= att.getMaxOff()) {
@@ -85,7 +85,7 @@ public class CounterGenerator {
                     if (defender == null) {
                         continue;
                     }
-                    if (defender.active_m() < 10000 && defender.getWarIndex() > att.getWarIndex() * 0.3) {
+                    if (defender.active_m() < 10000 && defender.getStrength() > att.getStrength() * 0.3) {
                         maxOffFactor = 0;
                         break;
                     }
@@ -120,7 +120,7 @@ public class CounterGenerator {
                 }
             }
 
-            factors.put(att, activeFactor * warFactor * att.getWarIndex() * maxOffFactor * roomFactor);
+            factors.put(att, activeFactor * warFactor * att.getStrength() * maxOffFactor * roomFactor);
         }
 
         attackersSorted.sort((o1, o2) -> Double.compare(factors.get(o2), factors.get(o1)));
@@ -128,11 +128,11 @@ public class CounterGenerator {
         if (attackersSorted.size() > 0 && filter) {
             for (int i = 0; i < Math.min(3, attackersSorted.size()); i++) {
                 DBNation att = attackersSorted.get(i);
-                totalStr += Math.pow(att.getWarIndex(), 3);
+                totalStr += Math.pow(att.getStrength(), 3);
                 numWars++;
             }
             totalStr = Math.pow(totalStr / numWars, 1 / 3d);
-            if (totalStr < enemy.getWarIndex()) {
+            if (totalStr < enemy.getStrength()) {
                 return Collections.emptyList();
             }
         }

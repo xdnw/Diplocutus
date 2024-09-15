@@ -900,7 +900,9 @@ public class GuildKey {
             return "If war rooms should be enabled (i.e. auto generate a channel for wars against active nations)\n" +
                     "Note: Defensive war channels must be enabled to have auto war room creation";
         }
-    }.setupRequirements(f -> f.requires(ALLIANCE_ID));
+    }.setupRequirements(f -> f.requireFunction(d -> {
+        d.getOrThrow(GuildKey.ALLIANCE_ID);
+    }, "Requires " + GuildKey.ALLIANCE_ID.name() + " to be set"));
     public static GuildSetting<Guild> WAR_SERVER = new GuildSetting<Guild>(GuildSettingCategory.WAR_ROOM, Guild.class) {
         @NoFormat
         @Command(descMethod = "help")

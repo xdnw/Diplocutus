@@ -311,7 +311,7 @@ public class NationUpdateProcessor {
         double modifierMax = current.isInactiveForWar() ? DNS.WAR_RANGE_MAX_MODIFIER_INACTIVE : DNS.WAR_RANGE_MAX_MODIFIER_ACTIVE;
         double minScore = current.getScore() / modifierMax;
         double maxScore = current.getScore() / modifierMin;
-        double strength = current.getWarIndex();
+        double strength = current.getStrength();
 
         AlertUtil.forEachChannel(GuildDB::isValidAlliance, GuildKey.ENEMY_ALERT_CHANNEL, new BiConsumer<MessageChannel, GuildDB>() {
             @Override
@@ -327,7 +327,7 @@ public class NationUpdateProcessor {
                     boolean inRange = false;
                     Set<DBNation> nations = guildDB.getMemberDBNations();
                     for (DBNation nation : nations) {
-                        if (nation.getScore() >= minScore && nation.getScore() <= maxScore && nation.active_m() < 1440 && nation.getOff() < nation.getMaxOff() && nation.getWarIndex() > strength * 0.7) {
+                        if (nation.getScore() >= minScore && nation.getScore() <= maxScore && nation.active_m() < 1440 && nation.getOff() < nation.getMaxOff() && nation.getStrength() > strength * 0.7) {
                             inRange = true;
                         }
                     }
@@ -381,8 +381,8 @@ public class NationUpdateProcessor {
                             if (attacker.getScore() < minScore || attacker.getScore() > maxScore) continue;
                             if (attacker.getOff() > 4) continue;
 
-                            double attStr = attacker.getWarIndex();
-                            double defStr = current.getWarIndex();
+                            double attStr = attacker.getStrength();
+                            double defStr = current.getStrength();
 
                             AbstractMap.SimpleEntry<DBNation, Member> entry = new AbstractMap.SimpleEntry<>(attacker, member);
 

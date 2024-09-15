@@ -170,13 +170,13 @@ public class PlaceholdersMap {
 //        Placeholders<Technology> TECHNOLOGIES = null;
         this.placeholders.put(Technology.class, createTechnologies());
 //        Placeholders<GrantTransfer> GRANTS = null;
-        this.placeholders.put(GrantTransfer.class, createGrantTransfers());
-//        Placeholders<LoanTransfer> LOANS = null;
-        this.placeholders.put(LoanTransfer.class, createLoanTransfers());
-//        Placeholders<BankTransfer> DEPOSITS = null;
-        this.placeholders.put(BankTransfer.class, createBankTransfers());
-//        Placeholders<EquipmentTransfer> EQUIPMENT_TRANSFERS = null;
-        this.placeholders.put(EquipmentTransfer.class, createEquipmentTransfers());
+//        this.placeholders.put(GrantTransfer.class, createGrantTransfers());
+////        Placeholders<LoanTransfer> LOANS = null;
+//        this.placeholders.put(LoanTransfer.class, createLoanTransfers());
+////        Placeholders<BankTransfer> DEPOSITS = null;
+//        this.placeholders.put(BankTransfer.class, createBankTransfers());
+////        Placeholders<EquipmentTransfer> EQUIPMENT_TRANSFERS = null;
+//        this.placeholders.put(EquipmentTransfer.class, createEquipmentTransfers());
 
         // TODO FIXME :||remove
         //        Placeholders<Espionage> ESPIONAGE = null;

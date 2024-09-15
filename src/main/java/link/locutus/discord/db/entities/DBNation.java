@@ -148,6 +148,12 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         return getPrivateData().getProjects(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(15)).getOrDefault(project, 0);
     }
 
+    @Command(desc = "Get number of a project or investment")
+    public int getBuilding(@Me GuildDB db, Building building, @Switch("e") boolean includeEffects) {
+        if (!db.isAllianceId(getAlliance_id())) throw new IllegalArgumentException("Not in alliance " + db.getAllianceIds() + " for " + db.getGuild());
+        return getPrivateData().getBuildings(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(15), includeEffects).getOrDefault(building, 0);
+    }
+
     public boolean update(NationDB db, Nation entity, Consumer<Event> eventConsumer) {
         DBNation copy = null;
         if (entity.NationId != NationId) {
@@ -747,7 +753,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
             DBNation other = war.getNation(!war.isAttacker(this));
             if (other == null) continue;
             numWars++;
-            totalStr += Math.pow(other.getWarIndex(), 3);
+            totalStr += Math.pow(other.getStrength(), 3);
         }
         totalStr = Math.pow(totalStr / numWars, 1 / 3d);
 
@@ -793,7 +799,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
     public double getRelativeStrength(boolean inactiveIsLoss) {
         if (active_m() > 7200 && inactiveIsLoss) return 0;
 
-        double myStr = getWarIndex();
+        double myStr = getStrength();
         double enemyStr = getEnemyStrength();
 
         return myStr / enemyStr;
@@ -814,7 +820,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
             if (other == null || other.active_m() > 2440 || other.isVacation()) continue;
 //            if (filter.test(other.getScore())) {
             if (other.getScore() >= minScore && other.getScore() <= maxScore) {
-                strongest = Math.max(strongest, other.getWarIndex());
+                strongest = Math.max(strongest, other.getStrength());
             }
         }
         return strongest;
@@ -829,7 +835,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
     @Command(desc = "Relative strength of the strongest nation this nation is fighting (1 = equal)")
     public double getStrongestEnemyRelative() {
         double enemyStr = getStrongestEnemy();
-        double myStrength = getWarIndex();
+        double myStrength = getStrength();
         return myStrength == 0 ? 0 : enemyStr / myStrength;
     }
 
@@ -841,7 +847,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
             DBNation other = war.getNation(!war.isAttacker(this));
             if (other == null || other.active_m() > 2440 || other.isVacation()) continue;
             if (other.getScore() >= minScore && other.getScore() <= maxScore) {
-                strongest = Math.max(strongest, other.getWarIndex());
+                strongest = Math.max(strongest, other.getStrength());
             }
         }
         return strongest;
@@ -1657,6 +1663,17 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
                 .append(String.format("%4s", getAgeDays())).append("day").append(" | ")
                 .append("```");
         return response.toString();
+    }
+
+    @Command(desc = "War index without infra, land and tech modifiers")
+    public double getBaseIndex() {
+        double baseIndex = (getWarIndex() / getTechIndex()) * (getInfra() + (getLand() / 50d));
+        return baseIndex;
+    }
+
+    @Command(desc = "Estimate strength from base index and infra / 12")
+    public double getStrength() {
+        return getBaseIndex() + (getInfra() / 12d);
     }
 
     @Command(desc = "Sheet lookup")

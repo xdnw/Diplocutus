@@ -522,7 +522,7 @@ public class WarCommands {
             Collections.sort(canCounter, new Comparator<DBNation>() {
                 @Override
                 public int compare(DBNation o1, DBNation o2) {
-                    return Double.compare(o2.getWarIndex(), o1.getWarIndex());
+                    return Double.compare(o2.getStrength(), o1.getStrength());
                 }
             });
             if (canCounter.size() > maxCounterSize) canCounter = canCounter.subList(0, maxCounterSize);
@@ -534,25 +534,25 @@ public class WarCommands {
         for (DBNation nation : nations) {
             if (nation.active_m() > 2880) {
                 if (nation.lostInactiveWar() || nation.getAlliance_id() == 0) {
-                    strength.put(nation, Math.pow(nation.getWarIndex(), 3) * 0.44);
+                    strength.put(nation, Math.pow(nation.getStrength(), 3) * 0.44);
                     continue;
                 }
                 if (nation.getPosition() == Rank.APPLICANT.id) {
-                    strength.put(nation, Math.pow(nation.getWarIndex(), 3) * Math.max(0, 0.8 - 0.1 * nation.active_m() / 1440d));
+                    strength.put(nation, Math.pow(nation.getStrength(), 3) * Math.max(0, 0.8 - 0.1 * nation.active_m() / 1440d));
                     continue;
                 }
-                strength.put(nation, Math.pow(nation.getWarIndex(), 3) * Math.max(0, 0.8 - 0.1 * nation.active_m() / 1440d));
+                strength.put(nation, Math.pow(nation.getStrength(), 3) * Math.max(0, 0.8 - 0.1 * nation.active_m() / 1440d));
                 continue;
             }
             if (nation.getAlliance_id() == 0) {
-                strength.put(nation, Math.pow(nation.getWarIndex(), 3) * 0.66);
+                strength.put(nation, Math.pow(nation.getStrength(), 3) * 0.66);
                 continue;
             }
             if (nation.getDef() > 0 && nation.getRelativeStrength(false) < 1) {
-                strength.put(nation, Math.pow(nation.getWarIndex(), 3) * 0.33);
+                strength.put(nation, Math.pow(nation.getStrength(), 3) * 0.33);
                 continue;
             }
-            strength.put(nation, Math.pow(nation.getWarIndex(), 3));
+            strength.put(nation, Math.pow(nation.getStrength(), 3));
         }
          for (DBNation nation : nations) {
              double counterStrength = 0;
@@ -576,7 +576,7 @@ public class WarCommands {
                          } else {
                              inactive2 += (1 + (other.active_m()) / 1440d);
                          }
-                         counterStrength += Math.pow(other.getWarIndex(), 3);
+                         counterStrength += Math.pow(other.getStrength(), 3);
                      }
                  }
              }
@@ -589,10 +589,10 @@ public class WarCommands {
          }
 
         // nationsToBlitzWith foreach nation.getStrength();
-        double myStrength = nationsToBlitzWith.stream().mapToDouble(f -> Math.pow(f.getWarIndex(), 3)).sum();
+        double myStrength = nationsToBlitzWith.stream().mapToDouble(f -> Math.pow(f.getStrength(), 3)).sum();
 
         if (maxRelativeCounterStrength != null) {
-            counterChance.removeIf(f -> f.getKey().getWarIndex() > myStrength * maxRelativeCounterStrength);
+            counterChance.removeIf(f -> f.getKey().getStrength() > myStrength * maxRelativeCounterStrength);
             counterChance.removeIf(f -> strength.getOrDefault(f.getKey(), 0d) > myStrength * maxRelativeTargetStrength);
         }
 
@@ -639,7 +639,7 @@ public class WarCommands {
 
         List<Map.Entry<DBNation, Double>> counterChance = getCounterChance(db, targets, numResults, ignoreDNR, includeAllies, nationsToBlitzWith, maxRelativeTargetStrength, maxRelativeCounterStrength, withinAllAttackersRange, ignoreODP, force);
 
-        double myStrength = nationsToBlitzWith.stream().mapToDouble(f -> Math.pow(f.getWarIndex(), 3)).sum();
+        double myStrength = nationsToBlitzWith.stream().mapToDouble(f -> Math.pow(f.getStrength(), 3)).sum();
 
         StringBuilder response = new StringBuilder();
         numResults = Math.min(numResults, 25);
@@ -658,7 +658,7 @@ public class WarCommands {
                             .append(String.format("%5s", (int) nation.getScore())).append(" ns").append(" | ")
                     .append(String.format("%2s", "dev:" + (int) nation.getInfra())).append(" | ")
                                 .append(String.format("%5s", "land:" + (int) nation.getLand())).append(" | ")
-                    .append(String.format("%6s", "WarIndex:" + MathMan.format(nation.getWarIndex()))).append(" | ")
+                    .append(String.format("%6s", "WarIndex:" + MathMan.format(nation.getStrength()))).append(" | ")
                             .append(String.format("%1s", nation.getOff())).append(" \uD83D\uDDE1").append(" | ")
                     .append(String.format("%1s", nation.getDef())).append(" \uD83D\uDEE1");
 //                                .append(String.format("%2s", nation.getSpies())).append(" \uD83D\uDD0D");
@@ -2786,7 +2786,7 @@ public class WarCommands {
                 "Dev",
                 "Land",
                 "Score",
-                "WarIndex",
+                "BaseIndex",
                 "Resistance",
                 "Attacker",
                 "Att AA",
@@ -2794,7 +2794,7 @@ public class WarCommands {
                 "Def AA",
                 "Defender",
                 "Resistance",
-                "WarIndex",
+                "BaseIndex",
                 "Score",
                 "Land",
                 "Dev"
@@ -2819,7 +2819,7 @@ public class WarCommands {
             headers.set(4, MathMan.format(att.getInfra()));
             headers.set(5, MathMan.format(att.getLand()));
             headers.set(6, MathMan.format(att.getScore()));
-            headers.set(7, MathMan.format(att.getWarIndex()));
+            headers.set(7, MathMan.format(att.getBaseIndex()));
             headers.set(8, card.attackerResistance);
             headers.set(9, MarkupUtil.sheetUrl(att.getNation(), att.getUrl()));
             headers.set(10, MarkupUtil.sheetUrl(att.getAllianceName(), att.getAllianceUrl()));
@@ -2828,7 +2828,7 @@ public class WarCommands {
             headers.set(12, MarkupUtil.sheetUrl(def.getAllianceName(), def.getAllianceUrl()));
             headers.set(13, MarkupUtil.sheetUrl(def.getNation(), def.getUrl()));
             headers.set(14, card.defenderResistance);
-            headers.set(15, MathMan.format(def.getWarIndex()));
+            headers.set(15, MathMan.format(def.getBaseIndex()));
             headers.set(16, MathMan.format(def.getScore()));
             headers.set(17, MathMan.format(def.getLand()));
             headers.set(18, MathMan.format(def.getInfra()));
@@ -3231,7 +3231,7 @@ public class WarCommands {
             }
         }
         if (filterWeak) {
-            counterWith.removeIf(nation -> nation.getWarIndex() < target.getWarIndex() * 0.75);
+            counterWith.removeIf(nation -> nation.getStrength() < target.getStrength() * 0.75);
             if (size > counterWith.size()) {
                 errors.add("Removed `" + (size - counterWith.size()) + "` nations weaker than 0.75x the target's war index");
                 size = counterWith.size();
@@ -3341,7 +3341,7 @@ public class WarCommands {
                 throw new IllegalArgumentException("This guild is not in an alliance, please provide the nations to counter with");
             }
         }
-        attackers.removeIf(f -> enemy.getWarIndex() >= f.getWarIndex() * 1.25 || enemy.getInfra() > f.getInfra() * 2);
+        attackers.removeIf(f -> enemy.getStrength() >= f.getStrength() * 1.25 || enemy.getInfra() > f.getInfra() * 2);
         attackers.removeIf(f -> f.getUser() == null || db.getGuild().getMember(f.getUser()) == null);
         return warroom(channel, command, warCat, me, author, db, enemy, attackers, max, false, true, false, true, pingMembers, skipAddMembers, sendMail);
     }
