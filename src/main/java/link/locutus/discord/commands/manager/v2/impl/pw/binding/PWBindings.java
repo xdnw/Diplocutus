@@ -973,11 +973,18 @@ public class PWBindings extends BindingHelper {
         return warChannel;
     }
 
-    @Binding(value = "A project name. Replace spaces with `_`. See: <https://diplomacy-strife.fandom.com/wiki/Projects>", examples = "ACTIVITY_CENTER")
+    @Binding(value = "A project name. Replace spaces with `_`. See: <https://diplomacy-strife.fandom.com/wiki/Projects>", examples = "NATIONAL_HIGHWAY_SYSTEM")
     public static Project project(String input) {
         Project project = Project.parse(input);
         if (project == null) throw new IllegalArgumentException("Invalid project: `"  + input + "`. Options: " + StringMan.getString(Project.values));
         return project;
+    }
+
+    @Binding(value = "A timed policy")
+    public static TimedPolicy policy(String input) {
+        TimedPolicy policy = TimedPolicy.parse(input);
+        if (policy == null) throw new IllegalArgumentException("Invalid policy: `"  + input + "`. Options: " + StringMan.getString(TimedPolicy.values));
+        return policy;
     }
 
     @Binding(value = "A Bot metric for alliances")
@@ -1064,7 +1071,7 @@ public class PWBindings extends BindingHelper {
     }
 
     @Binding
-    public Technology Technology(String input) {
+    public static Technology Technology(String input) {
         return emum(Technology.class, input);
     }
 

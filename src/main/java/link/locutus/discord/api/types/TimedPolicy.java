@@ -61,6 +61,14 @@ public enum TimedPolicy {
         this.get = get;
     }
 
+    public static TimedPolicy parse(String input) {
+        try {
+            return TimedPolicy.valueOf(input.toUpperCase().replace(" ", "_"));
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
     public void apply(NationModifier modifier, int level) {
 
     }

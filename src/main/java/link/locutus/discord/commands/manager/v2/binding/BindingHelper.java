@@ -39,6 +39,11 @@ public class BindingHelper {
             String name = constant.name().replaceAll("_", " ").toLowerCase();
             if (name.equals(input)) return (T) constant;
         }
+        try {
+            Method method = emum.getMethod("parse", String.class);
+            T resultOrNull = (T) method.invoke(null, input);
+            if (resultOrNull != null) return resultOrNull;
+        } catch (Exception e) {}
         throw new IllegalArgumentException("Invalid category: `" + input + "`. Options: " + StringMan.getString(constants));
     }
 

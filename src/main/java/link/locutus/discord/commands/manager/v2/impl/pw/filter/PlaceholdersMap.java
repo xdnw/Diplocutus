@@ -165,15 +165,22 @@ public class PlaceholdersMap {
         this.placeholders.put(GuildSetting.class, createGuildSettings());
         //        Placeholders<Conflict> CONFLICTS = null;
         this.placeholders.put(Conflict.class, createConflicts());
+//        Placeholders<TimedPolicy> POLICIES = null;
+        this.placeholders.put(TimedPolicy.class, createPolicies());
+//        Placeholders<Technology> TECHNOLOGIES = null;
+        this.placeholders.put(Technology.class, createTechnologies());
+//        Placeholders<GrantTransfer> GRANTS = null;
+        this.placeholders.put(GrantTransfer.class, createGrantTransfers());
+//        Placeholders<LoanTransfer> LOANS = null;
+        this.placeholders.put(LoanTransfer.class, createLoanTransfers());
+//        Placeholders<BankTransfer> DEPOSITS = null;
+        this.placeholders.put(BankTransfer.class, createBankTransfers());
+//        Placeholders<EquipmentTransfer> EQUIPMENT_TRANSFERS = null;
+        this.placeholders.put(EquipmentTransfer.class, createEquipmentTransfers());
+
         // TODO FIXME :||remove
         //        Placeholders<Espionage> ESPIONAGE = null;
 //        Placeholders<CyberOps> CYBEROPS = null;
-//        Placeholders<Policy> POLICIES = null;
-//        Placeholders<Technology> TECHNOLOGIES = null;
-//        Placeholders<GrantTransfer> GRANTS = null;
-//        Placeholders<LoanTransfer> LOANS = null;
-//        Placeholders<BankTransfer> DEPOSITS = null;
-//        Placeholders<EquipmentTransfer> EQUIPMENT_TRANSFERS = null;
 
         Map<Class, Field> fields = new HashMap<>();
         for (Field field : PlaceholdersMap.class.getDeclaredFields()) {
@@ -1443,6 +1450,138 @@ public class PlaceholdersMap {
                                      @Default TypedFunction<Project, String> v,
                                      @Default TypedFunction<Project, String> w,
                                      @Default TypedFunction<Project, String> x) throws GeneralSecurityException, IOException {
+                return Placeholders._addColumns(this, command,db, io, author, sheet,
+                        a, b, c, d, e, f, g, h, i, j,
+                        k, l, m, n, o, p, q, r, s, t,
+                        u, v, w, x);
+            }
+        };
+    }
+
+    private Placeholders<TimedPolicy> createPolicies() {
+        return new StaticPlaceholders<TimedPolicy>(TimedPolicy.class, TimedPolicy::values, store, validators, permisser,
+                "A timed policy",
+                (ThrowingTriFunction<Placeholders<TimedPolicy>, ValueStore, String, Set<TimedPolicy>>) (inst, store, input) -> {
+                    Set<TimedPolicy> selection = getSelection(inst, store, input);
+                    if (selection != null) return selection;
+                    if (input.equalsIgnoreCase("*")) return new HashSet<>(Arrays.asList(TimedPolicy.values));
+                    if (SpreadSheet.isSheet(input)) {
+                        return SpreadSheet.parseSheet(input, List.of("policy"), true, (type, str) -> PWBindings.policy(str));
+                    }
+                    Set<TimedPolicy> result = new HashSet<>();
+                    for (String type : input.split(",")) {
+                        TimedPolicy policy = TimedPolicy.parse(type);
+                        if (policy == null) throw new IllegalArgumentException("Invalid policy: `" + type + "`");
+                        result.add(policy);
+                    }
+                    return result;
+                }) {
+            @Override
+            public Set<String> getSheetColumns() {
+                return Set.of("policy");
+            }
+
+            @NoFormat
+            @Command(desc = "Add an alias for a selection of policy")
+            @RolePermission(value = {Roles.INTERNAL_AFFAIRS_STAFF, Roles.MILCOM, Roles.ECON_STAFF, Roles.FOREIGN_AFFAIRS_STAFF, Roles.ECON, Roles.FOREIGN_AFFAIRS}, any = true)
+            public String addSelectionAlias(@Me JSONObject command, @Me GuildDB db, String name, Set<TimedPolicy> policies) {
+                return _addSelectionAlias(this, command, db, name, policies, "policies");
+            }
+
+            @NoFormat
+            @Command(desc = "Add columns to a Policy sheet")
+            @RolePermission(value = {Roles.INTERNAL_AFFAIRS_STAFF, Roles.MILCOM, Roles.ECON_STAFF, Roles.FOREIGN_AFFAIRS_STAFF, Roles.ECON, Roles.FOREIGN_AFFAIRS}, any = true)
+            public String addColumns(@Me JSONObject command, @Me GuildDB db, @Me IMessageIO io, @Me User author, @Switch("s") SheetTemplate sheet,
+                                     @Default TypedFunction<TimedPolicy, String> a,
+                                     @Default TypedFunction<TimedPolicy, String> b,
+                                     @Default TypedFunction<TimedPolicy, String> c,
+                                     @Default TypedFunction<TimedPolicy, String> d,
+                                     @Default TypedFunction<TimedPolicy, String> e,
+                                     @Default TypedFunction<TimedPolicy, String> f,
+                                     @Default TypedFunction<TimedPolicy, String> g,
+                                     @Default TypedFunction<TimedPolicy, String> h,
+                                     @Default TypedFunction<TimedPolicy, String> i,
+                                     @Default TypedFunction<TimedPolicy, String> j,
+                                     @Default TypedFunction<TimedPolicy, String> k,
+                                     @Default TypedFunction<TimedPolicy, String> l,
+                                     @Default TypedFunction<TimedPolicy, String> m,
+                                     @Default TypedFunction<TimedPolicy, String> n,
+                                     @Default TypedFunction<TimedPolicy, String> o,
+                                     @Default TypedFunction<TimedPolicy, String> p,
+                                     @Default TypedFunction<TimedPolicy, String> q,
+                                     @Default TypedFunction<TimedPolicy, String> r,
+                                     @Default TypedFunction<TimedPolicy, String> s,
+                                     @Default TypedFunction<TimedPolicy, String> t,
+                                     @Default TypedFunction<TimedPolicy, String> u,
+                                     @Default TypedFunction<TimedPolicy, String> v,
+                                     @Default TypedFunction<TimedPolicy, String> w,
+                                     @Default TypedFunction<TimedPolicy, String> x) throws GeneralSecurityException, IOException {
+                return Placeholders._addColumns(this, command,db, io, author, sheet,
+                        a, b, c, d, e, f, g, h, i, j,
+                        k, l, m, n, o, p, q, r, s, t,
+                        u, v, w, x);
+            }
+        };
+    }
+
+    private Placeholders<Technology> createTechnologies() {
+        return new StaticPlaceholders<Technology>(Technology.class, Technology::values, store, validators, permisser,
+                "A Technology",
+                (ThrowingTriFunction<Placeholders<Technology>, ValueStore, String, Set<Technology>>) (inst, store, input) -> {
+                    Set<Technology> selection = getSelection(inst, store, input);
+                    if (selection != null) return selection;
+                    if (input.equalsIgnoreCase("*")) return new HashSet<>(Arrays.asList(Technology.values));
+                    if (SpreadSheet.isSheet(input)) {
+                        return SpreadSheet.parseSheet(input, List.of("technology"), true, (type, str) -> PWBindings.Technology(str));
+                    }
+                    Set<Technology> result = new HashSet<>();
+                    for (String type : input.split(",")) {
+                        Technology technology = Technology.parse(type);
+                        if (technology == null) throw new IllegalArgumentException("Invalid technology: `" + type + "`");
+                        result.add(technology);
+                    }
+                    return result;
+                }) {
+            @Override
+            public Set<String> getSheetColumns() {
+                return Set.of("technology");
+            }
+
+            @NoFormat
+            @Command(desc = "Add an alias for a selection of technology")
+            @RolePermission(value = {Roles.INTERNAL_AFFAIRS_STAFF, Roles.MILCOM, Roles.ECON_STAFF, Roles.FOREIGN_AFFAIRS_STAFF, Roles.ECON, Roles.FOREIGN_AFFAIRS}, any = true)
+            public String addSelectionAlias(@Me JSONObject command, @Me GuildDB db, String name, Set<Technology> policies) {
+                return _addSelectionAlias(this, command, db, name, policies, "policies");
+            }
+
+            @NoFormat
+            @Command(desc = "Add columns to a Technology sheet")
+            @RolePermission(value = {Roles.INTERNAL_AFFAIRS_STAFF, Roles.MILCOM, Roles.ECON_STAFF, Roles.FOREIGN_AFFAIRS_STAFF, Roles.ECON, Roles.FOREIGN_AFFAIRS}, any = true)
+            public String addColumns(@Me JSONObject command, @Me GuildDB db, @Me IMessageIO io, @Me User author, @Switch("s") SheetTemplate sheet,
+                                     @Default TypedFunction<Technology, String> a,
+                                     @Default TypedFunction<Technology, String> b,
+                                     @Default TypedFunction<Technology, String> c,
+                                     @Default TypedFunction<Technology, String> d,
+                                     @Default TypedFunction<Technology, String> e,
+                                     @Default TypedFunction<Technology, String> f,
+                                     @Default TypedFunction<Technology, String> g,
+                                     @Default TypedFunction<Technology, String> h,
+                                     @Default TypedFunction<Technology, String> i,
+                                     @Default TypedFunction<Technology, String> j,
+                                     @Default TypedFunction<Technology, String> k,
+                                     @Default TypedFunction<Technology, String> l,
+                                     @Default TypedFunction<Technology, String> m,
+                                     @Default TypedFunction<Technology, String> n,
+                                     @Default TypedFunction<Technology, String> o,
+                                     @Default TypedFunction<Technology, String> p,
+                                     @Default TypedFunction<Technology, String> q,
+                                     @Default TypedFunction<Technology, String> r,
+                                     @Default TypedFunction<Technology, String> s,
+                                     @Default TypedFunction<Technology, String> t,
+                                     @Default TypedFunction<Technology, String> u,
+                                     @Default TypedFunction<Technology, String> v,
+                                     @Default TypedFunction<Technology, String> w,
+                                     @Default TypedFunction<Technology, String> x) throws GeneralSecurityException, IOException {
                 return Placeholders._addColumns(this, command,db, io, author, sheet,
                         a, b, c, d, e, f, g, h, i, j,
                         k, l, m, n, o, p, q, r, s, t,

@@ -266,6 +266,7 @@ public class CommandManager2 {
         getCommands().registerMethod(new WarCommands(), List.of("sheets_milcom"), "warSheet", "war_sheet");
         getCommands().registerMethod(new WarCommands(), List.of("war", "counter"), "counterWar", "war_id");
         getCommands().registerMethod(new WarCommands(), List.of("war", "counter"), "counter", "nation");
+        getCommands().registerMethod(new WarCommands(), List.of("war", "counter"), "autocounter", "auto");
 
 
 //        getCommands().registerMethod(new GrantCommands(), List.of("grant"), "costBulk", "cost");

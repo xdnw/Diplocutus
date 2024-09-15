@@ -312,6 +312,14 @@ public enum Technology {
         this.get = get;
     }
 
+    public static Technology parse(String type) {
+        try {
+            return Technology.valueOf(type.toUpperCase().replace(" ", "_"));
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
     public void apply(NationModifier modifier, int level) {
 
     }
