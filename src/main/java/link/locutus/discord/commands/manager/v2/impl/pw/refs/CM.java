@@ -6240,6 +6240,7 @@ public class CM {
                 return set("warId", value);
             }
 
+            }
             public static class counter{
                 @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="counter")
                 public static class nation extends CommandRef {

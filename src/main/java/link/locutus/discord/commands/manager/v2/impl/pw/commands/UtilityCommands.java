@@ -711,8 +711,8 @@ public class UtilityCommands {
 
     private static void printAA(StringBuilder response, DBNation nation, boolean spies) {
         response.append(String.format("%4s", TimeUtil.secToTime(TimeUnit.DAYS, nation.getAgeDays()))).append(" ");
-        response.append(nation.toMarkdown(true, false, false, true, false, false));
-        response.append(nation.toMarkdown(true, false, false, false, true, spies));
+        response.append(nation.toMarkdown(true, false, true, false, false));
+        response.append(nation.toMarkdown(true, false, false, true, spies));
     }
 
     @Command(desc = "Add or subtract interest to a nation's balance based on their current balance")

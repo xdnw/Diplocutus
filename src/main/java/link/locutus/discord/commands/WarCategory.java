@@ -426,7 +426,7 @@ public class WarCategory {
 
                 body.append("**Enemy:** ").append(target.getNationUrlMarkup(true))
                         .append(" | ").append(target.getAllianceUrlMarkup(true));
-                body.append(target.toMarkdown(true, true, false, false, true, false));
+                body.append(target.toMarkdown(true, false, false, true, false));
                 body.append("\n");
 
                 Set<DBWar> wars = target.getActiveWars();

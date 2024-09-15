@@ -1478,7 +1478,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
     }
 
     public String toMarkdown(boolean title, boolean general, boolean military) {
-        return toMarkdown(true, false, title, general, military, true);
+        return toMarkdown(true, title, general, military, true);
     }
 
     @Command(desc = "Days since creation")
@@ -1643,8 +1643,8 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         if (user != null) {
             response.append(user.getDiscordName() + " / <@" + user.getDiscordId() + "> | ");
         }
-        response.append(toMarkdown(true, false, true, true, false, false));
-        response.append(toMarkdown(true, false, false, false, true, true));
+        response.append(toMarkdown(true, true, true, false, false));
+        response.append(toMarkdown(true, false, false, true, true));
 
         response.append(" ```")
                 .append(String.format("%6s", isVacation())).append(" \uD83C\uDFD6\ufe0f").append(" | ");

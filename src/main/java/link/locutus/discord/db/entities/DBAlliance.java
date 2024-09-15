@@ -102,6 +102,19 @@ public class DBAlliance implements NationList, NationOrAlliance, GuildOrAlliance
         return update(Locutus.imp().getNationDB(), alliance, eventConsumer);
     }
 
+    @Command(desc = "Alliance revenue")
+    public Map<ResourceType, Double> getRevenue() {
+        Map<ResourceType, Double> revenue = new LinkedHashMap<>();
+        revenue.put(ResourceType.CASH, AllianceIncome);
+        revenue.put(ResourceType.MINERALS, AllianceMineralIncome);
+        revenue.put(ResourceType.URANIUM, AllianceUraniumIncome);
+        revenue.put(ResourceType.PRODUCTION, AllianceProductionIncome);
+        revenue.put(ResourceType.RARE_METALS, AllianceRareMetalIncome);
+        revenue.put(ResourceType.FUEL, AllianceFuelIncome);
+        revenue.put(ResourceType.TECHNOLOGY, AllianceTechIncome);
+        return revenue;
+    }
+
     public boolean update(NationDB db, Alliance alliance, Consumer<Event> eventConsumer) {
         DBAlliance copy = null;
         if (alliance.AllianceId != null && this.AllianceId != alliance.AllianceId) {
@@ -424,7 +437,108 @@ public class DBAlliance implements NationList, NationOrAlliance, GuildOrAlliance
     }
 
     public String toMarkdown() {
-        return "TODO FIXME :||remove";
+        StringBuilder body = new StringBuilder();
+        // `#id` | Alliance urlMakrup / acronym (linked)
+        body.append("`AA:").append(AllianceId).append("` | ").append(getMarkdownUrl());
+        body.append(" | `#").append(getRank()).append("`").append("\n");
+
+        String prefix = "";
+        if (!prefix.isEmpty()) {
+            body.append("\n");
+        }
+        body.append("```\n");
+        // Number of members / applicants (active past day)
+        Set<DBNation> nations = getNations();
+        Set<DBNation> members = nations.stream().filter(n -> n.getPosition() > Rank.APPLICANT.id && !n.isVacation()).collect(Collectors.toSet());
+        Set<DBNation> activeMembers = members.stream().filter(n -> n.active_m() < 10080).collect(Collectors.toSet());
+        Set<DBNation> applicants = nations.stream().filter(n -> n.getPosition() == Rank.APPLICANT.id && !n.isVacation()).collect(Collectors.toSet());
+        Set<DBNation> activeApplicants = applicants.stream().filter(n -> n.active_m() < 10080).collect(Collectors.toSet());
+        // 5 members (3 active/2 taxable) | 2 applicants (1 active)
+        body.append(members.size()).append(" members (").append(activeMembers.size()).append(" active 1w)");
+        if (!applicants.isEmpty()) {
+            body.append(" | ").append(applicants.size()).append(" applicants (").append(activeApplicants.size()).append(" active)");
+        }
+        body.append("\n");
+        // Off, Def, Cities (total/average), Score, Color
+        int off = nations.stream().mapToInt(DBNation::getOff).sum();
+        int def = nations.stream().mapToInt(DBNation::getDef).sum();
+        long dev = members.stream().mapToLong(f -> (long) f.getInfra()).sum();
+        long land = members.stream().mapToLong(f -> (long) f.getLand()).sum();
+        double avgDev = dev / (double) members.size();
+        double avgLand = land / (double) members.size();
+        double score = members.stream().mapToDouble(DBNation::getScore).sum();
+        // TODO FIXME :||remove !!important
+        // revenue
+        // devastation
+        // laws
+        // population
+        Map<String, Integer> indexes = new LinkedHashMap<>();
+
+        body.append(off).append("\uD83D\uDDE1 | ")
+                .append(def).append("\uD83D\uDEE1 | ")
+                .append("dev:" + MathMan.format(dev)).append(" (avg:").append(MathMan.format(avgDev)).append(") | ")
+                .append("land:" + MathMan.format(land)).append(" (avg:").append(MathMan.format(avgLand)).append(") | ")
+                .append(MathMan.format(score)).append("ns ")
+                .append("\n```\n");
+
+
+        Map<DBAlliance, Integer> warsByAlliance = new HashMap<>();
+        for (DBWar war : getActiveWars()) {
+            DBNation attacker = war.getNation(true);
+            DBNation defender = war.getNation(false);
+            if (attacker == null || attacker.active_m() > 7200) continue;
+            if (defender == null || defender.active_m() > 7200) continue;
+            int otherAAId = war.getAttacker_aa() == AllianceId ? war.getDefender_aa() : war.getAttacker_aa();
+            if (otherAAId > 0) {
+                DBAlliance otherAA = DBAlliance.getOrCreate(otherAAId);
+                warsByAlliance.put(otherAA, warsByAlliance.getOrDefault(otherAA, 0) + 1);
+            }
+        }
+        if (!warsByAlliance.isEmpty()) {
+            List<Map.Entry<DBAlliance, Integer>> sorted = warsByAlliance.entrySet().stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .toList();
+            body.append("\n**Alliance Wars:**\n");
+            String cappedMsg = null;
+            if (sorted.size() > 20) {
+                cappedMsg = "- +" + (sorted.size() - 20) + " more";
+                sorted = sorted.stream().limit(20).collect(Collectors.toList());
+            }
+            for (Map.Entry<DBAlliance, Integer> entry : sorted) {
+                body.append("- ").append(DNS.getMarkdownUrl(entry.getKey().getId(), true))
+                        .append(": ").append(entry.getValue()).append(" wars\n");
+            }
+            if (cappedMsg != null) {
+                body.append(cappedMsg).append("\n");
+            }
+        }
+        Map<Integer, Treaty> treaties = this.getTreaties();
+        if (treaties.isEmpty()) {
+            body.append("`No treaties`\n");
+        } else {
+            body.append("\n**Treaties:**\n");
+            String cappedMsg = null;
+            if (treaties.size() > 20) {
+                cappedMsg = "- +" + (treaties.size() - 20) + " more";
+                treaties = treaties.entrySet().stream().limit(20).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            }
+            for (Treaty treaty : treaties.values()) {
+                int otherId = treaty.getToId() == AllianceId ? treaty.getFromId() : treaty.getToId();
+                body.append("- ").append(treaty.getType())
+                        .append(": ").append(DNS.getMarkdownUrl(otherId, true))
+                        .append(" (").append(DiscordUtil.timestamp(treaty.getEndTime(), null))
+                        .append(")\n");
+            }
+            if (cappedMsg != null) {
+                body.append(cappedMsg).append("\n");
+            }
+        }
+        // Revenue
+        Map<ResourceType, Double> revenue = getRevenue();
+        body.append("\n**Revenue:**");
+        body.append("`").append(ResourceType.resourcesToString(revenue)).append("`\n");
+        body.append("- worth: `$" + MathMan.formatSig(ResourceType.convertedTotal(revenue)) + "`\n");
+        return body.toString();
     }
 
     @Command(desc = "Sum of nation attribute for specific nations in alliance")

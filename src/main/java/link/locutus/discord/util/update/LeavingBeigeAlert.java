@@ -318,7 +318,7 @@ public class LeavingBeigeAlert {
                         DBNation target = targetEntry.getKey();
 
                         String title = "Target: " + target.getNation();
-                        String body = target.toMarkdown(true, true, true, true, true, false);
+                        String body = target.toMarkdown(true, true, true, true, false);
 
                         boolean isSubscription = targetEntry.getValue();
                         if (isSubscription) {

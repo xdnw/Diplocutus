@@ -435,7 +435,7 @@ public class NationUpdateProcessor {
 //        if (loot < 10000000) {
 //            return false;
 //        }
-        String msg = defender.toMarkdown(true, true, true, true, true, false);
+        String msg = defender.toMarkdown(true, true, true, true, false);
         String title = "Target: " + defender.getNation();
         String url = "https://diplomacyandstrife.com/nation/" + defender.getNation_id();
         msg += "\n" + url;

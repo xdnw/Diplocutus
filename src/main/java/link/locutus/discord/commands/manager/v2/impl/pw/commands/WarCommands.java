@@ -655,15 +655,11 @@ public class WarCommands {
                     .append(" | " + String.format("%16s", nation.getAllianceName()));
 
             response.append("\n```")
-//                            .append(String.format("%5s", (int) nation.getScore())).append(" ns").append(" | ")
-                    // TODO FIXME :||remove unprotected
-//                    .append(String.format("%2s", nation.getCities())).append(" \uD83C\uDFD9").append(" | ")
-////                                .append(String.format("%5s", nation.getAvg_infra())).append(" \uD83C\uDFD7").append(" | ")
-//                    .append(String.format("%6s", nation.getSoldiers())).append(" \uD83D\uDC82").append(" | ")
-//                    .append(String.format("%5s", nation.getTanks())).append(" \u2699").append(" | ")
-//                    .append(String.format("%5s", nation.getAircraft())).append(" \u2708").append(" | ")
-//                    .append(String.format("%4s", nation.getShips())).append(" \u26F5").append(" | ")
-//                            .append(String.format("%1s", nation.getOff())).append(" \uD83D\uDDE1").append(" | ")
+                            .append(String.format("%5s", (int) nation.getScore())).append(" ns").append(" | ")
+                    .append(String.format("%2s", "dev:" + (int) nation.getInfra())).append(" | ")
+                                .append(String.format("%5s", "land:" + (int) nation.getLand())).append(" | ")
+                    .append(String.format("%6s", "WarIndex:" + MathMan.format(nation.getWarIndex()))).append(" | ")
+                            .append(String.format("%1s", nation.getOff())).append(" \uD83D\uDDE1").append(" | ")
                     .append(String.format("%1s", nation.getDef())).append(" \uD83D\uDEE1");
 //                                .append(String.format("%2s", nation.getSpies())).append(" \uD83D\uDD0D");
 
@@ -868,7 +864,6 @@ public class WarCommands {
 //        }
 //    }
 
-    // TODO FIXME :||remove
 //    @Command(desc = "Find nations to do a spy op against the specified enemy\n" +
 //                    "Op types: (INTEL,NUKE,MISSILE,SHIPS,AIRCRAFT,TANKS,SPIES,SOLDIER) or `*` (for all op types)\n" +
 //                    "The alliance argument is optional\n" +
@@ -2273,7 +2268,7 @@ public class WarCommands {
         }
     }
 
-    // TODO FIXME :||remove war room sheet
+    // TODO FIXME :||remove !!important
 //    @Command(desc = "Create war rooms from a blitz sheet")
 //    @RolePermission(Roles.MILCOM)
 //    public String warRoomSheet(@Me WarCategory warCat, @Me User author, @Me Guild guild, @Me JSONObject command, @Me IMessageIO io,
@@ -3320,37 +3315,36 @@ public class WarCommands {
         return response.toString();
     }
 
-    // TODO FIXME :||remove auto counter
-//    @RolePermission(value = Roles.MILCOM)
-//    @Command(desc = "Auto generate counters\n" +
-//            "Add `-p` to ping users that are added\n" +
-//            "Add `-a` to skip adding users\n" +
-//            "Add `-m` to send standard counter messages")
-//    public String autocounter(@Me IMessageIO channel, @Me JSONObject command, @Me WarCategory warCat, @Me DBNation me, @Me User author, @Me GuildDB db,
-//                              DBNation enemy,
-//                              @Arg("Nations to counter with\n" +
-//                                      "Default: This guild's alliance nations")
-//                              @Default Set<DBNation> attackers,
-//                              @Arg("Max number of nations to counter with")
-//                              @Default("3") @Range(min=0) int max,
-//                              @Arg("Ping the countering nations on discord")
-//                              @Switch("p") boolean pingMembers,
-//                              @Arg("Do not add countering nations to a war room for the enemy")
-//                              @Switch("a") boolean skipAddMembers,
-//                              @Arg("Send counter message ingame to the nations countering")
-//                              @Switch("m") boolean sendMail) {
-//        if (attackers == null) {
-//            AllianceList alliance = db.getAllianceList();
-//            if (alliance != null && !alliance.isEmpty()) {
-//                attackers = new HashSet<>(alliance.getNations(true, 2440, true));
-//            } else {
-//                throw new IllegalArgumentException("This guild is not in an alliance, please provide the nations to counter with");
-//            }
-//        }
-//        attackers.removeIf(f -> enemy.getCities() >= f.getCities() * 2);
-//        attackers.removeIf(f -> f.getUser() == null || db.getGuild().getMember(f.getUser()) == null);
-//        return warroom(channel, command, warCat, me, author, db, enemy, attackers, max, false, true, false, true, pingMembers, skipAddMembers, sendMail);
-//    }
+    @RolePermission(value = Roles.MILCOM)
+    @Command(desc = "Auto generate counters\n" +
+            "Add `-p` to ping users that are added\n" +
+            "Add `-a` to skip adding users\n" +
+            "Add `-m` to send standard counter messages")
+    public String autocounter(@Me IMessageIO channel, @Me JSONObject command, @Me WarCategory warCat, @Me DBNation me, @Me User author, @Me GuildDB db,
+                              DBNation enemy,
+                              @Arg("Nations to counter with\n" +
+                                      "Default: This guild's alliance nations")
+                              @Default Set<DBNation> attackers,
+                              @Arg("Max number of nations to counter with")
+                              @Default("3") @Range(min=0) int max,
+                              @Arg("Ping the countering nations on discord")
+                              @Switch("p") boolean pingMembers,
+                              @Arg("Do not add countering nations to a war room for the enemy")
+                              @Switch("a") boolean skipAddMembers,
+                              @Arg("Send counter message ingame to the nations countering")
+                              @Switch("m") boolean sendMail) {
+        if (attackers == null) {
+            AllianceList alliance = db.getAllianceList();
+            if (alliance != null && !alliance.isEmpty()) {
+                attackers = new HashSet<>(alliance.getNations(true, 2440, true));
+            } else {
+                throw new IllegalArgumentException("This guild is not in an alliance, please provide the nations to counter with");
+            }
+        }
+        attackers.removeIf(f -> enemy.getWarIndex() >= f.getWarIndex() * 1.25 || enemy.getInfra() > f.getInfra() * 2);
+        attackers.removeIf(f -> f.getUser() == null || db.getGuild().getMember(f.getUser()) == null);
+        return warroom(channel, command, warCat, me, author, db, enemy, attackers, max, false, true, false, true, pingMembers, skipAddMembers, sendMail);
+    }
 
 //    // TODO FIXME :||remove
 //    @RolePermission(value = Roles.MILCOM)
@@ -3488,7 +3482,7 @@ public class WarCommands {
 
         if (!skipAddMembers) {
             for (DBNation dbNation : attackersSorted) {
-                response.append("\nAdded " + dbNation.toMarkdown(false, false, true, false, true, false));
+                response.append("\nAdded " + dbNation.toMarkdown(false, true, false, true, false));
             }
         }
 
