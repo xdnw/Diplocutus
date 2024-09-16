@@ -169,7 +169,7 @@ public class PlaceholdersMap {
         this.placeholders.put(TimedPolicy.class, createPolicies());
 //        Placeholders<Technology> TECHNOLOGIES = null;
         this.placeholders.put(Technology.class, createTechnologies());
-//        Placeholders<GrantTransfer> GRANTS = null;
+        Placeholders<GrantTransfer> GRANTS = null;
 //        this.placeholders.put(GrantTransfer.class, createGrantTransfers());
 ////        Placeholders<LoanTransfer> LOANS = null;
 //        this.placeholders.put(LoanTransfer.class, createLoanTransfers());

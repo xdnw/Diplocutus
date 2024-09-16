@@ -761,7 +761,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
     }
 
     @Command
-    public double[] getRevenue() {
+    public Map<ResourceType, Double> getRevenue() {
         double[] result = ResourceType.getBuffer();
         result[ResourceType.CASH.ordinal()] = TaxIncome + OtherIncome + CorporationIncome;
         result[ResourceType.MINERALS.ordinal()] = MineralOutput;
@@ -771,7 +771,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         // TODO uranium
         // TODO rare metal
         // TODO political
-        return result;
+        return ResourceType.resourcesToMap(result);
     }
 
     @Command
@@ -1532,11 +1532,11 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
     @Command(desc = "The alliance tax rate necessary to break even when distributing raw resources")
     @RolePermission(value = Roles.ECON)
     public double equilibriumTaxRate() {
-        double[] revenue = getRevenue();
+        Map<ResourceType, Double> revenue = getRevenue();
         double consumeCost = 0;
         double taxable = 0;
         for (ResourceType type : ResourceType.values) {
-            double value = revenue[type.ordinal()];
+            double value = revenue.getOrDefault(type, 0d);
             if (value < 0) {
                 consumeCost += ResourceType.convertedTotal(type, -value);
             } else {
@@ -2461,6 +2461,4 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
     public void setNationPrivate(NationPrivate np) {
         this.privateData = np;
     }
-
-    // TODO FIXME :||remove costs for projects, buildings, units, tech
 }

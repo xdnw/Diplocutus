@@ -389,12 +389,12 @@ public class UtilityCommands {
     @Command(desc = "Create a sheet of alliances with customized columns\n" +
             "See <https://github.com/xdnw/diplocutus/wiki/nation_placeholders> for a list of placeholders")
     @NoFormat
-    public static String AllianceSheet(AlliancePlaceholders aaPlaceholders, @Me Guild guild, @Me IMessageIO channel, @Me DBNation me, @Me User author, @Me GuildDB db,
+    public String AllianceSheet(AlliancePlaceholders aaPlaceholders, @Me Guild guild, @Me IMessageIO channel, @Me DBNation me, @Me User author, @Me GuildDB db,
                                 @Arg("The nations to include in each alliance")
                                 Set<DBNation> nations,
                                 @Arg("The columns to use in the sheet")
                                 @TextArea List<String> columns,
-                                @Switch("s") SpreadSheet sheet) throws GeneralSecurityException, IOException, IllegalAccessException {
+                                @Switch("s") SpreadSheet sheet) throws GeneralSecurityException, IOException {
         if (sheet == null) {
             sheet = SpreadSheet.create(db, SheetKey.ALLIANCES_SHEET);
         }

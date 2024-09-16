@@ -579,7 +579,7 @@ public class UnsortedCommands {
             }
             throw new IllegalArgumentException("No nations provided");
         }
-        double[] revenue = new double[ResourceType.values.length];
+        Map<ResourceType, Double> revenue = new HashMap<>();
         if (snapshotDate == null) {
             for (DBNation nation : filtered) {
                 if (nation.getAlliance_id() == 0) continue;

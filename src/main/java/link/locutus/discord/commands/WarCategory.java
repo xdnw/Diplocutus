@@ -1,6 +1,7 @@
 package link.locutus.discord.commands;
 
 import link.locutus.discord.Locutus;
+import link.locutus.discord.api.generated.WarType;
 import link.locutus.discord.commands.manager.v2.command.CommandBehavior;
 import link.locutus.discord.commands.manager.v2.command.IMessageBuilder;
 import link.locutus.discord.commands.manager.v2.impl.discord.DiscordChannelIO;
@@ -50,6 +51,64 @@ import static link.locutus.discord.util.MathMan.max;
 import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
 
 public class WarCategory {
+    public static WarCategory.WarRoom createChannel(WarCategory warCat, User author, Guild guild, Consumer<String> errorOutput, boolean ping, boolean addMember, boolean addMessage, DBNation target, Collection<DBNation> attackers) {
+        GuildDB db = Locutus.imp().getGuildDB(guild);
+        WarCategory.WarRoom room = warCat.get(target, true, true, true, true);
+        TextChannel channel = room.getChannel(true, true);
+
+        String declareUrl = target.getUrl();
+        String channelUrl = "https://discord.com/channels/" + guild.getIdLong() + "/" + channel.getIdLong();
+        String info = "> A counter is when an alliance declares a war on a nation for attacking one of its members/applicants. We usually only order counters for unprovoked attacks on members.\n" +
+                "About Counters: https://docs.google.com/document/d/1eJfgNRk6L72G6N3MT01xjfn0CzQtYibwnTg9ARFknRg";
+
+        if (addMessage) {
+            RateLimitUtil.queue(channel.sendMessage(info));
+        }
+
+        for (DBNation attacker : attackers) {
+            User user = attacker.getUser();
+            if (user == null) {
+                errorOutput.accept("No user for: " + attacker.getNation() + " | " + attacker.getAllianceName() + ". Have they used " + CM.register.cmd.toSlashMention() + " ?");
+                continue;
+            }
+
+            guild = channel.getGuild();
+            Member member = guild.getMemberById(user.getIdLong());
+            if (member == null) {
+                errorOutput.accept("No member for: " + attacker.getNation() + " | " + attacker.getAllianceName() + ". Are they on this discord?");
+                continue;
+            }
+
+            if (addMember) {
+                List<PermissionOverride> overrideds = channel.getMemberPermissionOverrides();
+                boolean contains = false;
+                for (PermissionOverride overrided : overrideds) {
+                    if (member.equals(overrided.getMember())) {
+                        contains = true;
+                        break;
+                    }
+                }
+
+                if (!contains) {
+                    RateLimitUtil.complete(channel.upsertPermissionOverride(member).grant(Permission.VIEW_CHANNEL));
+                    if (ping) {
+                        String msg = author.getName() + " added " + user.getAsMention();
+
+                        if (addMessage) {
+                            msg += ". Please declare a war of type `" + WarType.ANNIHILATION_WAR.name() + "` with reason `counter`.";
+                            if (target.getStrength() > attacker.getStrength()) {
+                                msg += "\nThe enemy has more strength. You must ensure you have funds to build more military after you declare.";
+                            }
+                        }
+
+                        RateLimitUtil.queue(channel.sendMessage(msg + "\n- <" + declareUrl + (">")));
+                    }
+                }
+            }
+        }
+
+        return room;
+    }
 
     public static WarRoom getGlobalWarRoom(MessageChannel channel) {
         if (!(channel instanceof GuildMessageChannel)) return null;

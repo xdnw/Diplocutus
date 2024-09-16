@@ -5,6 +5,7 @@ import link.locutus.discord.Locutus;
 import link.locutus.discord.api.types.Building;
 import link.locutus.discord.api.types.Rank;
 import link.locutus.discord.api.generated.ResourceType;
+import link.locutus.discord.commands.manager.v2.binding.annotation.Command;
 import link.locutus.discord.commands.manager.v2.impl.pw.NationFilter;
 import link.locutus.discord.db.entities.DBAlliance;
 import link.locutus.discord.db.entities.DBNation;
@@ -14,14 +15,7 @@ import link.locutus.discord.util.DNS;
 import link.locutus.discord.util.StringMan;
 import link.locutus.discord.util.math.ArrayUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -185,19 +179,27 @@ public interface NationList extends NationFilter {
                 }
             }
         }
-        // TODO FIXME :||remove
-//        if (includeRevenue) {
-//            // Revenue
-//            Map<ResourceType, Double> revenue = getRevenue();
-//            if (revenue.isEmpty()) {
-//                body.append("`No taxable revenue`\n");
-//            } else {
-//                body.append("\n**Taxable Nation Revenue:**");
-//                body.append("`").append(ResourceType.resourcesToString(revenue)).append("`\n");
-//                body.append("- worth: `$" + MathMan.format(ResourceType.convertedTotal(revenue)) + "`\n");
-//            }
-//        }
+        if (includeRevenue) {
+            // Revenue
+            Map<ResourceType, Double> revenue = getRevenue();
+            if (revenue.isEmpty()) {
+                body.append("`No taxable revenue`\n");
+            } else {
+                body.append("\n**Taxable Nation Revenue:**");
+                body.append("`").append(ResourceType.resourcesToString(revenue)).append("`\n");
+                body.append("- worth: `$" + MathMan.format(ResourceType.convertedTotal(revenue)) + "`\n");
+            }
+        }
         return body.toString();
+    }
+
+    @Command
+    default Map<ResourceType, Double> getRevenue() {
+        Map<ResourceType, Double> total = new LinkedHashMap<>();
+        for (DBNation nation : getNations()) {
+            total = ResourceType.add(total, nation.getRevenue());
+        }
+        return total;
     }
 
     default Set<DBWar> getActiveWars() {

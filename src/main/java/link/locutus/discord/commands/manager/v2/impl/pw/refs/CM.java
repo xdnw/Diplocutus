@@ -2556,6 +2556,42 @@ public class CM {
             }
 
             }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="sendTargets")
+            public static class targets extends CommandRef {
+                public static final targets cmd = new targets();
+            public targets blitzSheet(String value) {
+                return set("blitzSheet", value);
+            }
+
+            public targets spySheet(String value) {
+                return set("spySheet", value);
+            }
+
+            public targets allowedNations(String value) {
+                return set("allowedNations", value);
+            }
+
+            public targets allowedEnemies(String value) {
+                return set("allowedEnemies", value);
+            }
+
+            public targets header(String value) {
+                return set("header", value);
+            }
+
+            public targets hideDefaultBlurb(String value) {
+                return set("hideDefaultBlurb", value);
+            }
+
+            public targets force(String value) {
+                return set("force", value);
+            }
+
+            public targets useLeader(String value) {
+                return set("useLeader", value);
+            }
+
+            }
         }
         public static class modal{
             @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.TestCommands.class,method="modal")
@@ -6208,6 +6244,22 @@ public class CM {
             }
 
             }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.UtilityCommands.class,method="AllianceSheet")
+            public static class alliance_sheet extends CommandRef {
+                public static final alliance_sheet cmd = new alliance_sheet();
+            public alliance_sheet nations(String value) {
+                return set("nations", value);
+            }
+
+            public alliance_sheet columns(String value) {
+                return set("columns", value);
+            }
+
+            public alliance_sheet sheet(String value) {
+                return set("sheet", value);
+            }
+
+            }
             @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="WarDecSheetDate")
             public static class declares_date extends CommandRef {
                 public static final declares_date cmd = new declares_date();
@@ -6771,6 +6823,46 @@ public class CM {
                     public static final delete_planning cmd = new delete_planning();
 
                 }
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="warRoomSheet")
+                public static class from_sheet extends CommandRef {
+                    public static final from_sheet cmd = new from_sheet();
+                public from_sheet blitzSheet(String value) {
+                    return set("blitzSheet", value);
+                }
+
+                public from_sheet customMessage(String value) {
+                    return set("customMessage", value);
+                }
+
+                public from_sheet addCounterMessage(String value) {
+                    return set("addCounterMessage", value);
+                }
+
+                public from_sheet ping(String value) {
+                    return set("ping", value);
+                }
+
+                public from_sheet addMember(String value) {
+                    return set("addMember", value);
+                }
+
+                public from_sheet allowedNations(String value) {
+                    return set("allowedNations", value);
+                }
+
+                public from_sheet headerRow(String value) {
+                    return set("headerRow", value);
+                }
+
+                public from_sheet useLeader(String value) {
+                    return set("useLeader", value);
+                }
+
+                public from_sheet force(String value) {
+                    return set("force", value);
+                }
+
+                }
                 @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="warRoomList")
                 public static class list extends CommandRef {
                     public static final list cmd = new list();
@@ -6797,6 +6889,92 @@ public class CM {
                     public static final setCategory cmd = new setCategory();
                 public setCategory category(String value) {
                     return set("category", value);
+                }
+
+                }
+            }
+            public static class sheet{
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="blitzSheet")
+                public static class blitzsheet extends CommandRef {
+                    public static final blitzsheet cmd = new blitzsheet();
+                public blitzsheet attNations(String value) {
+                    return set("attNations", value);
+                }
+
+                public blitzsheet defNations(String value) {
+                    return set("defNations", value);
+                }
+
+                public blitzsheet maxOff(String value) {
+                    return set("maxOff", value);
+                }
+
+                public blitzsheet sameAAPriority(String value) {
+                    return set("sameAAPriority", value);
+                }
+
+                public blitzsheet sameActivityPriority(String value) {
+                    return set("sameActivityPriority", value);
+                }
+
+                public blitzsheet hour(String value) {
+                    return set("hour", value);
+                }
+
+                public blitzsheet attActivity(String value) {
+                    return set("attActivity", value);
+                }
+
+                public blitzsheet defActivity(String value) {
+                    return set("defActivity", value);
+                }
+
+                public blitzsheet processActiveWars(String value) {
+                    return set("processActiveWars", value);
+                }
+
+                public blitzsheet onlyEasyTargets(String value) {
+                    return set("onlyEasyTargets", value);
+                }
+
+                public blitzsheet maxStrengthRatio(String value) {
+                    return set("maxStrengthRatio", value);
+                }
+
+                public blitzsheet maxDevelopmentRatio(String value) {
+                    return set("maxDevelopmentRatio", value);
+                }
+
+                public blitzsheet sheet(String value) {
+                    return set("sheet", value);
+                }
+
+                }
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="ValidateBlitzSheet")
+                public static class validate extends CommandRef {
+                    public static final validate cmd = new validate();
+                public validate sheet(String value) {
+                    return set("sheet", value);
+                }
+
+                public validate maxWars(String value) {
+                    return set("maxWars", value);
+                }
+
+                public validate nationsFilter(String value) {
+                    return set("nationsFilter", value);
+                }
+
+                public validate attackerFilter(String value) {
+                    return set("attackerFilter", value);
+                }
+
+                public validate useLeader(String value) {
+                    return set("useLeader", value);
+                }
+
+                public validate headerRow(String value) {
+                    return set("headerRow", value);
                 }
 
                 }

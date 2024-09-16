@@ -269,6 +269,13 @@ public class CommandManager2 {
         getCommands().registerMethod(new WarCommands(), List.of("war", "counter"), "autocounter", "auto");
         getCommands().registerMethod(new WarCommands(), List.of("war", "find"), "war", "enemy");
 
+        getCommands().registerMethod(new WarCommands(), List.of("war", "sheet"), "blitzSheet", "blitzsheet");
+        getCommands().registerMethod(new WarCommands(), List.of("war", "sheet"), "ValidateBlitzSheet", "validate");
+        getCommands().registerMethod(new WarCommands(), List.of("war", "room"), "warRoomSheet", "from_sheet");
+        getCommands().registerMethod(new WarCommands(), List.of("message"), "sendTargets", "targets");
+
+        getCommands().registerMethod(new UtilityCommands(), List.of("sheets_ia"), "AllianceSheet", "alliance_sheet");
+
 
 //        getCommands().registerMethod(new GrantCommands(), List.of("grant"), "costBulk", "cost");
 //        getCommands().registerMethod(new StatCommands(), List.of("alliance", "stats"), "militarizationTime", "militarization_time");

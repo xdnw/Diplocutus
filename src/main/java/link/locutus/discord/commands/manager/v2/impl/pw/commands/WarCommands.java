@@ -2250,122 +2250,120 @@ public class WarCommands {
         }
     }
 
-    // TODO FIXME :||remove !!important
-//    @Command(desc = "Create war rooms from a blitz sheet")
-//    @RolePermission(Roles.MILCOM)
-//    public String warRoomSheet(@Me WarCategory warCat, @Me User author, @Me Guild guild, @Me JSONObject command, @Me IMessageIO io,
-//                               SpreadSheet blitzSheet,
-//                               @Arg("Custom message to send in each created war room")
-//                               @Default String customMessage,
-//                               @Arg("If the default counter message should be sent")
-//                               @Switch("c") boolean addCounterMessage,
-//                               @Arg("If the added member should be pinged in the channel")
-//                               @Switch("p") boolean ping,
-//                               @Arg("If the member should be added to the war room")
-//                               @Switch("m") boolean addMember,
-//                               @Arg("The nations from the blitz sheet to create war rooms for\n" +
-//                                       "Defaults to everyone")
-//                               @Switch("a") Set<DBNation> allowedNations,
-//                               @Arg("The row the blitz sheet header is one\n" +
-//                                       "Defaults to first row")
-//                               @Switch("h") Integer headerRow,
-//                               @Arg("Parse nation leader instead of nation name") @Switch("l") boolean useLeader,
-//                               @Switch("f") boolean force) {
-//        if (headerRow == null) headerRow = 0;
-//
-//        IMessageBuilder msg = io.create();
-//
-//        StringBuilder response = new StringBuilder();
-//        AtomicInteger errors = new AtomicInteger();
-//        StringBuilder body = new StringBuilder();
-//        Map<DBNation, Set<DBNation>> targets = BlitzGenerator.getTargets(blitzSheet, useLeader, headerRow, f -> 3, 0.75, DNS.WAR_RANGE_MAX_MODIFIER, true, true, false, f -> true,
-//                (dbNationDBNationEntry, s) -> {response.append(s).append("\n"); errors.incrementAndGet();},
-//                info -> body.append("```\n" + info.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).collect(Collectors.joining("\n")) + "\n```").append("\n"));
-//        if (!force) {
-//            msg = io.create();
-//            String title = "Create";
-//            if (errors.get() > 0) {
-//                title += " with " + errors.get() + " errors";
-//                if (response.length() > 2000) {
-//                    msg = msg.file(errors.get() + "_errors.txt", response.toString());
-//                    body.append("\n\n**See `errors.txt` for details**");
-//                } else {
-//                    body.append("\n\n__**Errors:**__\n").append(response);
-//                }
-//            }
-//            msg.embed(title, body.toString())
-//                    .confirmation(command).send();
-//            return null;
-//        }
-//
-//        msg.append("Creating channels...").send();
-//
-//        if (allowedNations != null) {
-//            for (Map.Entry<DBNation, Set<DBNation>> entry : targets.entrySet()) {
-//                entry.getValue().removeIf(f -> !allowedNations.contains(f));
-//            }
-//        }
-//        targets.entrySet().removeIf(f -> f.getValue().isEmpty());
-//
-//        Set<GuildMessageChannel> channels = new LinkedHashSet<>();
-//        for (Map.Entry<DBNation, Set<DBNation>> entry : targets.entrySet()) {
-//            DBNation target = entry.getKey();
-//            Set<DBNation> attackers = entry.getValue();
-//
-//            WarCategory.WarRoom channel = WarRoom.createChannel(warCat, author, guild, s -> response.append(s).append("\n"), ping, addMember, addCounterMessage, target, attackers);
-//
-//            try {
-//                if (customMessage != null) {
-//                    RateLimitUtil.queue(channel.getChannel().sendMessage(customMessage));
-//                }
-//
-//                channels.add(channel.getChannel());
-//            } catch (Throwable e) {
-//                e.printStackTrace();
-//                response.append(e.getMessage());
-//            }
-//        }
-//
-//        return "Created " + channels.size() + " for " + targets.size() + " targets";
-//    }
+    @Command(desc = "Create war rooms from a blitz sheet")
+    @RolePermission(Roles.MILCOM)
+    public String warRoomSheet(@Me WarCategory warCat, @Me User author, @Me Guild guild, @Me JSONObject command, @Me IMessageIO io,
+                               SpreadSheet blitzSheet,
+                               @Arg("Custom message to send in each created war room")
+                               @Default String customMessage,
+                               @Arg("If the default counter message should be sent")
+                               @Switch("c") boolean addCounterMessage,
+                               @Arg("If the added member should be pinged in the channel")
+                               @Switch("p") boolean ping,
+                               @Arg("If the member should be added to the war room")
+                               @Switch("m") boolean addMember,
+                               @Arg("The nations from the blitz sheet to create war rooms for\n" +
+                                       "Defaults to everyone")
+                               @Switch("a") Set<DBNation> allowedNations,
+                               @Arg("The row the blitz sheet header is one\n" +
+                                       "Defaults to first row")
+                               @Switch("h") Integer headerRow,
+                               @Arg("Parse nation leader instead of nation name") @Switch("l") boolean useLeader,
+                               @Switch("f") boolean force) {
+        if (headerRow == null) headerRow = 0;
 
-    // TODO FIXME :||important
-//    @RolePermission(Roles.MILCOM)
-//    @Command(desc = "Send spy or war blitz sheets to individual nations\n" +
-//            "Blitz Sheet Columns: `nation`, `attacker 1`, `attacker 2`, `attacker 3`")
-//    public String sendTargets(@Me GuildDB db, @Me Guild guild, @Me JSONObject command, @Me User author, @Me IMessageIO channel, @Me DBNation me,
-//                              @Arg("Url of the war blitz sheet to send")
-//                              @Default SpreadSheet blitzSheet,
-//                              @Arg("Url of the spy sheet to send")
-//                              @Default SpreadSheet spySheet,
-//                              @Arg("What attacker nations to send to")
-//                              @Default("*") Set<DBNation> allowedNations,
-//                              @Arg("What defender nations to include (default: all)")
-//                              @Default Set<DBNation> allowedEnemies,
-//                              @Arg("Text to prepend to the target instructions being sent")
-//                              @Default("") String header,
-//                              @Arg("Hide the default blurb from the message")
-//                              @Switch("b") boolean hideDefaultBlurb,
-//                              @Switch("f") boolean force,
-//                              @Arg("Parse nation leader instead of nation name") @Switch("l") boolean useLeader) throws IOException, GeneralSecurityException {
-//        if(header != null) {
-//            GPTUtil.checkThrowModeration(header);
-//        }
-//
-//        if (header != null && !header.isEmpty() && !Roles.MAIL.has(author, guild)) {
-//            return "You need the MAIL role on discord (see " + CM.role.setAlias.cmd.toSlashMention() + ") to add the custom message: `" + header + "`";
-//        }
-//        Map<DBNation, Set<DBNation>> warDefAttMap = new HashMap<>();
-//        Map<DBNation, Set<DBNation>> spyDefAttMap = new HashMap<>();
+        IMessageBuilder msg = io.create();
+
+        StringBuilder response = new StringBuilder();
+        AtomicInteger errors = new AtomicInteger();
+        StringBuilder body = new StringBuilder();
+        Map<DBNation, Set<DBNation>> targets = BlitzGenerator.getTargets(blitzSheet, useLeader, headerRow, f -> 3, DNS.WAR_RANGE_MIN_MODIFIER_ACTIVE, DNS.WAR_RANGE_MAX_MODIFIER_ACTIVE, true, true, f -> true,
+                (dbNationDBNationEntry, s) -> {response.append(s).append("\n"); errors.incrementAndGet();},
+                info -> body.append("```\n" + info.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).collect(Collectors.joining("\n")) + "\n```").append("\n"));
+        if (!force) {
+            msg = io.create();
+            String title = "Create";
+            if (errors.get() > 0) {
+                title += " with " + errors.get() + " errors";
+                if (response.length() > 2000) {
+                    msg = msg.file(errors.get() + "_errors.txt", response.toString());
+                    body.append("\n\n**See `errors.txt` for details**");
+                } else {
+                    body.append("\n\n__**Errors:**__\n").append(response);
+                }
+            }
+            msg.embed(title, body.toString())
+                    .confirmation(command).send();
+            return null;
+        }
+
+        msg.append("Creating channels...").send();
+
+        if (allowedNations != null) {
+            for (Map.Entry<DBNation, Set<DBNation>> entry : targets.entrySet()) {
+                entry.getValue().removeIf(f -> !allowedNations.contains(f));
+            }
+        }
+        targets.entrySet().removeIf(f -> f.getValue().isEmpty());
+
+        Set<GuildMessageChannel> channels = new LinkedHashSet<>();
+        for (Map.Entry<DBNation, Set<DBNation>> entry : targets.entrySet()) {
+            DBNation target = entry.getKey();
+            Set<DBNation> attackers = entry.getValue();
+
+            WarCategory.WarRoom channel = WarCategory.createChannel(warCat, author, guild, s -> response.append(s).append("\n"), ping, addMember, addCounterMessage, target, attackers);
+
+            try {
+                if (customMessage != null) {
+                    RateLimitUtil.queue(channel.getChannel().sendMessage(customMessage));
+                }
+
+                channels.add(channel.getChannel());
+            } catch (Throwable e) {
+                e.printStackTrace();
+                response.append(e.getMessage());
+            }
+        }
+
+        return "Created " + channels.size() + " for " + targets.size() + " targets";
+    }
+
+    @RolePermission(Roles.MILCOM)
+    @Command(desc = "Send spy or war blitz sheets to individual nations\n" +
+            "Blitz Sheet Columns: `nation`, `attacker 1`, `attacker 2`, `attacker 3`")
+    public String sendTargets(@Me GuildDB db, @Me Guild guild, @Me JSONObject command, @Me User author, @Me IMessageIO channel, @Me DBNation me,
+                              @Arg("Url of the war blitz sheet to send")
+                              @Default SpreadSheet blitzSheet,
+                              @Arg("Url of the spy sheet to send")
+                              @Default SpreadSheet spySheet,
+                              @Arg("What attacker nations to send to")
+                              @Default("*") Set<DBNation> allowedNations,
+                              @Arg("What defender nations to include (default: all)")
+                              @Default Set<DBNation> allowedEnemies,
+                              @Arg("Text to prepend to the target instructions being sent")
+                              @Default("") String header,
+                              @Arg("Hide the default blurb from the message")
+                              @Switch("b") boolean hideDefaultBlurb,
+                              @Switch("f") boolean force,
+                              @Arg("Parse nation leader instead of nation name") @Switch("l") boolean useLeader) throws IOException, GeneralSecurityException {
+        if(header != null) {
+            GPTUtil.checkThrowModeration(header);
+        }
+
+        if (header != null && !header.isEmpty() && !Roles.MAIL.has(author, guild)) {
+            return "You need the MAIL role on discord (see " + CM.role.setAlias.cmd.toSlashMention() + ") to add the custom message: `" + header + "`";
+        }
+        Map<DBNation, Set<DBNation>> warDefAttMap = new HashMap<>();
+        Map<DBNation, Set<DBNation>> spyDefAttMap = new HashMap<>();
 //        Map<DBNation, Set<Spyop>> spyOps = new HashMap<>();
-//
-//        Map<String, Object> blitzSheetSummary = new LinkedHashMap<>();
+
+        Map<String, Object> blitzSheetSummary = new LinkedHashMap<>();
 //        Map<String, Object> spySheetSummary = new LinkedHashMap<>();
-//
-//        if (blitzSheet != null) {
-//            warDefAttMap = BlitzGenerator.getTargets(blitzSheet, useLeader, 0, f -> 2, 0.75, DNS.WAR_RANGE_MAX_MODIFIER, true, true, false, f -> true, (a, b) -> {}, (a) -> blitzSheetSummary.putAll(a));
-//        }
-//
+
+        if (blitzSheet != null) {
+            warDefAttMap = BlitzGenerator.getTargets(blitzSheet, useLeader, 0, f -> 2, DNS.WAR_RANGE_MIN_MODIFIER_ACTIVE, DNS.WAR_RANGE_MAX_MODIFIER_ACTIVE, true, true, f -> true, (a, b) -> {}, (a) -> blitzSheetSummary.putAll(a));
+        }
+
 //        if (spySheet != null) {
 //            try {
 //                spyDefAttMap = BlitzGenerator.getTargets(spySheet, useLeader, 0, f -> 2, 0.4, 2.5, false, false, true, f -> true, (a, b) -> {}, (a) -> spySheetSummary.putAll(a));
@@ -2375,87 +2373,87 @@ public class WarCommands {
 //                spyOps = SpyBlitzGenerator.getTargets(spySheet, 4);
 //            }
 //        }
-//
-//        if (allowedEnemies != null) {
-//            for (Map.Entry<DBNation, Set<DBNation>> entry : warDefAttMap.entrySet()) {
-//                entry.getValue().removeIf(f -> !allowedEnemies.contains(f));
-//            }
-//            for (Map.Entry<DBNation, Set<DBNation>> entry : spyDefAttMap.entrySet()) {
-//                entry.getValue().removeIf(f -> !allowedEnemies.contains(f));
-//            }
-//        }
-//
-//        Map<DBNation, Set<DBNation>> warAttDefMap = BlitzGenerator.reverse(warDefAttMap);
-//        Map<DBNation, Set<DBNation>> spyAttDefMap = BlitzGenerator.reverse(spyDefAttMap);
-//        Set<DBNation> allAttackers = new LinkedHashSet<>();
-//        allAttackers.addAll(warAttDefMap.keySet());
-//        allAttackers.addAll(spyAttDefMap.keySet());
-//
-//        String date = TimeUtil.YYYY_MM_DD.format(ZonedDateTime.now());
-//        String subject = "Targets-" + date + "/" + channel.getIdLong();
-//
-//        String blurb = "BE ACTIVE ON DISCORD. Additional attack instructions may be in your war room\n" +
-//                "\n" +
-//                "This is an alliance war, not a counter. The goal is battlefield control:\n" +
-//                "1. Try to raid wars just before day change (day change if possible)\n" +
-//                "2. If you have ground control, further attacks with tanks kills aircraft\n" +
-//                "3. If you have tanks and can get ground control, do ground attacks to kill planes\n" +
-//                "4. Get air control to halve enemy tank strength\n" +
-//                "5. You can rebuy units inbetween each attack\n" +
-//                "6. Do not waste attacks destroying infra or minimal units\n" +
-//                "7. Be efficient with your attacks and try NOT to get active enemies to 0 resistance\n" +
-//                "8. You can buy more ships when enemy planes are weak, to avoid naval losses\n" +
-//                "9. Some wars you may get beiged in, that is OKAY";
-//
-//        long start = System.currentTimeMillis();
-//
-//        Map<DBNation, Map.Entry<String, String>> mailTargets = new HashMap<>();
-//        int totalSpyTargets = 0;
-//        int totalWarTargets = 0;
-//
-//        int sent = 0;
-//        for (DBNation attacker : allAttackers) {
-//            if (!allowedNations.contains(attacker)) continue;
-//
-//            List<DBNation> myAttackOps = new ArrayList<>(warAttDefMap.getOrDefault(attacker, Collections.emptySet()));
+
+        if (allowedEnemies != null) {
+            for (Map.Entry<DBNation, Set<DBNation>> entry : warDefAttMap.entrySet()) {
+                entry.getValue().removeIf(f -> !allowedEnemies.contains(f));
+            }
+            for (Map.Entry<DBNation, Set<DBNation>> entry : spyDefAttMap.entrySet()) {
+                entry.getValue().removeIf(f -> !allowedEnemies.contains(f));
+            }
+        }
+
+        Map<DBNation, Set<DBNation>> warAttDefMap = BlitzGenerator.reverse(warDefAttMap);
+        Map<DBNation, Set<DBNation>> spyAttDefMap = BlitzGenerator.reverse(spyDefAttMap);
+        Set<DBNation> allAttackers = new LinkedHashSet<>();
+        allAttackers.addAll(warAttDefMap.keySet());
+        allAttackers.addAll(spyAttDefMap.keySet());
+
+        String date = TimeUtil.YYYY_MM_DD.format(ZonedDateTime.now());
+        String subject = "Targets-" + date + "/" + channel.getIdLong();
+
+        String blurb = "BE ACTIVE ON DISCORD. Additional attack instructions may be in your war room\n" +
+                "\n" +
+                "This is an alliance war, not a counter. The goal is battlefield control:\n" +
+                "1. Try to raid wars just before day change (day change if possible)\n" +
+                "2. If you have ground control, further attacks with tanks kills aircraft\n" +
+                "3. If you have tanks and can get ground control, do ground attacks to kill planes\n" +
+                "4. Get air control to halve enemy tank strength\n" +
+                "5. You can rebuy units inbetween each attack\n" +
+                "6. Do not waste attacks destroying infra or minimal units\n" +
+                "7. Be efficient with your attacks and try NOT to get active enemies to 0 resistance\n" +
+                "8. You can buy more ships when enemy planes are weak, to avoid naval losses\n" +
+                "9. Some wars you may get beiged in, that is OKAY";
+
+        long start = System.currentTimeMillis();
+
+        Map<DBNation, Map.Entry<String, String>> mailTargets = new HashMap<>();
+        int totalSpyTargets = 0;
+        int totalWarTargets = 0;
+
+        int sent = 0;
+        for (DBNation attacker : allAttackers) {
+            if (!allowedNations.contains(attacker)) continue;
+
+            List<DBNation> myAttackOps = new ArrayList<>(warAttDefMap.getOrDefault(attacker, Collections.emptySet()));
 //            List<Spyop> mySpyOps = new ArrayList<>(spyOps.getOrDefault(attacker, Collections.emptySet()));
-//            if (myAttackOps.isEmpty() && mySpyOps.isEmpty()) continue;
-//
-//            sent++;
-//
-//            StringBuilder mail = new StringBuilder();
-//            header = header.replace("\\n", "\n");
-//            mail.append(header).append("\n");
-//
-//            if (!myAttackOps.isEmpty()) {
-//                if (!hideDefaultBlurb) {
-//                    mail.append(blurb + "\n");
-//                }
-//                mail.append("\n");
-//
-//                mail.append("Your nation:\n");
-//                mail.append(getStrengthInfo(attacker) + "\n");
-//                mail.append("\n");
-//
-//                for (int i = 0; i < myAttackOps.size(); i++) {
-//                    totalWarTargets++;
-//                    DBNation defender = myAttackOps.get(i);
-//                    mail.append((i + 1) + ". War Target: " + MarkupUtil.htmlUrl(defender.getNation(), defender.getUrl()) + "\n");
-//                    mail.append(getStrengthInfo(defender) + "\n"); // todo
-//
-//                    Set<DBNation> others = new LinkedHashSet<>(warDefAttMap.get(defender));
-//                    others.remove(attacker);
-//                    if (!others.isEmpty()) {
-//                        Set<String> allies = new LinkedHashSet<>();
-//                        for (DBNation other : others) {
-//                            allies.add(other.getNation());
-//                        }
-//                        mail.append("Joining you: " + StringMan.join(allies, ",") + "\n");
-//                    }
-//                    mail.append("\n");
-//                }
-//            }
-//
+            if (myAttackOps.isEmpty()) continue; //  && mySpyOps.isEmpty()
+
+            sent++;
+
+            StringBuilder mail = new StringBuilder();
+            header = header.replace("\\n", "\n");
+            mail.append(header).append("\n");
+
+            if (!myAttackOps.isEmpty()) {
+                if (!hideDefaultBlurb) {
+                    mail.append(blurb + "\n");
+                }
+                mail.append("\n");
+
+                mail.append("Your nation:\n");
+                mail.append("strength:" + MathMan.formatSig(attacker.getStrength()) + "\n");
+                mail.append("\n");
+
+                for (int i = 0; i < myAttackOps.size(); i++) {
+                    totalWarTargets++;
+                    DBNation defender = myAttackOps.get(i);
+                    mail.append((i + 1) + ". War Target: " + MarkupUtil.htmlUrl(defender.getNation(), defender.getUrl()) + "\n");
+                    mail.append("strength:" + MathMan.formatSig(defender.getStrength()) + "\n"); // todo
+
+                    Set<DBNation> others = new LinkedHashSet<>(warDefAttMap.get(defender));
+                    others.remove(attacker);
+                    if (!others.isEmpty()) {
+                        Set<String> allies = new LinkedHashSet<>();
+                        for (DBNation other : others) {
+                            allies.add(other.getNation());
+                        }
+                        mail.append("Joining you: " + StringMan.join(allies, ",") + "\n");
+                    }
+                    mail.append("\n");
+                }
+            }
+
 //            if (!mySpyOps.isEmpty()) {
 //                int intelOps = 0;
 //                int killSpies = 0;
@@ -2510,97 +2508,97 @@ public class WarCommands {
 //                    mail.append("\n");
 //                }
 //            }
-//
-//            String body = mail.toString().replace("\n","<br>");
-//
-//            mailTargets.put(attacker, new AbstractMap.SimpleEntry<>(subject, body));
-//        }
-//
-//        if (!force) {
-//            String title = totalWarTargets + " wars & " + totalSpyTargets + " spyops";
-//
-//            Set<Integer> alliances = new LinkedHashSet<>();
-//            for (DBNation nation : mailTargets.keySet()) alliances.add(nation.getAlliance_id());
-//            String embedTitle = title + " to " + mailTargets.size() + " nations";
-//            if (alliances.size() != 1) embedTitle += " in " + alliances.size() + " alliances";
-//
-//            StringBuilder body = new StringBuilder();
-//            body.append("**subject:** `" + subject + "`\n\n");
-//            if (!blitzSheetSummary.isEmpty()) {
-//                body.append("War Blitz Sheet Summary:\n" + blitzSheetSummary.entrySet().stream().map(e -> "- " + e.getKey() + ": `" + e.getValue() + "`").collect(Collectors.joining("\n")) + "\n");
-//            }
+
+            String body = mail.toString().replace("\n","<br>");
+
+            mailTargets.put(attacker, new AbstractMap.SimpleEntry<>(subject, body));
+        }
+
+        if (!force) {
+            String title = totalWarTargets + " wars & " + totalSpyTargets + " spyops";
+
+            Set<Integer> alliances = new LinkedHashSet<>();
+            for (DBNation nation : mailTargets.keySet()) alliances.add(nation.getAlliance_id());
+            String embedTitle = title + " to " + mailTargets.size() + " nations";
+            if (alliances.size() != 1) embedTitle += " in " + alliances.size() + " alliances";
+
+            StringBuilder body = new StringBuilder();
+            body.append("**subject:** `" + subject + "`\n\n");
+            if (!blitzSheetSummary.isEmpty()) {
+                body.append("War Blitz Sheet Summary:\n" + blitzSheetSummary.entrySet().stream().map(e -> "- " + e.getKey() + ": `" + e.getValue() + "`").collect(Collectors.joining("\n")) + "\n");
+            }
 //            if (!spySheetSummary.isEmpty()) {
 //                body.append("Spy Blitz Sheet Summary:\n" + spySheetSummary.entrySet().stream().map(e -> "- " + e.getKey() + ": `" + e.getValue() + "`").collect(Collectors.joining("\n")) + "\n");
 //            }
-//
-//            channel.create().confirmation(embedTitle, body.toString(), command)
-//                            .append(author.getAsMention())
-//                                    .send();
-//            return null;
-//        }
-//
-//        Map<DBNation, String> mailErrors = new LinkedHashMap<>();
-//        Map<DBNation, String> dmErrors = new LinkedHashMap<>();
-//        CompletableFuture<IMessageBuilder> msgFuture = channel.send("Sending messages...");
-//        for (Map.Entry<DBNation, Map.Entry<String, String>> entry : mailTargets.entrySet()) {
-//            DBNation attacker = entry.getKey();
-//            subject = entry.getValue().getKey();
-//            String body = entry.getValue().getValue();
-//            String markup = MarkupUtil.htmlToMarkdown(body);
-//            try {
-//                attacker.sendDM("**" + subject + "**:\n" + markup, new Consumer<String>() {
-//                    @Override
-//                    public void accept(String string) {
-//                        dmErrors.put(attacker, string);
-//                    }
-//                });
-//            } catch (Throwable e) {
-//                dmErrors.put(attacker, (e.getMessage() + " ").split("\n")[0]);
-//            }
-//
-//            if (System.currentTimeMillis() - start > 10000) {
-//                start = System.currentTimeMillis();
-//                if (msgFuture != null) {
-//                    IMessageBuilder tmp = msgFuture.getNow(null);
-//                    if (tmp != null) msgFuture = tmp.clear().append("Sending to " + attacker.getNation()).send();
-//                }
-//            }
-//        }
-//
-//        StringBuilder errorMsg = new StringBuilder();
-//        if (!mailErrors.isEmpty()) {
-//            errorMsg.append("Mail errors: ");
-//            errorMsg.append(
-//                    mailErrors.keySet()
-//                            .stream()
-//                            .map(f -> f.getNation_id() + "")
-//                            .collect(Collectors.joining(","))
-//            );
-//            for (Map.Entry<DBNation, String> entry : mailErrors.entrySet()) {
-//                errorMsg.append("- " + entry.getKey().getNation_id() + ": " + entry.getValue() + "\n");
-//            }
-//        }
-//
-//        if (!dmErrors.isEmpty()) {
-//            errorMsg.append("DM errors: ");
-//            errorMsg.append(
-//                    dmErrors.keySet()
-//                            .stream()
-//                            .map(f -> f.getNation_id() + "")
-//                            .collect(Collectors.joining(","))
-//            );
-//            for (Map.Entry<DBNation, String> entry : dmErrors.entrySet()) {
-//                errorMsg.append("- " + entry.getKey().getNation_id() + ": " + entry.getValue() + "\n");
-//            }
-//        }
-//
-//        IMessageBuilder msg = channel.create();
-//        if (!errorMsg.isEmpty()) {
-//            msg = msg.file("Errors.txt", errorMsg.toString());
-//        }
-//        msg.append("Done, sent " + sent + " messages" + (errorMsg.isEmpty() ? " (no errors)" : " (with errors)")).send();
-//        return null;
-//    }
+
+            channel.create().confirmation(embedTitle, body.toString(), command)
+                            .append(author.getAsMention())
+                                    .send();
+            return null;
+        }
+
+        Map<DBNation, String> mailErrors = new LinkedHashMap<>();
+        Map<DBNation, String> dmErrors = new LinkedHashMap<>();
+        CompletableFuture<IMessageBuilder> msgFuture = channel.send("Sending messages...");
+        for (Map.Entry<DBNation, Map.Entry<String, String>> entry : mailTargets.entrySet()) {
+            DBNation attacker = entry.getKey();
+            subject = entry.getValue().getKey();
+            String body = entry.getValue().getValue();
+            String markup = MarkupUtil.htmlToMarkdown(body);
+            try {
+                attacker.sendDM("**" + subject + "**:\n" + markup, new Consumer<String>() {
+                    @Override
+                    public void accept(String string) {
+                        dmErrors.put(attacker, string);
+                    }
+                });
+            } catch (Throwable e) {
+                dmErrors.put(attacker, (e.getMessage() + " ").split("\n")[0]);
+            }
+
+            if (System.currentTimeMillis() - start > 10000) {
+                start = System.currentTimeMillis();
+                if (msgFuture != null) {
+                    IMessageBuilder tmp = msgFuture.getNow(null);
+                    if (tmp != null) msgFuture = tmp.clear().append("Sending to " + attacker.getNation()).send();
+                }
+            }
+        }
+
+        StringBuilder errorMsg = new StringBuilder();
+        if (!mailErrors.isEmpty()) {
+            errorMsg.append("Mail errors: ");
+            errorMsg.append(
+                    mailErrors.keySet()
+                            .stream()
+                            .map(f -> f.getNation_id() + "")
+                            .collect(Collectors.joining(","))
+            );
+            for (Map.Entry<DBNation, String> entry : mailErrors.entrySet()) {
+                errorMsg.append("- " + entry.getKey().getNation_id() + ": " + entry.getValue() + "\n");
+            }
+        }
+
+        if (!dmErrors.isEmpty()) {
+            errorMsg.append("DM errors: ");
+            errorMsg.append(
+                    dmErrors.keySet()
+                            .stream()
+                            .map(f -> f.getNation_id() + "")
+                            .collect(Collectors.joining(","))
+            );
+            for (Map.Entry<DBNation, String> entry : dmErrors.entrySet()) {
+                errorMsg.append("- " + entry.getKey().getNation_id() + ": " + entry.getValue() + "\n");
+            }
+        }
+
+        IMessageBuilder msg = channel.create();
+        if (!errorMsg.isEmpty()) {
+            msg = msg.file("Errors.txt", errorMsg.toString());
+        }
+        msg.append("Done, sent " + sent + " messages" + (errorMsg.isEmpty() ? " (no errors)" : " (with errors)")).send();
+        return null;
+    }
 
     @RolePermission(Roles.MILCOM)
     @Command(desc="Run checks on nations in a blitz sheet\n" +
