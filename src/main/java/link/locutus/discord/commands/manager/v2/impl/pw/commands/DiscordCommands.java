@@ -471,14 +471,14 @@ public class DiscordCommands {
         }
         try {
             String pnwDiscordName = nation.getUsername();
-            if (pnwDiscordName == null || pnwDiscordName.isEmpty()) {
+            String userName = DiscordUtil.getFullUsername(user);
+            if (pnwDiscordName == null || pnwDiscordName.isEmpty() || !userName.equalsIgnoreCase(pnwDiscordName)) {
                 Locutus.imp().getNationDB().updateNation(db.getApiOrThrow(), nation, Event::post);
             }
             pnwDiscordName = nation.getUsername();
             if (pnwDiscordName == null || pnwDiscordName.isEmpty()) {
                 return errorMsg;
             }
-            String userName = DiscordUtil.getFullUsername(user);
             if (checkId) {
                 userName = "" + user.getIdLong();
             }

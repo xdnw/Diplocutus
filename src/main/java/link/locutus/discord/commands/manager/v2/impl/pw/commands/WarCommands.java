@@ -48,6 +48,7 @@ import link.locutus.discord.pnw.*;
 import link.locutus.discord.user.Roles;
 import link.locutus.discord.util.*;
 import link.locutus.discord.util.DNS;
+import link.locutus.discord.util.battle.BlitzGenerator;
 import link.locutus.discord.util.discord.DiscordUtil;
 import link.locutus.discord.util.io.PagePriority;
 import link.locutus.discord.util.scheduler.CachedFunction;
@@ -684,7 +685,6 @@ public class WarCommands {
         return response.toString();
     }
 
-    // TODO FIXME :||remove war cmd !!important
     @Command(desc="Find a war target that you can hit\n" +
             "Defaults to `enemies` coalition")
     @RolePermission(Roles.MEMBER)
@@ -2602,131 +2602,114 @@ public class WarCommands {
 //        return null;
 //    }
 
-    // TODO FIXME :||remove validate blitz sheet
-//    @RolePermission(Roles.MILCOM)
-//    @Command(desc="Run checks on nations in a blitz sheet\n" +
-//            "- In range of their blitz targets" +
-//            "- Still in the alliance" +
-//            "- Have no more than the provided number of offensive wars\n" +
-//            "Sheet columns: `nation`, `att1`, `att1`, `att3`")
-//    public String ValidateBlitzSheet(SpreadSheet sheet,
-//                                     @Arg("Max wars per attacker")
-//                                     @Default("3") int maxWars,
-//                                     @Arg("Only allow attacking these nations")
-//                                     @Default("*") Set<DBNation> nationsFilter,
-//                                     @Default Set<DBNation> attackerFilter,
-//                                     @Arg("Parse nation leader instead of nation name") @Switch("l") boolean useLeader,
-//                                     @Arg("Which row of the sheet has the header\n" +
-//                                             "Default: 1st row")
-//                                     @Switch("h") Integer headerRow) {
-//        Function<DBNation, Boolean> isValidTarget = nationsFilter::contains;
-//
-//        StringBuilder response = new StringBuilder();
-//        Integer finalMaxWars = maxWars;
-//        if (headerRow == null) headerRow = 0;
-//        AtomicBoolean hasErrors = new AtomicBoolean(false);
-//        BlitzGenerator.getTargets(sheet, useLeader, headerRow, f -> finalMaxWars, 0.75, DNS.WAR_RANGE_MAX_MODIFIER, true, true, false, isValidTarget, new BiConsumer<Map.Entry<DBNation, DBNation>, String>() {
-//            @Override
-//            public void accept(Map.Entry<DBNation, DBNation> entry, String msg) {
-//                hasErrors.set(true);
-//                DBNation defender = entry.getKey();
-//                DBNation attacker = entry.getValue();
-//                if (attackerFilter != null && attacker != null && !attackerFilter.contains(attacker)) return;
-//                response.append(msg + "\n");
-//            }
-//        }, info -> response.append("```\n" + info.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).collect(Collectors.joining("\n")) + "\n```").append("\n"));
-//
-//        if (!hasErrors.get()) response.append("\n**All checks passed**");
-//
-//        return response.toString();
-//    }
-//
-//    private String getStrengthInfo(DBNation nation) {
-//        String msg = "Ground:" + (int) nation.getGroundStrength(true, false) + ", Air: " + nation.getAircraft() + ", cities:" + nation.getCities();
-//
-//        if (nation.active_m() > 10000) msg += " (inactive)";
-//        else {
-//            msg += " (" + ((int) (nation.avg_daily_login() * 100)) + "% active)";
-//        }
-//
-//        return msg;
-//    }
+    @RolePermission(Roles.MILCOM)
+    @Command(desc="Run checks on nations in a blitz sheet\n" +
+            "- In range of their blitz targets" +
+            "- Still in the alliance" +
+            "- Have no more than the provided number of offensive wars\n" +
+            "Sheet columns: `nation`, `att1`, `att1`, `att3`")
+    public String ValidateBlitzSheet(SpreadSheet sheet,
+                                     @Arg("Max wars per attacker")
+                                     @Default("2") int maxWars,
+                                     @Arg("Only allow attacking these nations")
+                                     @Default("*") Set<DBNation> nationsFilter,
+                                     @Default Set<DBNation> attackerFilter,
+                                     @Arg("Parse nation leader instead of nation name") @Switch("l") boolean useLeader,
+                                     @Arg("Which row of the sheet has the header\n" +
+                                             "Default: 1st row")
+                                     @Switch("h") Integer headerRow) {
+        Function<DBNation, Boolean> isValidTarget = nationsFilter::contains;
+
+        StringBuilder response = new StringBuilder();
+        Integer finalMaxWars = maxWars;
+        if (headerRow == null) headerRow = 0;
+        AtomicBoolean hasErrors = new AtomicBoolean(false);
+        BlitzGenerator.getTargets(sheet, useLeader, headerRow, f -> finalMaxWars, DNS.WAR_RANGE_MIN_MODIFIER_ACTIVE, DNS.WAR_RANGE_MAX_MODIFIER_ACTIVE, true, true, isValidTarget, new BiConsumer<Map.Entry<DBNation, DBNation>, String>() {
+            @Override
+            public void accept(Map.Entry<DBNation, DBNation> entry, String msg) {
+                hasErrors.set(true);
+                DBNation defender = entry.getKey();
+                DBNation attacker = entry.getValue();
+                if (attackerFilter != null && attacker != null && !attackerFilter.contains(attacker)) return;
+                response.append(msg + "\n");
+            }
+        }, info -> response.append("```\n" + info.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).collect(Collectors.joining("\n")) + "\n```").append("\n"));
+
+        if (!hasErrors.get()) response.append("\n**All checks passed**");
+
+        return response.toString();
+    }
 
 
-    // TODO FIXME :||remove blitz sheet
-//    @Command(desc = "Generates a a blitz sheet\n" +
-//            "A blitz sheet contains a list of defenders (left column) and auto assigns attackers (right columns)\n" +
-//            "Note: If the blitz sheet generated has a lot of city updeclares or unslotted enemies it is recommended to go through and remove low priority defenders\n" +
-//            "- Low priority could be enemies without a recent offensive war, inactive, low military, or poor activity\n" +
-//            "- Example defNations: `~enemies,#position>1,#active_m<4880,#dayssincelastoffensive>200,#dayssince3consecutivelogins>120,#aircraftpct<0.8,#tankpct<=0.6`" +
-//            "Note: To avoid updeclares enable `onlyEasyTargets`")
-//    @RolePermission(Roles.MILCOM)
-//    public String blitzSheet(@Me IMessageIO io, @Me User author, @Me GuildDB db,
-//                             @Arg("Nations that should be used for the attackers\n" +
-//                                     "It is recommended to use a google sheet of the attackers available")
-//                             NationList attNations,
-//
-//                             @Arg("Nations that should be used for the defenders\n" +
-//                                     "It is recommended to use a google sheet of the priority defenders (unless you are sure you can hit every nation)")
-//                             NationList defNations,
-//                             @Arg("How many offensive slots a nation can have (defaults to 3)")
-//                             @Default("3") @Range(min=1,max=5) int maxOff,
-//                             @Arg("Value between 0 and 1 to prioritize assigning a target to nations in the same alliance\n" +
-//                                     "Default: 0")
-//                             @Default("0") double sameAAPriority,
-//                             @Arg("Value between 0 and 1 to prioritize assigning targets to nations with similar activity patterns\n" +
-//                                     "Recommended not to use if you know who is attacking")
-//                             @Default("0") double sameActivityPriority,
-//                             @Arg("The turn in the day (between 0 and 11) when you expect the blitz to happen")
-//                             @Default("-1") @Range(min=-1,max=11) int turn,
-//                             @Arg("A value between 0 and 1 to filter out attackers below this level of daily activity (default: 0, which is 0%)\n" +
-//                                     "Recommend using if you did not provide a sheet of attackers")
-//                             @Default("0") double attActivity,
-//                             @Arg("A value between 0 and 1 to filter out defenders below this level of activity (default: 0)\n" +
-//                                     "Recommend using if you did not provide a sheet of defenders")
-//                             @Default("0") double defActivity,
-//                             @Arg("Factor in existing wars of attackers and defenders\n" +
-//                                     "i.e. To determine slots available and nation strength")
-//                             @Switch("w") @Default("true") boolean processActiveWars,
-//                             @Arg("Only assign down declares")
-//                             @Switch("e") boolean onlyEasyTargets,
-//                             @Arg("Maximum ratio of defender cities to attacker\n" +
-//                                     "e.g. A value of 1.5 means defenders can have 1.5x more cities than the attacker")
-//                             @Switch("c") Double maxCityRatio,
-//                             @Arg("Maximum ratio of defender ground strength to attacker\n" +
-//                                     "e.g. A value of 1.5 means defenders can have 1.5x more ground strength than the attacker")
-//                             @Switch("g") Double maxGroundRatio,
-//                             @Arg("Maximum ratio of defender aircraft to attacker\n" +
-//                                     "e.g. A value of 1.5 means defenders can have 1.5x more aircraft than the attacker")
-//                             @Switch("a") Double maxAirRatio,
-//                             @Switch("s") SpreadSheet sheet) throws GeneralSecurityException, IOException {
-//        Set<Long> guilds = new HashSet<>();
-//
-//        BlitzGenerator blitz = new BlitzGenerator(turn, maxOff, sameAAPriority, sameActivityPriority, attActivity, defActivity, guilds, processActiveWars);
-//        blitz.addNations(attNations.getNations(), true);
-//        blitz.addNations(defNations.getNations(), false);
-//        if (processActiveWars) blitz.removeSlotted();
-//
-//        Map<DBNation, List<DBNation>> targets;
-//        if (maxCityRatio != null || maxGroundRatio != null || maxAirRatio != null) {
-//            onlyEasyTargets = true;
-//        }
-//        if (onlyEasyTargets) {
-//            if (maxCityRatio == null) maxCityRatio = 1.8;
-//            if (maxGroundRatio ==  null) maxGroundRatio = 1d;
-//            if (maxAirRatio == null) maxAirRatio = 1.22;
-//            targets = blitz.assignEasyTargets(maxCityRatio, maxGroundRatio, maxAirRatio);
-//        } else {
-//            targets = blitz.assignTargets();
-//        }
-//
-//        if (sheet == null) sheet = SpreadSheet.create(db, SheetKey.ACTIVITY_SHEET);
-//
-//        SheetUtil.writeTargets(sheet, targets, turn);
-//
-//        sheet.send(io, null, author.getAsMention()).send();
-//        return null;
-//    }
+    @Command(desc = "Generates a a blitz sheet\n" +
+            "A blitz sheet contains a list of defenders (left column) and auto assigns attackers (right columns)\n" +
+            "Note: If the blitz sheet generated has a lot of city updeclares or unslotted enemies it is recommended to go through and remove low priority defenders\n" +
+            "- Low priority could be enemies without a recent offensive war, inactive, low military, or poor activity\n" +
+            "- Example defNations: `~enemies,#position>1,#active_m<4880,#dayssincelastoffensive>200,#dayssince3consecutivelogins>120,#aircraftpct<0.8,#tankpct<=0.6`" +
+            "Note: To avoid updeclares enable `onlyEasyTargets`")
+    @RolePermission(Roles.MILCOM)
+    public String blitzSheet(@Me IMessageIO io, @Me User author, @Me GuildDB db,
+                             @Arg("Nations that should be used for the attackers\n" +
+                                     "It is recommended to use a google sheet of the attackers available")
+                             NationList attNations,
+
+                             @Arg("Nations that should be used for the defenders\n" +
+                                     "It is recommended to use a google sheet of the priority defenders (unless you are sure you can hit every nation)")
+                             NationList defNations,
+                             @Arg("How many offensive slots a nation can have (defaults to 3)")
+                             @Default("3") @Range(min=1,max=5) int maxOff,
+                             @Arg("Value between 0 and 1 to prioritize assigning a target to nations in the same alliance\n" +
+                                     "Default: 0")
+                             @Default("0") double sameAAPriority,
+                             @Arg("Value between 0 and 1 to prioritize assigning targets to nations with similar activity patterns\n" +
+                                     "Recommended not to use if you know who is attacking")
+                             @Default("0") double sameActivityPriority,
+                             @Arg("The hour in the day (UTC, between 0 and 23) when you expect the blitz to happen")
+                             @Default("-1") @Range(min=-1,max=23) int hour,
+                             @Arg("A value between 0 and 1 to filter out attackers below this level of daily activity (default: 0, which is 0%)\n" +
+                                     "Recommend using if you did not provide a sheet of attackers")
+                             @Default("0") double attActivity,
+                             @Arg("A value between 0 and 1 to filter out defenders below this level of activity (default: 0)\n" +
+                                     "Recommend using if you did not provide a sheet of defenders")
+                             @Default("0") double defActivity,
+                             @Arg("Factor in existing wars of attackers and defenders\n" +
+                                     "i.e. To determine slots available and nation strength")
+                             @Switch("w") @Default("true") boolean processActiveWars,
+                             @Arg("Only assign down declares")
+                             @Switch("e") boolean onlyEasyTargets,
+                             @Arg("Maximum ratio of defender strength to attacker\n" +
+                                     "e.g. A value of 1.5 means defenders can have 1.5x more base+unit strength than the attacker")
+                             @Switch("c") Double maxStrengthRatio,
+                             @Arg("Maximum ratio of defender development to attacker\n" +
+                                     "e.g. A value of 1.5 means defenders can have 1.5x more development than the attacker")
+                             @Switch("g") Double maxDevelopmentRatio,
+                             @Switch("s") SpreadSheet sheet) throws GeneralSecurityException, IOException {
+        Set<Long> guilds = new HashSet<>();
+
+        BlitzGenerator blitz = new BlitzGenerator(hour, maxOff, sameAAPriority, sameActivityPriority, attActivity, defActivity, guilds, processActiveWars);
+        blitz.addNations(attNations.getNations(), true);
+        blitz.addNations(defNations.getNations(), false);
+        if (processActiveWars) blitz.removeSlotted();
+
+        Map<DBNation, List<DBNation>> targets;
+        if (maxStrengthRatio != null || maxDevelopmentRatio != null) {
+            onlyEasyTargets = true;
+        }
+        if (onlyEasyTargets) {
+            if (maxStrengthRatio == null) maxStrengthRatio = 1.5;
+            if (maxDevelopmentRatio ==  null) maxDevelopmentRatio = 1.5d;
+            targets = blitz.assignEasyTargets(maxStrengthRatio, maxDevelopmentRatio);
+        } else {
+            targets = blitz.assignTargets();
+        }
+
+        if (sheet == null) sheet = SpreadSheet.create(db, SheetKey.ACTIVITY_SHEET);
+
+        SheetUtil.writeTargets(sheet, targets, hour);
+
+        sheet.send(io, null, author.getAsMention()).send();
+        return null;
+    }
 
     @Command(desc = "Generate a sheet of active wars between two coalitions (allies, enemies)\n" +
             "Add `-i` to list concluded wars",
