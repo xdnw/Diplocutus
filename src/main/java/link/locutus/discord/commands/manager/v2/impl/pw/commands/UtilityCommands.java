@@ -385,65 +385,51 @@ public class UtilityCommands {
         return null;
     }
 
-    // TODO FIXME :||remove alliance sheet
-//    @RolePermission(value = {Roles.MILCOM, Roles.INTERNAL_AFFAIRS,Roles.ECON,Roles.FOREIGN_AFFAIRS}, any=true)
-//    @Command(desc = "Create a sheet of alliances with customized columns\n" +
-//            "See <https://github.com/xdnw/diplocutus/wiki/nation_placeholders> for a list of placeholders")
-//    @NoFormat
-//    public static String AllianceSheet(AlliancePlaceholders aaPlaceholders, @Me Guild guild, @Me IMessageIO channel, @Me DBNation me, @Me User author, @Me GuildDB db,
-//                                @Arg("The nations to include in each alliance")
-//                                Set<DBNation> nations,
-//                                @Arg("The columns to use in the sheet")
-//                                @TextArea List<String> columns,
-//                                @Switch("s") SpreadSheet sheet) throws GeneralSecurityException, IOException, IllegalAccessException {
-//        if (sheet == null) {
-//            sheet = SpreadSheet.create(db, SheetKey.ALLIANCES_SHEET);
-//        }
-//        List<String> header = new ArrayList<>(columns);
-//        for (int i = 0; i < header.size(); i++) {
-//            String arg = header.get(i);
-//            arg = arg.replace("{", "").replace("}", "").replace("=", "");
-//            header.set(i, arg);
-//        }
-//
-//        Map<Integer, List<DBNation>> nationMap = new RankBuilder<>(nations).group(n -> n.getAlliance_id()).get();
-//
-//        Map<DBAlliance, DBNation> totals = new HashMap<>();
-//        for (Map.Entry<Integer, List<DBNation>> entry : nationMap.entrySet()) {
-//            Integer id = entry.getKey();
-//            DBAlliance alliance = DBAlliance.get(id);
-//            if (alliance == null) continue;
-//            DBNation total = DBNation.createFromList(DNS.getName(id, true), entry.getValue(), false);
-//            totals.put(alliance, total);
-//        }
-//
-//        sheet.setHeader(header);
-//
-//        PlaceholderCache<DBAlliance> aaCache = new PlaceholderCache<>(totals.keySet());
-//        List<Function<DBAlliance, String>> formatByColumn = new ArrayList<>();
-//        for (String column : columns) {
-//            formatByColumn.add(aaPlaceholders.getFormatFunction(guild, me, author, column, aaCache, true));
-//        }
-////        Placeholders.PlaceholderCache<DBNation> natCache = new Placeholders.PlaceholderCache<>(totals.values());
-//
-//        for (Map.Entry<DBAlliance, DBNation> entry : totals.entrySet()) {
-//            DBAlliance dbAlliance = entry.getKey();
-//            DBNation nation = entry.getValue();
-//            for (int i = 0; i < columns.size(); i++) {
-//                Function<DBAlliance, String> formatter = formatByColumn.get(i);
-//                String formatted = formatter.apply(dbAlliance);
-//                header.set(i, formatted);
-//            }
-//
-//            sheet.addRow(new ArrayList<>(header));
-//        }
-//
-//        sheet.updateClearCurrentTab();
-//        sheet.updateWrite();
-//
-//        sheet.attach(channel.create(), "alliances").send();
-//        return null;
-//    }
+    @RolePermission(value = {Roles.MILCOM, Roles.INTERNAL_AFFAIRS,Roles.ECON,Roles.FOREIGN_AFFAIRS}, any=true)
+    @Command(desc = "Create a sheet of alliances with customized columns\n" +
+            "See <https://github.com/xdnw/diplocutus/wiki/nation_placeholders> for a list of placeholders")
+    @NoFormat
+    public static String AllianceSheet(AlliancePlaceholders aaPlaceholders, @Me Guild guild, @Me IMessageIO channel, @Me DBNation me, @Me User author, @Me GuildDB db,
+                                @Arg("The nations to include in each alliance")
+                                Set<DBNation> nations,
+                                @Arg("The columns to use in the sheet")
+                                @TextArea List<String> columns,
+                                @Switch("s") SpreadSheet sheet) throws GeneralSecurityException, IOException, IllegalAccessException {
+        if (sheet == null) {
+            sheet = SpreadSheet.create(db, SheetKey.ALLIANCES_SHEET);
+        }
+        List<String> header = new ArrayList<>(columns);
+        for (int i = 0; i < header.size(); i++) {
+            String arg = header.get(i);
+            arg = arg.replace("{", "").replace("}", "").replace("=", "");
+            header.set(i, arg);
+        }
+
+        Map<Integer, List<DBNation>> nationMap = new RankBuilder<>(nations).group(n -> n.getAlliance_id()).get();
+        Set<DBAlliance> alliances = nationMap.keySet().stream().map(DBAlliance::get).filter(Objects::nonNull).collect(Collectors.toSet());
+
+        sheet.setHeader(header);
+
+        PlaceholderCache<DBAlliance> aaCache = new PlaceholderCache<>(alliances);
+        List<Function<DBAlliance, String>> formatByColumn = new ArrayList<>();
+        for (String column : columns) {
+            formatByColumn.add(aaPlaceholders.getFormatFunction(guild, me, author, column, aaCache, true));
+        }
+        for (DBAlliance alliance : alliances) {
+            for (int i = 0; i < columns.size(); i++) {
+                Function<DBAlliance, String> formatter = formatByColumn.get(i);
+                String formatted = formatter.apply(alliance);
+                header.set(i, formatted);
+            }
+            sheet.addRow(new ArrayList<>(header));
+        }
+
+        sheet.updateClearCurrentTab();
+        sheet.updateWrite();
+
+        sheet.attach(channel.create(), "alliances").send();
+        return null;
+    }
 
     @RolePermission(value = {Roles.MILCOM, Roles.ECON, Roles.INTERNAL_AFFAIRS}, any=true)
     @Command(desc = "A sheet of nations stats with customizable columns\n" +
