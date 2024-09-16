@@ -685,184 +685,166 @@ public class WarCommands {
     }
 
     // TODO FIXME :||remove war cmd !!important
-//    @Command(desc="Find a war target that you can hit\n" +
-//            "Defaults to `enemies` coalition")
-//    @RolePermission(Roles.MEMBER)
-//    public void war(@Me User author, @Me IMessageIO channel, @Me GuildDB db, @Me DBNation me, @Default("~enemies") Set<DBNation> targets, @Default("8") int numResults,
-//                      @Arg("Score to search for targets within war range of\n" +
-//                              "Defaults to your score")
-//                      @Switch("r") Double attackerScore,
-//                      @Arg("Include inactive nations in the search\n" +
-//                              "Defaults to false")
-//                      @Switch("i") boolean includeInactives,
-//                        @Arg("Include applicants in the search\n" +
-//                                "Defaults to false")
-//                      @Switch("a") boolean includeApplicants,
-//                      @Arg("Only list targets with offensive wars they are winning")
-//                      @Switch("p") boolean onlyPriority,
-//                      @Arg("Only list targets weaker than you")
-//                      @Switch("w") boolean onlyWeak,
-//                      @Arg("Sort by easiest targets")
-//                      @Switch("e") boolean onlyEasy,
-//                        @Arg("Only list targets with less cities than you")
-//                      @Switch("c") boolean onlyLessCities,
-//                      @Arg("Return results in direct message")
-//                      @Switch("d") boolean resultsInDm,
-//                      @Arg("Include nations much stronger than you in the search\n" +
-//                              "Defaults to false")
-//                      @Switch("s") boolean includeStrong) throws IOException, ExecutionException, InterruptedException {
-//        if (resultsInDm) {
-//            channel = new DiscordChannelIO(RateLimitUtil.complete(author.openPrivateChannel()), null);
-//        }
-//        if (attackerScore == null) attackerScore = me.getScore();
-//
-//        String aa = null;
-//
-//        if (!includeApplicants) targets.removeIf(f -> f.active_m() > 1440 && f.getPosition() <= 1);
-//        if (!includeInactives) targets.removeIf(n -> n.active_m() >= 2440);
-//        targets.removeIf(n -> n.isVacation());
-////                nations.removeIf(n -> n.isBeige());
-//
-//        double minScore = attackerScore * 0.75;
-//        double maxScore = attackerScore * DNS.WAR_RANGE_MAX_MODIFIER;
-//
-//        List<DBNation> strong = new ArrayList<>();
-//
-//        ArrayList<DBNation> targetsStorted = new ArrayList<>();
-//        for (DBNation nation : targets) {
-//            if (nation.getScore() >= maxScore || nation.getScore() <= minScore) continue;
-//            if (nation.active_m() > 2440 && !includeInactives) continue;
-//            if (nation.isVacation()) continue;
-//            if (nation.getDef() >= 3) continue;
-//            if (nation.getCities() >= me.getCities() * 1.5 && !includeStrong && me.getGroundStrength(false, true) > nation.getGroundStrength(true, false) * 2) continue;
-//            if (nation.getCities() >= me.getCities() * 1.8 && !includeStrong && nation.active_m() < 2880) continue;
-//            targetsStorted.add(nation);
-//        }
-//
-//        if (onlyPriority) {
-//            targetsStorted.removeIf(f -> f.getNumWars() == 0);
-//            targetsStorted.removeIf(f -> f.getRelativeStrength() <= 1);
-//        }
-//
-//        DBNation finalMe = me;
-//        if (onlyWeak) {
-//            targetsStorted.removeIf(f -> f.getGroundStrength(true, false) > finalMe.getGroundStrength(true, false));
-//            targetsStorted.removeIf(f -> f.getAircraft() > finalMe.getAircraft());
-//        }
-//        if (onlyLessCities) {
-//            targetsStorted.removeIf(f -> f.getCities() > finalMe.getCities());
-//        }
-//
-//        Set<DBWar> wars = me.getActiveWars();
-//        for (DBWar war : wars) {
-//            targetsStorted.remove(war.getNation(true));
-//            targetsStorted.remove(war.getNation(false));
-//        }
-//
-//        int mySoldierRebuy = me.getCities() * Buildings.BARRACKS.getUnitCap() * 5 * 2;
-//
-//        long currentTurn = TimeUtil.getTurn();
-//
-//        List<Map.Entry<DBNation, Double>> nationNetValues = new ArrayList<>();
-//
-//        for (DBNation nation : targetsStorted) {
-//            if (nation.isBeige()) continue;
-//            double value;
-//            if (onlyEasy) {
-//                value = BlitzGenerator.getAirStrength(nation, true);
-//            } else {
-////                        SimulatedWarNode origin = SimulatedWarNode.of(nation, me.getNation_id() + "", nation.getNation_id() + "", "raid");
-//                 value = BlitzGenerator.getAirStrength(nation, true);
-//                value *= 2 * (nation.getCities() / (double) me.getCities());
-//                if (nation.getOff() > 0) value /= 4;
-//                if (nation.getShips() > 1 && nation.getOff() > 0 && nation.isBlockader()) value /= 2;
-//                if (nation.getDef() <= 1) value /= (1.05 + (0.1 * nation.getDef()));
-//                if (nation.active_m() > 1440) value *= 1 + Math.sqrt(nation.active_m() - 1440) / 250;
-//                value /= (1 + nation.getOff() * 0.1);
-//                if (nation.getScore() > attackerScore * 1.25) value /= 2;
-//                if (nation.getOff() > 0) value /= nation.getRelativeStrength();
+    @Command(desc="Find a war target that you can hit\n" +
+            "Defaults to `enemies` coalition")
+    @RolePermission(Roles.MEMBER)
+    public void war(@Me User author, @Me IMessageIO channel, @Me GuildDB db, @Me DBNation me, @Default("~enemies") Set<DBNation> targets, @Default("8") int numResults,
+                      @Arg("Score to search for targets within war range of\n" +
+                              "Defaults to your score")
+                      @Switch("r") Double attackerScore,
+                      @Arg("Include inactive nations in the search\n" +
+                              "Defaults to false")
+                      @Switch("i") boolean includeInactives,
+                        @Arg("Include applicants in the search\n" +
+                                "Defaults to false")
+                      @Switch("a") boolean includeApplicants,
+                      @Arg("Only list targets with offensive wars they are winning")
+                      @Switch("p") boolean onlyPriority,
+                      @Arg("Only list targets weaker than you")
+                      @Switch("w") boolean onlyWeak,
+                      @Arg("Sort by easiest targets")
+                      @Switch("e") boolean onlyEasy,
+                        @Arg("Only list targets with less cities than you")
+                      @Switch("c") boolean onlyLessDev,
+                      @Arg("Return results in direct message")
+                      @Switch("d") boolean resultsInDm,
+                      @Arg("Include nations much stronger than you in the search\n" +
+                              "Defaults to false")
+                      @Switch("s") boolean includeStrong) throws IOException, ExecutionException, InterruptedException {
+        if (resultsInDm) {
+            channel = new DiscordChannelIO(RateLimitUtil.complete(author.openPrivateChannel()), null);
+        }
+        if (attackerScore == null) attackerScore = me.getScore();
+
+        if (!includeApplicants) targets.removeIf(f -> f.active_m() > 1440 && f.getPosition() <= 1);
+        if (!includeInactives) targets.removeIf(n -> n.active_m() >= 2440);
+        targets.removeIf(n -> n.isVacation());
+        double minScore = attackerScore * DNS.WAR_RANGE_MIN_MODIFIER_ACTIVE;
+        double maxScore = attackerScore * DNS.WAR_RANGE_MAX_MODIFIER_ACTIVE;
+
+        List<DBNation> strong = new ArrayList<>();
+
+        ArrayList<DBNation> targetsStorted = new ArrayList<>();
+        for (DBNation nation : targets) {
+            if (nation.getScore() >= maxScore || nation.getScore() <= minScore) continue;
+            if (nation.active_m() > 2440 && !includeInactives) continue;
+            if (nation.isVacation()) continue;
+            if (nation.getDef() >= 3) continue;
+            if (nation.getInfra() >= me.getInfra() * 1.5 && !includeStrong && me.getStrength() < nation.getStrength() * 1.5) continue;
+            if (nation.getInfra() >= me.getInfra() * 2 && !includeStrong && nation.active_m() < 2880) continue;
+            targetsStorted.add(nation);
+        }
+
+        if (onlyPriority) {
+            targetsStorted.removeIf(f -> f.getNumWars() == 0);
+            targetsStorted.removeIf(f -> f.getRelativeStrength() <= 1);
+        }
+
+        DBNation finalMe = me;
+        if (onlyWeak) {
+            targetsStorted.removeIf(f -> f.getStrength() > finalMe.getStrength());
+        }
+        if (onlyLessDev) {
+            targetsStorted.removeIf(f -> f.getInfra() > finalMe.getInfra());
+        }
+
+        Set<DBWar> wars = me.getActiveWars();
+        for (DBWar war : wars) {
+            targetsStorted.remove(war.getNation(true));
+            targetsStorted.remove(war.getNation(false));
+        }
+
+        List<Map.Entry<DBNation, Double>> nationNetValues = new ArrayList<>();
+
+        for (DBNation nation : targetsStorted) {
+            if (nation.hasProtection()) continue;
+            double value;
+            if (onlyEasy) {
+                value = nation.getStrength();
+            } else {
+//                        SimulatedWarNode origin = SimulatedWarNode.of(nation, me.getNation_id() + "", nation.getNation_id() + "", "raid");
+                 value = nation.getStrength();
+                if (nation.getOff() > 0) value /= 4;
+                if (nation.getDef() <= 1) value /= (1.05 + (0.1 * nation.getDef()));
+                if (nation.active_m() > 1440) value *= 1 + Math.sqrt(nation.active_m() - 1440) / 250;
+                value /= (1 + nation.getOff() * 0.1);
+                if (nation.getScore() > attackerScore * 1.25) value /= 2;
+                if (nation.getOff() > 0) value /= nation.getRelativeStrength();
+            }
+
+            nationNetValues.add(new AbstractMap.SimpleEntry<>(nation, value));
+        }
+
+        Map<DBNation, Integer> beigeTurns = new HashMap<>();
+
+        if (nationNetValues.isEmpty()) {
+            for (DBNation nation : targetsStorted) {
+                if (nation.hasProtection()) {
+                    long time = nation.getProtectionRemainingMs();
+                    nationNetValues.add(new AbstractMap.SimpleEntry<>(nation, (double) (time / 1000L)));
+                }
+            }
+            if (nationNetValues.isEmpty()) {
+                String message;
+                if (onlyPriority) {
+                    message = "No targets found. Try ";// + CM.war.find.enemy.cmd.toSlashMention() + ""; // TODO FIXME :||remove !!important
+                } else {
+                    message = "No targets found:\n" +
+                            "- Add `-i` to include inactives\n" +
+                            "- Add `-a` to include applicants";
+                }
+                channel.send(message);
+                return;
+            }
+        }
+
+        nationNetValues.sort(Comparator.comparingDouble(Map.Entry::getValue));
+
+        StringBuilder response = new StringBuilder("**Results for " + me.getNation() + "**:");
+
+        int count = 0;
+
+        long currentHour = TimeUtil.getHour();
+        for (Map.Entry<DBNation, Double> nationNetValue : nationNetValues) {
+            if (count++ == numResults) break;
+
+            DBNation nation = nationNetValue.getKey();
+
+            response.append('\n')
+                    .append("<" + Settings.INSTANCE.DNS_URL() + "/nation/id=" + nation.getNation_id() + ">")
+                    .append(" | " + String.format("%16s", nation.getNation()))
+                    .append(" | " + String.format("%16s", nation.getAllianceName()));
+
+            // TODO FIXME :||remove !!important loot
+//            double total = nation.lootTotal();
+//            if (total != 0) {
+//                response.append(": $" + MathMan.format(total));
 //            }
-//
-//            nationNetValues.add(new AbstractMap.SimpleEntry<>(nation, value));
-//        }
-//
-//        Map<DBNation, Integer> beigeTurns = new HashMap<>();
-//
-//        if (nationNetValues.isEmpty()) {
-//            for (DBNation nation : targetsStorted) {
-//                if (nation.isBeige()) {
-//                    int turns = beigeTurns.computeIfAbsent(nation, f -> f.getBeigeTurns());
-//                    nationNetValues.add(new AbstractMap.SimpleEntry<>(nation, (double) turns));
-//                }
-//            }
-//            if (nationNetValues.isEmpty()) {
-//                String message;
-//                if (onlyPriority) {
-//                    message = "No targets found. Try " + CM.war.find.enemy.cmd.toSlashMention() + "";
-//                } else {
-//                    message = "No targets found:\n" +
-//                            "- Add `-i` to include inactives\n" +
-//                            "- Add `-a` to include applicants";
-//                }
-//                channel.send(message);
-//                return;
-//            }
-//        }
-//
-//        nationNetValues.sort(Comparator.comparingDouble(Map.Entry::getValue));
-//
-//        StringBuilder response = new StringBuilder("**Results for " + me.getNation() + "**:");
-//
-//        int count = 0;
-//
-//        boolean whitelisted = db.isWhitelisted();
-//
-//        for (Map.Entry<DBNation, Double> nationNetValue : nationNetValues) {
-//            if (count++ == numResults) break;
-//
-//            DBNation nation = nationNetValue.getKey();
-//
-//            response.append('\n')
-//                    .append("<" + Settings.INSTANCE.DNS_URL() + "/nation/id=" + nation.getNation_id() + ">")
-//                    .append(" | " + String.format("%16s", nation.getNation()))
-//                    .append(" | " + String.format("%16s", nation.getAllianceName()));
-//
-//            if (whitelisted) {
-//                double total = nation.lootTotal();
-//                if (total != 0) {
-//                    response.append(": $" + MathMan.format(total));
-//                }
-//            }
-//
-//            response.append("\n```")
-//                    .append(String.format("%2s", nation.getCities())).append(" \uD83C\uDFD9").append(" | ")
-//                    .append(String.format("%6s", nation.getSoldiers())).append(" \uD83D\uDC82").append(" | ")
-//                    .append(String.format("%5s", nation.getTanks())).append(" \u2699").append(" | ")
-//                    .append(String.format("%5s", nation.getAircraft())).append(" \u2708").append(" | ")
-//                    .append(String.format("%4s", nation.getShips())).append(" \u26F5").append(" | ")
-//                    .append(String.format("%1s", nation.getDef())).append(" \uD83D\uDEE1");
-//
-//            if (nation.isBeige()) {
-//                int turns = beigeTurns.computeIfAbsent(nation, f -> f.getBeigeTurns());
-//                if (turns > 0) {
-//                    response.append(" | ").append("beige=" + turns);
-//                }
-//            }
-//
-//            Activity activity = nation.getActivity(14 * 24);
-//            double loginChance = activity.loginChance((int) Math.max(1, (24 - (currentTurn % 24))), true);
-//            int loginPct = (int) (loginChance * 100);
-//
-//            response.append(" | login=" + loginPct + "%");
-//            response.append("```");
-//        }
-//
-//        if (count == 0) {
-//            channel.send("No results. Please ping a target (advisor)");
-//        } else {
-//            channel.send(response.toString());
-//        }
-//    }
+            response.append("\n```")
+                    .append(String.format("%2s", "Dev:" + MathMan.format(nation.getInfra()))).append(" | ")
+                    .append(String.format("%6s", "Land:" + MathMan.format(nation.getLand()))).append(" | ")
+                    .append(String.format("%5s", "Base:" + MathMan.format(nation.getBaseIndex()))).append(" | ")
+                    .append(String.format("%4s", "Strength:" + MathMan.format(nation.getEnemyStrength()))).append(" | ")
+                    .append(String.format("%1s", "Def:" + MathMan.format(nation.getDef())));
+
+            if (nation.hasProtection()) {
+                response.append(" | ").append("protected=" + DiscordUtil.timestamp(nation.getProtectionRemainingMs(), null));
+            }
+
+            Activity activity = nation.getActivity(14 * 24);
+            double loginChance = activity.loginChance((int) Math.max(1, (24 - (currentHour % 24))), true);
+            int loginPct = (int) (loginChance * 100);
+
+            response.append(" | login=" + loginPct + "%");
+            response.append("```");
+        }
+
+        if (count == 0) {
+            channel.send("No results. Please ping a target (advisor)");
+        } else {
+            channel.send(response.toString());
+        }
+    }
 
 //    @Command(desc = "Find nations to do a spy op against the specified enemy\n" +
 //                    "Op types: (INTEL,NUKE,MISSILE,SHIPS,AIRCRAFT,TANKS,SPIES,SOLDIER) or `*` (for all op types)\n" +

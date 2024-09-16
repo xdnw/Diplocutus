@@ -263,6 +263,23 @@ public class NationCommands {
         }
 
         }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getBaseIndex")
+        public static class getBaseIndex extends CommandRef {
+            public static final getBaseIndex cmd = new getBaseIndex();
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getBuilding")
+        public static class getBuilding extends CommandRef {
+            public static final getBuilding cmd = new getBuilding();
+        public getBuilding building(String value) {
+            return set("building", value);
+        }
+
+        public getBuilding includeEffects(String value) {
+            return set("includeEffects", value);
+        }
+
+        }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getCashOutput")
         public static class getCashOutput extends CommandRef {
             public static final getCashOutput cmd = new getCashOutput();
@@ -587,6 +604,11 @@ public class NationCommands {
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getStabilityIndex")
         public static class getStabilityIndex extends CommandRef {
             public static final getStabilityIndex cmd = new getStabilityIndex();
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getStrength")
+        public static class getStrength extends CommandRef {
+            public static final getStrength cmd = new getStrength();
 
         }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getStrongestEnemy")

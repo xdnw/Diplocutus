@@ -820,7 +820,9 @@ public class GuildKey {
     }.setupRequirements(new Consumer<GuildSetting<Boolean>>() {
         @Override
         public void accept(GuildSetting<Boolean> f) {
-            f.requires(ALLIANCE_ID).requiresNot(AUTOROLE_ALLY_GOV, false);
+            f.requireFunction(d -> {
+                d.getOrThrow(GuildKey.ALLIANCE_ID);
+            }, "Requires " + GuildKey.ALLIANCE_ID.name() + " to be set").requiresNot(AUTOROLE_ALLY_GOV, false);
         }
     });
     public static GuildSetting<Integer> AUTOROLE_TOP_X = new GuildIntegerSetting(GuildSettingCategory.ROLE) {

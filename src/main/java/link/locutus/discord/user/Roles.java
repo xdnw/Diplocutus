@@ -119,8 +119,10 @@ public enum Roles {
 
     ESPIONAGE_ALERTS(41, "Role to receive pings when an alliance member gets spied", GuildKey.DEFENSE_WAR_CHANNEL),
 
-    ;
+    BLITZ_PARTICIPANT(27, "Opt in to blitz participation (clear this regularly)", GuildKey.ALLIANCE_ID),
+    BLITZ_PARTICIPANT_OPT_OUT(28, "Opt in to blitz participation (clear this regularly)", GuildKey.ALLIANCE_ID),
 
+    ;
 
     public static Roles[] values = values();
     private final String desc;

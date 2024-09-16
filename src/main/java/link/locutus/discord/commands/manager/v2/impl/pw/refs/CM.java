@@ -3423,6 +3423,30 @@ public class CM {
                 }
 
                 }
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.filter.PlaceholdersMap.class,method="addSelectionAlias", field="TECHNOLOGIES")
+                public static class technology extends CommandRef {
+                    public static final technology cmd = new technology();
+                public technology name(String value) {
+                    return set("name", value);
+                }
+
+                public technology policies(String value) {
+                    return set("policies", value);
+                }
+
+                }
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.filter.PlaceholdersMap.class,method="addSelectionAlias", field="POLICIES")
+                public static class timedpolicy extends CommandRef {
+                    public static final timedpolicy cmd = new timedpolicy();
+                public timedpolicy name(String value) {
+                    return set("name", value);
+                }
+
+                public timedpolicy policies(String value) {
+                    return set("policies", value);
+                }
+
+                }
                 @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.filter.PlaceholdersMap.class,method="addSelectionAlias", field="TREATIES")
                 public static class treaty extends CommandRef {
                     public static final treaty cmd = new treaty();
@@ -5425,6 +5449,214 @@ public class CM {
                 }
 
                 }
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.filter.PlaceholdersMap.class,method="addColumns", field="TECHNOLOGIES")
+                public static class technology extends CommandRef {
+                    public static final technology cmd = new technology();
+                public technology sheet(String value) {
+                    return set("sheet", value);
+                }
+
+                public technology a(String value) {
+                    return set("a", value);
+                }
+
+                public technology b(String value) {
+                    return set("b", value);
+                }
+
+                public technology c(String value) {
+                    return set("c", value);
+                }
+
+                public technology d(String value) {
+                    return set("d", value);
+                }
+
+                public technology e(String value) {
+                    return set("e", value);
+                }
+
+                public technology f(String value) {
+                    return set("f", value);
+                }
+
+                public technology g(String value) {
+                    return set("g", value);
+                }
+
+                public technology h(String value) {
+                    return set("h", value);
+                }
+
+                public technology i(String value) {
+                    return set("i", value);
+                }
+
+                public technology j(String value) {
+                    return set("j", value);
+                }
+
+                public technology k(String value) {
+                    return set("k", value);
+                }
+
+                public technology l(String value) {
+                    return set("l", value);
+                }
+
+                public technology m(String value) {
+                    return set("m", value);
+                }
+
+                public technology n(String value) {
+                    return set("n", value);
+                }
+
+                public technology o(String value) {
+                    return set("o", value);
+                }
+
+                public technology p(String value) {
+                    return set("p", value);
+                }
+
+                public technology q(String value) {
+                    return set("q", value);
+                }
+
+                public technology r(String value) {
+                    return set("r", value);
+                }
+
+                public technology s(String value) {
+                    return set("s", value);
+                }
+
+                public technology t(String value) {
+                    return set("t", value);
+                }
+
+                public technology u(String value) {
+                    return set("u", value);
+                }
+
+                public technology v(String value) {
+                    return set("v", value);
+                }
+
+                public technology w(String value) {
+                    return set("w", value);
+                }
+
+                public technology x(String value) {
+                    return set("x", value);
+                }
+
+                }
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.filter.PlaceholdersMap.class,method="addColumns", field="POLICIES")
+                public static class timedpolicy extends CommandRef {
+                    public static final timedpolicy cmd = new timedpolicy();
+                public timedpolicy sheet(String value) {
+                    return set("sheet", value);
+                }
+
+                public timedpolicy a(String value) {
+                    return set("a", value);
+                }
+
+                public timedpolicy b(String value) {
+                    return set("b", value);
+                }
+
+                public timedpolicy c(String value) {
+                    return set("c", value);
+                }
+
+                public timedpolicy d(String value) {
+                    return set("d", value);
+                }
+
+                public timedpolicy e(String value) {
+                    return set("e", value);
+                }
+
+                public timedpolicy f(String value) {
+                    return set("f", value);
+                }
+
+                public timedpolicy g(String value) {
+                    return set("g", value);
+                }
+
+                public timedpolicy h(String value) {
+                    return set("h", value);
+                }
+
+                public timedpolicy i(String value) {
+                    return set("i", value);
+                }
+
+                public timedpolicy j(String value) {
+                    return set("j", value);
+                }
+
+                public timedpolicy k(String value) {
+                    return set("k", value);
+                }
+
+                public timedpolicy l(String value) {
+                    return set("l", value);
+                }
+
+                public timedpolicy m(String value) {
+                    return set("m", value);
+                }
+
+                public timedpolicy n(String value) {
+                    return set("n", value);
+                }
+
+                public timedpolicy o(String value) {
+                    return set("o", value);
+                }
+
+                public timedpolicy p(String value) {
+                    return set("p", value);
+                }
+
+                public timedpolicy q(String value) {
+                    return set("q", value);
+                }
+
+                public timedpolicy r(String value) {
+                    return set("r", value);
+                }
+
+                public timedpolicy s(String value) {
+                    return set("s", value);
+                }
+
+                public timedpolicy t(String value) {
+                    return set("t", value);
+                }
+
+                public timedpolicy u(String value) {
+                    return set("u", value);
+                }
+
+                public timedpolicy v(String value) {
+                    return set("v", value);
+                }
+
+                public timedpolicy w(String value) {
+                    return set("w", value);
+                }
+
+                public timedpolicy x(String value) {
+                    return set("x", value);
+                }
+
+                }
                 @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.filter.PlaceholdersMap.class,method="addColumns", field="TREATIES")
                 public static class treaty extends CommandRef {
                     public static final treaty cmd = new treaty();
@@ -6242,6 +6474,34 @@ public class CM {
 
             }
             public static class counter{
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="autocounter")
+                public static class auto extends CommandRef {
+                    public static final auto cmd = new auto();
+                public auto enemy(String value) {
+                    return set("enemy", value);
+                }
+
+                public auto attackers(String value) {
+                    return set("attackers", value);
+                }
+
+                public auto max(String value) {
+                    return set("max", value);
+                }
+
+                public auto pingMembers(String value) {
+                    return set("pingMembers", value);
+                }
+
+                public auto skipAddMembers(String value) {
+                    return set("skipAddMembers", value);
+                }
+
+                public auto sendMail(String value) {
+                    return set("sendMail", value);
+                }
+
+                }
                 @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="counter")
                 public static class nation extends CommandRef {
                     public static final nation cmd = new nation();
@@ -6349,6 +6609,54 @@ public class CM {
 
                 public blitztargets page(String value) {
                     return set("page", value);
+                }
+
+                }
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="war")
+                public static class enemy extends CommandRef {
+                    public static final enemy cmd = new enemy();
+                public enemy targets(String value) {
+                    return set("targets", value);
+                }
+
+                public enemy numResults(String value) {
+                    return set("numResults", value);
+                }
+
+                public enemy attackerScore(String value) {
+                    return set("attackerScore", value);
+                }
+
+                public enemy includeInactives(String value) {
+                    return set("includeInactives", value);
+                }
+
+                public enemy includeApplicants(String value) {
+                    return set("includeApplicants", value);
+                }
+
+                public enemy onlyPriority(String value) {
+                    return set("onlyPriority", value);
+                }
+
+                public enemy onlyWeak(String value) {
+                    return set("onlyWeak", value);
+                }
+
+                public enemy onlyEasy(String value) {
+                    return set("onlyEasy", value);
+                }
+
+                public enemy onlyLessDev(String value) {
+                    return set("onlyLessDev", value);
+                }
+
+                public enemy resultsInDm(String value) {
+                    return set("resultsInDm", value);
+                }
+
+                public enemy includeStrong(String value) {
+                    return set("includeStrong", value);
                 }
 
                 }
