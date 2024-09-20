@@ -702,14 +702,13 @@ public final class DNS {
         return aaIds;
     }
 
-    public static Map<MilitaryUnit, Long> parseUnits(String arg) {
+    public static <E extends Enum<E>, V extends Number> Map<E, V> parseEnumMap(String arg, Class<E> enumClass, Class<V> valueClass) {
         arg = arg.trim();
         if (!arg.contains(":") && !arg.contains("=")) arg = arg.replaceAll("[ ]+", ":");
         arg = arg.replace(" ", "").replace('=', ':').replaceAll("([0-9]),([0-9])", "$1$2").toUpperCase();
-        for (MilitaryUnit unit : MilitaryUnit.values()) {
-            String name = unit.getName();
-            if (name == null || name.equalsIgnoreCase(unit.name())) continue;
-            arg = arg.replace(name.toUpperCase() + ":", unit.name() + ":");
+        for (E unit : enumClass.getEnumConstants()) {
+            String name = unit.name();
+            arg = arg.replace(name.toUpperCase() + ":", name + ":");
         }
 
         double sign = 1;
@@ -722,28 +721,48 @@ public final class DNS {
         if (preMultiply != -1) {
             String[] split = arg.split("\\*\\{", 2);
             arg = "{" + split[1];
-            sign *= MathMan.parseDouble(split[0]);
+            sign *= Double.parseDouble(split[0]);
         }
         if (postMultiply != -1) {
             String[] split = arg.split("\\}\\*", 2);
             arg = split[0] + "}";
-            sign *= MathMan.parseDouble(split[1]);
+            sign *= Double.parseDouble(split[1]);
         }
 
-        Type type = new TypeToken<Map<MilitaryUnit, Long>>() {}.getType();
+        Type type = com.google.gson.reflect.TypeToken.getParameterized(Map.class, enumClass, valueClass).getType();
         if (arg.charAt(0) != '{' && arg.charAt(arg.length() - 1) != '}') {
             arg = "{" + arg + "}";
         }
-        Map<MilitaryUnit, Long> result = new Gson().fromJson(arg, type);
+        Map<E, V> result = new Gson().fromJson(arg, type);
         if (result.containsKey(null)) {
             throw new IllegalArgumentException("Invalid resource type specified in map: `" + arg + "`");
         }
         if (sign != 1) {
-            for (Map.Entry<MilitaryUnit, Long> entry : result.entrySet()) {
-                entry.setValue((long) (entry.getValue() * sign));
+            for (Map.Entry<E, V> entry : result.entrySet()) {
+                entry.setValue(multiply(entry.getValue(), sign, valueClass));
             }
         }
         return result;
+    }
+
+    private static <V extends Number> V multiply(V value, double factor, Class<V> valueClass) {
+        if (valueClass == Long.class) {
+            return valueClass.cast((long) (value.longValue() * factor));
+        } else if (valueClass == Double.class) {
+            return valueClass.cast(value.doubleValue() * factor);
+        } else if (valueClass == Integer.class) {
+            return valueClass.cast((int) (value.intValue() * factor));
+        } else {
+            throw new IllegalArgumentException("Unsupported value type: " + valueClass);
+        }
+    }
+
+    public static Map<MilitaryUnit, Long> parseUnits(String arg) {
+        return parseEnumMap(arg, MilitaryUnit.class, Long.class);
+    }
+
+    public static Map<Building, Integer> parseBuildings(String arg) {
+        return parseEnumMap(arg, Building.class, Integer.class);
     }
 
     public static Map<String, String> parseMap(String arg) {

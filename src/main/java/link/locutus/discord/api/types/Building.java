@@ -3,12 +3,10 @@ package link.locutus.discord.api.types;
 import link.locutus.discord.api.generated.NationBuildings;
 import link.locutus.discord.api.generated.NationsEffectsSummary;
 import link.locutus.discord.commands.manager.v2.binding.annotation.Command;
+import link.locutus.discord.db.entities.DBNation;
 
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.function.Supplier;
-import java.util.function.ToIntFunction;
+import java.util.function.*;
 
 public enum Building {
     RESEARCH_CENTERS(f -> f.ResearchCenters, f -> f.researchCenter, 250000, 0.05, 100, 10000, 50000) {
@@ -56,7 +54,7 @@ public enum Building {
     RAIL_NETWORKS(f -> f.RailNetworks, f -> f.railNetwork, 500000, 0.03, 0, 5000, 75000, () -> Technology.TRANSPORTATION_TECHNOLOGY, 1),
     AIRPORTS(f -> f.Airports, f -> f.airport, 1500000, 0.01, 0, 10000, 200000, () -> Technology.TRANSPORTATION_TECHNOLOGY, 4),
     PORTS(f -> f.Ports, f -> f.port, 1000000, 0.01, 0, 10000, 250000, () -> Technology.TRANSPORTATION_TECHNOLOGY, 3),
-    SUBWAY(f -> f.Subways, f -> 0, 1000000, 0.05, 0, 5000, 75000, () -> Project.CAPITAL_SUBWAY_SYSTEM),
+    SUBWAY(f -> f.Subways, f -> 0, 100000000, 0.05, 0, 5000, 75000, () -> Project.CAPITAL_SUBWAY_SYSTEM),
     PRECURSOR_TELEPORTATION_HUBS(f -> f.PrecursorTeleportationHubs, f -> 0, 2000000, 0.0025, 0, 10000, 500000, () -> Technology.PRECURSOR_TECHNOLOGY, 5),
     ARMY_BASES(f -> f.ArmyBases, f -> f.armyBase, 500000, 0.015, 0, 10000, 50000),
     NAVAL_BASES(f -> f.NavalBases, f -> f.navalBase, 2000000, 0.01, 0, 10000, 25000),
@@ -64,7 +62,7 @@ public enum Building {
     RESIDENTIAL_DISTRICTS(f -> f.ResidentialDistricts, f -> f.residentialDistrict, 250000, 0.05, 0, 0, 100000),
 
     // TODO FIXME :||remove missing from wiki
-    RICH_MINING_AREA(f -> f.RichMiningArea, f -> 0, 250000, 0.005, 0, 10000, 25000, () -> Technology.RARE_METAL_MINING, 1),
+    RICH_MINING_AREA(f -> f.RichMiningArea, f -> 0, 250000, 0.005, 0, 10000, 200000, () -> Technology.RARE_METAL_MINING, 1),
     ;
 
     public static Building[] values = Building.values();
@@ -75,7 +73,7 @@ public enum Building {
     private final int jobsPerLevel;
     private final int corporationIncomePerLevel;
     private final Supplier<Technology> unlockRequirement;
-    private final int level;
+    private final int techLevel;
     private final Supplier<Project> requiresProject;
     private final Function<NationBuildings, Integer> get;
     private final Function<NationsEffectsSummary, Integer> getEffect;
@@ -103,7 +101,7 @@ public enum Building {
         this.corporationIncomePerLevel = corporationIncomePerLevel;
         this.unlockRequirement = unlockRequirement;
         this.requiresProject = requiresProject;
-        this.level = level;
+        this.techLevel = level;
     }
 
     public double cost(int level, int totalSlots, double costReduction) {
@@ -124,7 +122,6 @@ public enum Building {
     public void apply(NationModifier modifier, int level) {
 
     }
-
 
     public static Building parse(String input) {
         for (Building building : values) {
@@ -188,11 +185,30 @@ public enum Building {
     }
 
     @Command(desc = "Get the level of the building")
-    public int getLevel() {
-        return level;
+    public int getTechLevel() {
+        return techLevel;
     }
 
     public int get(NationsEffectsSummary result) {
         return getEffect.apply(result);
+    }
+
+    public String getCantBuildReason(Function<Project, Integer> hasProject, Function<Technology, Integer> hasTech) {
+        if (requiresProject != null && requiresProject.get() != null) {
+            if (hasProject.apply(requiresProject.get()) == 0) {
+                return "Requires project " + requiresProject.get().name();
+            }
+        }
+        if (unlockRequirement != null && unlockRequirement.get() != null) {
+            int currentLevel = hasTech.apply(unlockRequirement.get());
+            if (currentLevel < techLevel) {
+                return "Requires " + unlockRequirement.get().name() + " level " + techLevel + " (current: " + currentLevel + ")";
+            }
+        }
+        return null;
+    }
+
+    public boolean canBuild(Function<Project, Integer> hasProject, Function<Technology, Integer> hasTech) {
+        return getCantBuildReason(hasProject, hasTech) == null;
     }
 }

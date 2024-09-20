@@ -1432,6 +1432,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         return getInactiveMs() > TimeUnit.DAYS.toMillis(14);
     }
 
+    @Command
     public int active_m() {
         long now = getSnapshot() == null ? System.currentTimeMillis() : getSnapshot();
         return (int) TimeUnit.MILLISECONDS.toMinutes(now - lastActiveMs());

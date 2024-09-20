@@ -4,10 +4,15 @@ import link.locutus.discord.api.endpoints.DnsApi;
 import link.locutus.discord.api.endpoints.DnsQuery;
 import link.locutus.discord.api.types.tx.BankTransfer;
 import link.locutus.discord.db.DBMainV2;
+import link.locutus.discord.db.SQLUtil;
 import link.locutus.discord.event.Event;
 import link.locutus.discord.util.scheduler.ThrowingConsumer;
 import link.locutus.discord.util.scheduler.ThrowingFunction;
 
+import javax.annotation.Nullable;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -132,6 +137,39 @@ public interface DBEntity<T, E extends DBEntity<T, E>> {
             } else {
                 stmt.setObject(i + 1, value);
             }
+        }
+    }
+
+    default void writeHeader(DataOutputStream out) throws IOException {
+        Map<String, Class<?>> types = getTypes();
+        for (String key : types.keySet()) {
+            out.writeUTF(key);
+        }
+    }
+
+    default boolean isNullable(String fieldName) {
+        try {
+            return getClass().getDeclaredField(fieldName).getAnnotation(Nullable.class) != null;
+        } catch (NoSuchFieldException e) {
+            return false;
+        }
+    }
+
+    default BiConsumer<DataOutputStream, Object>[] getWriters() {
+        Map<String, Class<?>> types = getTypes();
+        BiConsumer<DataOutputStream, Object>[] writers = new BiConsumer[types.size()];
+        int i = 0;
+        for (Map.Entry<String, Class<?>> entry : types.entrySet()) {
+            writers[i++] = SQLUtil.getWriter(entry.getValue(), isNullable(entry.getKey()));
+        }
+        return writers;
+    }
+
+    default void write(DataOutputStream out, BiConsumer<DataOutputStream, Object>[] writers) {
+        Object[] data = this.write();
+        for (int i = 0; i < data.length; i++) {
+            BiConsumer<DataOutputStream, Object> writer = writers[i];
+            writer.accept(out, data[i]);
         }
     }
 }

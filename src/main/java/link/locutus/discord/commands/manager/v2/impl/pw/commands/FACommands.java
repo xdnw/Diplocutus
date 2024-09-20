@@ -320,8 +320,8 @@ public class FACommands {
                 return "Embassy: <#" + channel.getId() + ">";
             }
         }
-        if (me.getPosition() <= 2) {
-            return "You must be an officer to create an embassy";
+        if (me.getPosition() < reqRank.id) {
+            return "You must be an " + reqRank.name() + " to create an embassy";
         }
 
         String embassyName = nation.getAllianceName() + "-" + nation.getAlliance_id();

@@ -5,7 +5,11 @@ import com.ptsmods.mysqlw.table.ColumnType;
 import link.locutus.discord.db.entities.DBEntity;
 import link.locutus.discord.db.entities.DBNation;
 import link.locutus.discord.db.entities.components.NationPrivate;
+import link.locutus.discord.util.IOUtil;
+import link.locutus.discord.util.math.ArrayUtil;
+import link.locutus.discord.util.scheduler.ThrowingBiConsumer;
 
+import java.io.DataOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -118,5 +122,68 @@ public class SQLUtil {
     public static String addColumn(DBEntity<?, ?> entity, String columnName, Class<?> type, String def) {
         String tableName = entity.getTableName();
         return "ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + toSqlType(type) + " DEFAULT " + def;
+    }
+
+    public static ThrowingBiConsumer<DataOutputStream, Object> getWriter(Class<?> type, boolean isNullable) {
+//        } else if (clazz == Float.class || clazz == float.class) {
+//            return "FLOAT";
+//        } else if (clazz == Boolean.class || clazz == boolean.class) {
+//            return "BOOLEAN";
+//        } else if (clazz == Short.class || clazz == short.class) {
+//            return "SMALLINT";
+//        } else if (clazz == Byte.class || clazz == byte.class) {
+//            return "TINYINT";
+//        } else if (clazz == byte[].class) {
+//            return "BLOB";
+//        } else {
+//            throw new IllegalArgumentException("Unsupported data type: " + clazz.getName());
+//        }
+        if (type == String.class) {
+            return (dos, o) -> {
+                if (o == null) dos.writeUTF("");
+                else dos.writeUTF((String) o);
+            };
+        } else if (type == Integer.class || type == int.class) {
+            if (isNullable) {
+                return (dos, o) -> {
+                    dos.writeBoolean(o != null);
+                    if (o != null) IOUtil.writeVarInt(dos, (Integer) o);
+                };
+            }
+            return (dos, o) -> {
+                IOUtil.writeVarInt(dos, (Integer) o);
+            };
+        } else if (type == Long.class || type == long.class) {
+            if (isNullable) {
+                return (dos, o) -> {
+                    dos.writeBoolean(o != null);
+                    if (o != null) IOUtil.writeVarLong(dos, (Long) o);
+                };
+            }
+            return (dos, o) -> {
+                IOUtil.writeVarLong(dos, (Long) o);
+            };
+        } else if (type == Double.class || type == double.class) {
+            if (isNullable) {
+                return (dos, o) -> {
+                    dos.writeBoolean(o != null);
+                    if (o != null) dos.writeDouble((Double) o);
+                };
+            }
+            return (dos, o) -> {
+                dos.writeDouble((Double) o);
+            };
+        } else if (type == Double.class || type == double.class) {
+            if (isNullable) {
+                return (dos, o) -> {
+                    dos.writeBoolean(o != null);
+                    if (o != null) dos.writeDouble((Double) o);
+                };
+            }
+            return (dos, o) -> {
+                dos.writeDouble((Double) o);
+            };
+        }
+        throw new IllegalArgumentException("Unsupported data type: " + type.getName());
     }
 }

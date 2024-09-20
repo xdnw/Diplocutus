@@ -22,10 +22,7 @@ import link.locutus.discord.util.MathMan;
 import link.locutus.discord.util.math.ArrayUtil;
 import net.dv8tion.jda.api.entities.User;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class BuildCommands {
@@ -93,6 +90,88 @@ public class BuildCommands {
         double cost = building.cost(start_amount, end_amount, total_slots, 1 - (buildingCostReduction * 0.01));
         return "Purchasing `" + building.getName() + "` from `" + start_amount + "` to `" + end_amount + "` would cost $" + MathMan.format(cost) + "\n" +
                 "(Building Cost Reduction: " + buildingCostReduction + "%)";
+    }
+
+    @Command
+    public String nextBuildingCost(@Me DBNation me, @Me User user, @Me GuildDB db, DBNation nation, @Default Double buildingCostReduction, @Switch("u") boolean force_update) {
+        long now = System.currentTimeMillis() - (force_update ? 0 : TimeUnit.HOURS.toMillis(1));
+        int total_slots = nation.getPrivateData().getTotalSlots(now);
+        if (buildingCostReduction == null) {
+            buildingCostReduction = nation.getPrivateData().getBuildingCostPercent(now);
+        }
+        Map<Building, Integer> counts = nation.getPrivateData().getBuildings(now, false);
+
+        Map<Building, Double> costPerBuilding = new LinkedHashMap<>();
+        Map<Project, Integer> projects = nation.getPrivateData().getProjects(now);
+        Map<Technology, Integer> tech = nation.getPrivateData().getTechnology(now);
+        Map<Building, String> cantBuild = new HashMap<>();
+
+        for (Building building : Building.values) {
+            String cantBuildReason = building.getCantBuildReason(p -> projects.getOrDefault(p, 0), t -> tech.getOrDefault(t, 0));
+            if (cantBuildReason != null) {
+                cantBuild.put(building, cantBuildReason);
+                continue;
+            }
+            int current = counts.getOrDefault(building, 0);
+            double cost = building.cost(current, current + 1, total_slots, 1 - (buildingCostReduction * 0.01));
+            costPerBuilding.put(building, cost);
+        }
+        StringBuilder response = new StringBuilder();
+        response.append("### Next Building Costs for " + nation.getMarkdownUrl() + ":\n```\n");
+        for (Map.Entry<Building, Double> entry : costPerBuilding.entrySet()) {
+            int currentLevel = counts.getOrDefault(entry.getKey(), 0);
+            response.append(currentLevel + "x" + entry.getKey().getName() + ": $" + MathMan.format(entry.getValue()) + "\n");
+        }
+        response.append("```\n");
+        if (!cantBuild.isEmpty()) {
+            response.append("### Can't Build:\n```\n");
+            for (Map.Entry<Building, String> entry : cantBuild.entrySet()) {
+                response.append(entry.getKey().getName() + ": " + entry.getValue() + "\n");
+            }
+            response.append("```\n");
+        }
+        return response.toString();
+    }
+
+    @Command
+    public String buildingCostBulk(@Me DBNation me, @Me User user, @Me GuildDB db, Map<Building, Integer> buildTo, @Default Integer total_slots, @Default DBNation nation, @Default Double buildingCostReduction, @Switch("u") boolean force_update) {
+        long now = System.currentTimeMillis() - (force_update ? 0 : TimeUnit.HOURS.toMillis(1));
+        Map<Building, Integer> counts = nation != null ? nation.getPrivateData().getBuildings(now, false) : Collections.emptyMap();
+        if (total_slots == null) {
+            if (nation == null) {
+                throw new IllegalArgumentException("You must provide either `nation` or `total_slots`.");
+            }
+            if (me.getId() != nation.getId() && (!Roles.INTERNAL_AFFAIRS.has(user, db.getGuild()) || !db.isAllianceId(nation.getAlliance_id()))) {
+                throw new IllegalArgumentException("You can't view another nation's build.");
+            }
+            total_slots = nation.getPrivateData().getTotalSlots(now);
+            buildingCostReduction = nation.getPrivateData().getBuildingCostPercent(now);
+        }
+        if (buildingCostReduction == null) {
+            buildingCostReduction = 0d;
+        }
+
+        Map<Building, Double> costPerBuilding = new LinkedHashMap<>();
+
+        for (Map.Entry<Building, Integer> entry : buildTo.entrySet()) {
+            int startAmount = counts.getOrDefault(entry.getKey(), 0);
+            int endAmount = startAmount + entry.getValue();
+            if (endAmount <= startAmount) {
+                costPerBuilding.put(entry.getKey(), 0d);
+            } else {
+                double cost = entry.getKey().cost(startAmount, endAmount, total_slots, 1 - (buildingCostReduction * 0.01));
+                costPerBuilding.put(entry.getKey(), cost);
+            }
+        }
+        StringBuilder response = new StringBuilder();
+        response.append("### Building Costs for " + nation.getMarkdownUrl() + ":\n```\n");
+        for (Map.Entry<Building, Double> entry : costPerBuilding.entrySet()) {
+            int startAmount = counts.getOrDefault(entry.getKey(), 0);
+            int endAmount = startAmount + buildTo.get(entry.getKey());
+            response.append(entry.getKey().getName() + " (" + startAmount + " -> " + endAmount + "): $" + MathMan.format(entry.getValue()) + "\n");
+        }
+        response.append("```\n");
+        return response.toString();
     }
 
     @Command

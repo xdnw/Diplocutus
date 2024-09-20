@@ -424,7 +424,7 @@ public class DiscordCommands {
 
     @Command(desc = "Register your discord user with your Diplomacy and Strife nation.")
     public String register(@Me GuildDB db, @Me User author, /* @Default("%user%")  */ DBNation nation, @Default User user) throws IOException {
-        if (user != null && !Roles.ADMIN.hasOnRoot(author)) {
+        if (user != null && user.getIdLong() != author.getIdLong() && !Roles.ADMIN.hasOnRoot(author)) {
             return "You do not have permission to register another user. Please leave that argument blank.";
         }
         if (user == null) user = author;

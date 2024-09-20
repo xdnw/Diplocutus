@@ -685,9 +685,12 @@ public class PWBindings extends BindingHelper {
 
     @Binding(examples = {"{soldiers=12,tanks=56}"}, value = "A comma separated list of units and their amounts")
     public Map<MilitaryUnit, Long> units(String input) {
-        Map<MilitaryUnit, Long> map = DNS.parseUnits(input);
-        if (map == null) throw new IllegalArgumentException("Invalid units: " + input + ". Valid types: " + StringMan.getString(MilitaryUnit.values()) + ". In the form: `{SOLDIERS=1234,TANKS=5678}`");
-        return map;
+        return DNS.parseUnits(input);
+    }
+
+    @Binding(examples = {"{subway=12,commercial_district=56}"}, value = "A comma separated list of buildings and their amounts")
+    public Map<Building, Integer> buildings(String input) {
+        return DNS.parseBuildings(input);
     }
 
     @Binding(examples = {"money", "aluminum"}, value = "The name of a resource")

@@ -68,6 +68,7 @@ public class SettingCommands {
     @Command(desc = "Configure any alliance or guild settings")
     @RolePermission(any = true, value = {Roles.ADMIN, Roles.INTERNAL_AFFAIRS, Roles.ECON, Roles.MILCOM, Roles.FOREIGN_AFFAIRS})
     @NoFormat
+    @Ephemeral
     public static String info(@Me Guild guild, @Me User author,
                            @Arg("The setting to change or view")
                            @Default GuildSetting key,
