@@ -3,16 +3,25 @@ package link.locutus.discord.util.update;
 import com.google.common.eventbus.Subscribe;
 import link.locutus.discord.Locutus;
 import link.locutus.discord.api.generated.ResourceType;
+import link.locutus.discord.api.types.tx.DBLoanRequest;
 import link.locutus.discord.commands.manager.v2.command.IMessageBuilder;
 import link.locutus.discord.commands.manager.v2.impl.discord.DiscordChannelIO;
 import link.locutus.discord.commands.manager.v2.impl.pw.refs.CM;
 import link.locutus.discord.config.Settings;
 import link.locutus.discord.db.BankDB;
 import link.locutus.discord.db.GuildDB;
+import link.locutus.discord.db.entities.DBAlliance;
 import link.locutus.discord.db.entities.DBNation;
 import link.locutus.discord.db.entities.NationMeta;
 import link.locutus.discord.api.types.tx.Transaction2;
+import link.locutus.discord.db.guild.GuildKey;
 import link.locutus.discord.db.guild.GuildSetting;
+import link.locutus.discord.event.grantrequest.GrantRequestCreateEvent;
+import link.locutus.discord.event.grantrequest.GrantRequestDeleteEvent;
+import link.locutus.discord.event.grantrequest.GrantRequestUpdateEvent;
+import link.locutus.discord.event.loanrequest.LoanRequestCreateEvent;
+import link.locutus.discord.event.loanrequest.LoanRequestDeleteEvent;
+import link.locutus.discord.event.loanrequest.LoanRequestUpdateEvent;
 import link.locutus.discord.user.Roles;
 import link.locutus.discord.util.AlertUtil;
 import link.locutus.discord.util.DNS;
@@ -39,6 +48,116 @@ import static link.locutus.discord.db.guild.GuildKey.DEPOSIT_ALERT_CHANNEL;
 import static link.locutus.discord.db.guild.GuildKey.WITHDRAW_ALERT_CHANNEL;
 
 public class BankUpdateProcessor {
+    private GuildDB getGuild(int id) {
+        return Locutus.imp().getGuildDBByAA(id);
+    }
+
+    private GuildMessageChannel getChannel(Transaction2 transfer, boolean isReceiver, GuildSetting<MessageChannel> key) {
+        int id = (int) (isReceiver ? transfer.receiver_id : transfer.sender_id);
+        GuildDB db = getGuild(id);
+        MessageChannel channel = db == null ? null : key.getOrNull(db);
+        return channel instanceof GuildMessageChannel ? (GuildMessageChannel) channel : null;
+    }
+
+    private String toRequestTitle(String title, Transaction2 transfer) {
+        return title + "#" + transfer.tx_id + " " + DNS.getName(transfer.receiver_id, transfer.receiver_type == 1);
+    }
+
+    private String loanBody(DBLoanRequest loanRequest) {
+        StringBuilder body = new StringBuilder("\n");
+        body.append("Upfront: $" + MathMan.format(loanRequest.upfront) + "\n");
+        body.append("Interest Type: " + loanRequest.interestType.name() + "\n");
+        body.append("Interest Rate: " + MathMan.format(loanRequest.interestRate) + "\n");
+        body.append("Forced Interest: " + MathMan.format(loanRequest.forcedInterest) + "\n");
+        body.append("Minimum Payment: " + MathMan.format(loanRequest.minimumPayment) + "\n");
+        body.append("Duration: " + loanRequest.duration + "x" + loanRequest.durationType.name() + "\n");
+        return body.toString();
+    }
+
+    private String toRequestBody(Transaction2 transfer) {
+        StringBuilder body = new StringBuilder();
+        body.append("Date: " + DiscordUtil.timestamp(transfer.tx_datetime, null) + "\n");
+        body.append("From: " + DNS.getMarkdownUrl((int) transfer.sender_id, transfer.sender_type == 1) + "\n");
+        body.append("To: " + DNS.getMarkdownUrl((int) transfer.receiver_id, transfer.receiver_type == 1) + "\n");
+        if (transfer.note != null) {
+            body.append("Note: `" + transfer.note + "`\n");
+        }
+        body.append("Resources: " + ResourceType.resourcesToString(transfer.resources) + "\n");
+        return body.toString();
+    }
+
+    @Subscribe
+    public void onLoanRequestCreate(LoanRequestCreateEvent event) {
+        GuildMessageChannel channel = getChannel(event.getCurrent(), false, GuildKey.LOAN_REQUEST_ALERTS);
+        if (channel == null) return;
+        String title =  toRequestTitle("Loan Request: ", event.getCurrent());
+        String body = toRequestBody(event.getCurrent()) + loanBody(event.getCurrent());
+        IMessageBuilder msg = new DiscordChannelIO(channel).create().embed(title, body);
+        Role econRole = Roles.ECON.toRole(channel.getGuild());
+        if (econRole != null) msg.append(econRole.getAsMention());
+        msg.sendWhenFree();
+    }
+
+    @Subscribe
+    public void onLoanRequestUpdate(LoanRequestUpdateEvent event) {
+        GuildMessageChannel channel = getChannel(event.getCurrent(), false, GuildKey.LOAN_REQUEST_ALERTS);
+        if (channel == null) return;
+        String title =  toRequestTitle("Loan Request Update: ", event.getCurrent());
+        String body = toRequestBody(event.getCurrent()) + loanBody(event.getCurrent());
+        IMessageBuilder msg = new DiscordChannelIO(channel).create().embed(title, body);
+        Role econRole = Roles.ECON.toRole(channel.getGuild());
+        if (econRole != null) msg.append(econRole.getAsMention());
+        msg.sendWhenFree();
+    }
+
+    @Subscribe
+    public void onLoanRequestDelete(LoanRequestDeleteEvent event) {
+        GuildMessageChannel channel = getChannel(event.getPrevious(), false, GuildKey.LOAN_REQUEST_ALERTS);
+        if (channel == null) return;
+        String title =  toRequestTitle("Loan Request Delete: ", event.getPrevious());
+        String body = toRequestBody(event.getPrevious()) + loanBody(event.getPrevious());
+        IMessageBuilder msg = new DiscordChannelIO(channel).create().embed(title, body);
+        Role econRole = Roles.ECON.toRole(channel.getGuild());
+        if (econRole != null) msg.append(econRole.getAsMention());
+        msg.sendWhenFree();
+    }
+
+    @Subscribe
+    public void onGrantRequestCreate(GrantRequestCreateEvent event) {
+        GuildMessageChannel channel = getChannel(event.getCurrent(), false, GuildKey.GRANT_REQUEST_ALERTS);
+        if (channel == null) return;
+        String title =  toRequestTitle("Grant Request: ", event.getCurrent());
+        String body = toRequestBody(event.getCurrent());
+        IMessageBuilder msg = new DiscordChannelIO(channel).create().embed(title, body);
+        Role econRole = Roles.ECON.toRole(channel.getGuild());
+        if (econRole != null) msg.append(econRole.getAsMention());
+        msg.sendWhenFree();
+    }
+
+    @Subscribe
+    public void onGrantRequestUpdate(GrantRequestUpdateEvent event) {
+        GuildMessageChannel channel = getChannel(event.getCurrent(), false, GuildKey.GRANT_REQUEST_ALERTS);
+        if (channel == null) return;
+        String title =  toRequestTitle("Grant Request Update: ", event.getCurrent());
+        String body = toRequestBody(event.getCurrent());
+        IMessageBuilder msg = new DiscordChannelIO(channel).create().embed(title, body);
+        Role econRole = Roles.ECON.toRole(channel.getGuild());
+        if (econRole != null) msg.append(econRole.getAsMention());
+        msg.sendWhenFree();
+    }
+
+    @Subscribe
+    public void onGrantRequestDelete(GrantRequestDeleteEvent event) {
+        GuildMessageChannel channel = getChannel(event.getPrevious(), false, GuildKey.GRANT_REQUEST_ALERTS);
+        if (channel == null) return;
+        String title =  toRequestTitle("Grant Request Delete: ", event.getPrevious());
+        String body = toRequestBody(event.getPrevious());
+        IMessageBuilder msg = new DiscordChannelIO(channel).create().embed(title, body);
+        Role econRole = Roles.ECON.toRole(channel.getGuild());
+        if (econRole != null) msg.append(econRole.getAsMention());
+        msg.sendWhenFree();
+    }
+
     // TODO FIXME :||remove
 //    @Subscribe
 //    public void process(TransactionEvent event) {

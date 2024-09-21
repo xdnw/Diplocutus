@@ -150,10 +150,10 @@ public class Settings extends Config {
         @Comment("If any turn related tasks are run (default: true)")
         public boolean ENABLE_TURN_TASKS = true;
 //
-        @Comment("Fetches most active nations (default disabled)")
+        @Comment("Fetches most active nations (default 5m)")
         public int ALL_NATION_SECONDS = 5 * 60;
 
-        @Comment("Fetches most active nations (default disabled)")
+        @Comment("Fetches most active nations (default 5m)")
         public int ALL_ALLIANCE_SECONDS = 5 * 60;
 
         @Comment("Runs the pre update beige reminders (default: 61 seconds)")
@@ -161,6 +161,9 @@ public class Settings extends Config {
 
         @Comment("Fetches alliance treaties (default: 60 minutes)")
         public int TREATY_UPDATE_SECONDS = 60 * 60;
+
+        @Comment("Fetches most active nations (default 10m)")
+        public int ALL_BANK_REQUESTS_SECONDS = 10 * 60;
 
         @Create
         public TURN_TASKS TURN_TASKS;

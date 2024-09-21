@@ -14,7 +14,7 @@ public class AllianceLoanRequest {
     public ResourceType LoanResourceType;
     public Double InitialAmount;
     public Double UpfrontFee;
-    public String InterestType;
+    public InterestType InterestType;
     public Double InterestRate;
     public Double ForcedInterest;
     public Double MinimumPayment;

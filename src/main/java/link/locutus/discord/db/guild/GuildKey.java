@@ -1428,6 +1428,40 @@ public class GuildKey {
         }
     }.setupRequirements(f -> f.requires(DEFENSE_WAR_CHANNEL));
 
+    public static GuildSetting<MessageChannel> LOAN_REQUEST_ALERTS = new GuildChannelSetting(GuildSettingCategory.BANK_INFO) {
+        @NoFormat
+        @Command(descMethod = "help")
+        @RolePermission(Roles.ADMIN)
+        public String LOAN_REQUEST_ALERTS(@Me GuildDB db, @Me User user, MessageChannel channel) {
+            return LOAN_REQUEST_ALERTS.setAndValidate(db, user, channel);
+        }
+
+        @Override
+        public String help() {
+            return "The #channel to receive alerts for loan requests\n" +
+                    "`" + Roles.ECON.name() + "` are pinged for loan requests\n"
+                    + CM.role.setAlias.cmd.locutusRole(Roles.ECON.name()).discordRole("")
+                    ;
+        }
+    }.setupRequirements(f -> f.requires(API_KEY).requireActiveGuild().requireValidAlliance());
+
+    public static GuildSetting<MessageChannel> GRANT_REQUEST_ALERTS = new GuildChannelSetting(GuildSettingCategory.BANK_INFO) {
+        @NoFormat
+        @Command(descMethod = "help")
+        @RolePermission(Roles.ADMIN)
+        public String GRANT_REQUEST_ALERTS(@Me GuildDB db, @Me User user, MessageChannel channel) {
+            return GRANT_REQUEST_ALERTS.setAndValidate(db, user, channel);
+        }
+
+        @Override
+        public String help() {
+            return "The #channel to receive alerts for grant requests\n" +
+                    "`" + Roles.ECON.name() + "` are pinged for grant requests\n"
+                    + CM.role.setAlias.cmd.locutusRole(Roles.ECON.name()).discordRole("")
+                    ;
+        }
+    }.setupRequirements(f -> f.requires(API_KEY).requireActiveGuild().requireValidAlliance());
+
     private static final Map<String, GuildSetting> BY_NAME = new HashMap<>();
 
     static {

@@ -55,7 +55,9 @@ public class StringMan {
     public static String stripApiKey(String msg) {
         return msg
                 .replaceAll("(?i)[\\[\\]\"\\n^:\\s,\\.](?=.*[A-Za-z])(?=.*\\d)[0-9A-Fa-f]{14,}(?=[\\[\\]\"\\n$:\\s,\\.]|$)", "XXX")
-                .replaceAll("(key=)(?i)([0-9A-Fa-f]{14,})", "$1XXX");
+                .replaceAll("(key=)(?i)([0-9A-Fa-f]{14,})", "$1XXX")
+                .replaceAll("(APICode=)(?i)([0-9A-Fa-f]{14,})", "$1XXX")
+                ;
     }
 
     public static String toCsv(List<List<String>> rows) {

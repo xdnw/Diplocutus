@@ -706,6 +706,13 @@ public class AdminCommands {
 
     @Command
     @RolePermission(value = Roles.ADMIN, root = true)
+    public String syncRequests(DBAlliance alliance) throws IOException, ParseException {
+        Locutus.imp().runEventsAsync(events -> Locutus.imp().getBankDB().updateGrantLoanRequests(alliance, events));
+        return "Done!";
+    }
+
+    @Command
+    @RolePermission(value = Roles.ADMIN, root = true)
     public String deleteAllInaccessibleChannels(@Switch("f") boolean force) {
         Map<GuildDB, List<GuildSetting>> toUnset = new LinkedHashMap<>();
 

@@ -449,6 +449,10 @@ public final class Locutus extends ListenerAdapter {
             runEventsAsync(getNationDB()::updateActiveTreaties);
         }, Settings.INSTANCE.TASKS.TREATY_UPDATE_SECONDS, TimeUnit.SECONDS);
 
+        taskTrack.addTask("Bank Requests", () -> {
+            runEventsAsync(getBankDB()::updateAllGrantLoanRequests);
+        }, Settings.INSTANCE.TASKS.ALL_BANK_REQUESTS_SECONDS, TimeUnit.SECONDS);
+
         taskTrack.addTask("Nation", () -> {
             runEventsAsync(events -> getNationDB().updateAllNations(events));
             synchronized (warUpdateLock) {

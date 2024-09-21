@@ -278,6 +278,8 @@ public class CommandManager2 {
 
         getCommands().registerMethod(new UtilityCommands(), List.of("sheets_ia"), "AllianceSheet", "alliance_sheet");
 
+        getCommands().registerMethod(new AdminCommands(), List.of("admin", "sync"), "syncRequests", "requests");
+
 
 //        getCommands().registerMethod(new GrantCommands(), List.of("grant"), "costBulk", "cost");
 //        getCommands().registerMethod(new StatCommands(), List.of("alliance", "stats"), "militarizationTime", "militarization_time");

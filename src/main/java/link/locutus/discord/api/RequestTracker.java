@@ -9,6 +9,7 @@ import link.locutus.discord.util.MathMan;
 import link.locutus.discord.util.StringMan;
 import link.locutus.discord.util.io.PageRequestQueue;
 import link.locutus.discord.util.math.ArrayUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -61,6 +62,17 @@ public class RequestTracker {
 
     public void runWithRetryAfter(PageRequestQueue.PageRequestTask task) {
         runWithRetryAfter(task, 0);
+    }
+
+    private Throwable strip(Throwable e, ApiKeyPool.ApiKey key) {
+        if (e.getMessage() != null) {
+            String stripped = StringMan.stripApiKey(e.getMessage());
+            stripped = StringUtils.replaceIgnoreCase(e.getMessage(), key.getKey(), "XXX");
+            if (!Objects.equals(e.getMessage(), stripped)) {
+                return new RuntimeException(stripped);
+            }
+        }
+        return e;
     }
 
     private Throwable strip(Throwable e) {
