@@ -4,7 +4,8 @@ import link.locutus.discord.commands.manager.v2.binding.annotation.Command;
 
 public enum TreatyType {
     NONE(0),
-    MDPAP(12, "MDP", "#ced518"),
+    MDPAP(13, "MDPAP", "#ced518"),
+    MDAP(12, "MDAP", "#ced518"),
     MDOAP(11, "MDoAP", "#c10007"),
     MNDAP(10, "MnDAP", "#ff0000"),
     MNDOAP(9, "MnDoAP", "#ff0000"),

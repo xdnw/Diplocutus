@@ -155,8 +155,6 @@ public class WarDB extends DBMainV2 {
             conflictManager.loadConflicts();
         }
 
-
-
         return this;
     }
 

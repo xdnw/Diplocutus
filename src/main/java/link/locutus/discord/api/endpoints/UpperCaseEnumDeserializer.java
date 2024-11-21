@@ -34,7 +34,6 @@ public class UpperCaseEnumDeserializer<T extends Enum<T>> extends JsonDeserializ
     @Override
     public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         String value = p.getText();
-        System.out.println("Parse " + value + " | " + enumType);
         T cached = cache.get(value.toUpperCase(Locale.ROOT).replace(" ", "_"));
         if (cached != null) {
             return cached;

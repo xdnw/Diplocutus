@@ -269,8 +269,12 @@ public class DnsApi {
     //NationWarHistory?APICode={API_CODE}&NationId={NATION_ID}
     //Info: Returns a list of wars and corresponding data for a specific nation
     //API Cost: 1
-    public DnsQuery<WarHistory> nationWarHistory(int nationId) {
-        return query(WarHistory.class, "NationWarHistory", 1).add("NationId", nationId);
+    public DnsQuery<WarHistory> nationWarHistory(Integer nationId) {
+        DnsQuery<WarHistory> query = query(WarHistory.class, "NationWarHistory", 1);
+        if (nationId != null) {
+            query.add("NationId", nationId);
+        }
+        return query;
     }
     //Optional Parameters:
     //StartDate: any war started on or after this date (year/month/day)
