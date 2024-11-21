@@ -1381,6 +1381,11 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         return getActiveWars().size();
     }
 
+    @Command(desc = "Number of active offensive and defensive wars based on api")
+    public int getExpectedWars() {
+        return OffWars + DefWars;
+    }
+
     @Command(desc = "Number of offensive and defensive wars since date")
     public int getNumWarsSince(long date) {
         return Locutus.imp().getWarDb().countWarsByNation(NationId, date, getSnapshot());
