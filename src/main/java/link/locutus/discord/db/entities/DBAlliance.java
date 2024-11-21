@@ -1100,4 +1100,10 @@ public class DBAlliance implements NationList, NationOrAlliance, GuildOrAlliance
     public int getNumWars() {
         return getNations().stream().mapToInt(DBNation::getNumWars).sum();
     }
+
+    @Command(desc = "Total number of active wars")
+    public int getExpectedWars() {
+        return getNations().stream().mapToInt(DBNation::getExpectedWars).sum();
+    }
+
 }

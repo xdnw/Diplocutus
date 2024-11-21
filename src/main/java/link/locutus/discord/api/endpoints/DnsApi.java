@@ -319,4 +319,22 @@ public class DnsApi {
         if (onlyOffensive != null) query.add("OnlyOffensive", onlyOffensive.toString().toLowerCase(Locale.ROOT));
         return query;
     }
+    // Active War History
+    //NationWarHistory?APICode={API_CODE}&NationId={NATION_ID}
+    //Info: Returns a list of ACTIVE wars for all nations. By defaults only returns basic data. Extra stats can be returned for additional API cost.
+    //API Cost: 3(10 with extra stats)
+    //Optional Parameters:
+    //StartDate: any war started on or after this date (year/month/day)
+    //StarDateEnd: any war started on or before this date (year/month/day)
+    //pullStats: Pulls war stats. (PullStats=true)
+    public DnsQuery<WarHistory> activeWarHistory(int nationId, Date startDate, Date endDate, Boolean pullStats) {
+        int cost = 3;
+        if (pullStats != null) cost = 10;
+        DnsQuery<WarHistory> query = query(WarHistory.class, "NationWarHistory", cost).add("NationId", nationId);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+        if (startDate != null) query.add("StartDate", formatter.format(startDate));
+        if (endDate != null) query.add("EndDate", formatter.format(endDate));
+        if (pullStats != null) query.add("PullStats", pullStats.toString().toLowerCase(Locale.ROOT));
+        return query;
+    }
 }

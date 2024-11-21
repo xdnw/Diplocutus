@@ -484,15 +484,16 @@ public class WarDB extends DBMainV2 {
     public void updateWars(boolean pullAll, Consumer<Event> eventConsumer) {
         for (DBAlliance alliance : Locutus.imp().getNationDB().getAlliances()) {
             Integer expected = activeWarCache.get(alliance.getId());
+            int currWars = alliance.getExpectedWars();
             boolean fetch = false;
             if (expected == null) {
-                expected = alliance.getNumWars();
+                expected = currWars;
                 activeWarCache.put(alliance.getId(), expected);
                 if (expected != 0 && loadedWarCounts) {
                     fetch = true;
                 }
             }
-            int currWars = alliance.getNumWars();
+
             if (expected != currWars || fetch) {
                 activeWarCache.put(alliance.getId(), currWars);
                 if (expected > 0) {
