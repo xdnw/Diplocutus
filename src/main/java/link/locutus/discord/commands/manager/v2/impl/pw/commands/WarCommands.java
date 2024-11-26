@@ -2698,7 +2698,7 @@ public class WarCommands {
             if (maxDevelopmentRatio ==  null) maxDevelopmentRatio = 1.5d;
             targets = blitz.assignEasyTargets(maxStrengthRatio, maxDevelopmentRatio);
         } else {
-            targets = blitz.assignTargets();
+            targets = blitz.assignTargets(maxStrengthRatio);
         }
 
         if (sheet == null) sheet = SpreadSheet.create(db, SheetKey.ACTIVITY_SHEET);

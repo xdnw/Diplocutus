@@ -464,7 +464,7 @@ public class BlitzGenerator {
 
         for (DBNation attacker : colA) {
             double attActive = activityFactor(attacker, true);
-            if (attActive <= attActiveThreshold) {
+            if (attActive < attActiveThreshold) {
                 continue;
             }
 
@@ -478,7 +478,7 @@ public class BlitzGenerator {
 
                 double defActive = activityFactor(defender, false);
 
-                if (defActive <= defActiveThreshold) {
+                if (defActive < defActiveThreshold) {
                     continue;
                 }
 
@@ -575,7 +575,7 @@ public class BlitzGenerator {
 
     }
 
-    public Map<DBNation, List<DBNation>> assignTargets() {
+    public Map<DBNation, List<DBNation>> assignTargets(Double maxStrengthRatio) {
         init();
 
         Map<DBNation, List<DBNation>> attPool = new HashMap<>(); // Pool of nations that could be used as targets
@@ -583,13 +583,13 @@ public class BlitzGenerator {
 
         for (DBNation attacker : colA) {
             double attActive = activityFactor(attacker, true);
-            if (attActive <= attActiveThreshold) continue;
+            if (attActive < attActiveThreshold) continue;
 
             int num = 0;
             for (DBNation defender : colB) {
                 double defActive = activityFactor(defender, false);
 
-                if (defActive <= defActiveThreshold) continue;
+                if (defActive < defActiveThreshold) continue;
 
                 double minScore = attacker.getScore() * DNS.WAR_RANGE_MIN_MODIFIER_ACTIVE;
                 double maxScore = attacker.getScore() * DNS.WAR_RANGE_MAX_MODIFIER_ACTIVE;
@@ -698,7 +698,9 @@ public class BlitzGenerator {
                 if (attackers.size() == 0) continue;
                 attackers.removeIf(n -> attTargets.getOrDefault(n, Collections.emptyList()).size() >= maxAttacksPerNation);
                 if (attackers.size() == 0) continue;
-                attackers.removeIf(n -> n.getStrength() < defender.getStrength() * 0.88);
+                if (maxStrengthRatio != null) {
+                    attackers.removeIf(n -> n.getStrength() * maxStrengthRatio < defender.getStrength());
+                }
 
                 // TODO calculate strength based on current military if not indefinite
                 // TODO use simulator to calculate strength
