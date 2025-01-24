@@ -2162,7 +2162,7 @@ public class WarCommands {
         sheet.updateWrite();
         String response = "";
         if (!forceUpdate) response += "\nNote: Results may be outdated, add `-f` to update.";
-        sheet.attach(io.create(), "mmr", response).send();
+        sheet.attach(io.create(), "quality", response).send();
         return null;
     }
 
