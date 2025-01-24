@@ -27,7 +27,7 @@ public enum MilitaryUnit {
     HEAVY_TANKS(CombatType.GROUND, 3.3, 900, 60, 2, MilitaryUnitType.ARMOR, 272, 18, f -> f.HeavyTanks, f -> f.HeavyTanksQuality,
             3750, 1875, 200, Map.of(Technology.TANK_TECHNOLOGY, 13, Technology.ARMOR_IMPROVEMENT, 14), null),
     //Light Mech	1,250	625	0	Mech Lvl 1, Infantry Equipment Lvl 14
-    LIGHT_MECHS(CombatType.GROUND, 1.3, 300, 21, 10, MilitaryUnitType.ARMOR, 230, 16, f -> f.LightMechs, f -> f.LightTanksQuality,
+    LIGHT_MECHS(CombatType.GROUND, 1.3, 300, 21, 10, MilitaryUnitType.ARMOR, 230, 16, f -> f.LightMechs, f -> f.LightMechsQuality,
             1250, 625, 0, Map.of(Technology.MECH_DEVELOPMENT, 1, Technology.INFANTRY_EQUIPMENT, 14), null),
     //Heavy Mech	3,750	1,875	300	Mech Lvl 14, Armour Lvl 16
     HEAVY_MECHS(CombatType.GROUND, 4, 1000, 84, 3, MilitaryUnitType.ARMOR, 250, 21, f -> f.HeavyMechs, f -> f.HeavyMechsQuality,
