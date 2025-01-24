@@ -1,6 +1,7 @@
 package link.locutus.discord.db;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import link.locutus.discord.Locutus;
 import link.locutus.discord.api.endpoints.DnsApi;
 import link.locutus.discord.api.endpoints.DnsQuery;
@@ -14,15 +15,18 @@ import link.locutus.discord.db.entities.DBEntity;
 import link.locutus.discord.event.Event;
 import link.locutus.discord.event.grantrequest.GrantRequestCreateEvent;
 import link.locutus.discord.event.loanrequest.LoanRequestCreateEvent;
+import org.jooq.Condition;
+import org.jooq.GroupField;
+import org.jooq.Record;
+import org.jooq.Result;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+
+import static org.example.jooq.bank.Tables.TRANSACTIONS_2;
 
 
 public class BankDB extends DBMainV2 {
@@ -40,6 +44,25 @@ public class BankDB extends DBMainV2 {
 
         executeStmt(SQLUtil.createTable(new DBGrantRequest()));
         executeStmt(SQLUtil.createTable(new DBLoanRequest()));
+    }
+
+    public Set<Integer> getReceiverNationIdFromAllianceReceivers(Set<Integer> allianceIds) {
+        if (allianceIds.isEmpty()) return Collections.emptySet();
+        List<BankTransfer> transfers;
+        if (allianceIds.size() == 1) {
+            transfers = getTransactionsByAlliance(allianceIds.iterator().next());
+        } else {
+            transfers = getTransactionsByAlliance(allianceIds);
+        }
+        Set<Integer> nationIds = new IntOpenHashSet();
+        for (BankTransfer transfer : transfers) {
+            if (transfer.receiver_type == 0) {
+                nationIds.add((int) transfer.receiver_id);
+            } else if (transfer.sender_type == 0) {
+                nationIds.add((int) transfer.sender_id);
+            }
+        }
+        return nationIds;
     }
 
     public void updateAllGrantLoanRequests(Consumer<Event> eventConsumer) {
@@ -140,6 +163,29 @@ public class BankDB extends DBMainV2 {
         return select(new BankTransfer(), whereClause, ps -> {
             ps.setInt(1, nation);
             ps.setInt(2, nation);
+        });
+    }
+
+    public List<BankTransfer> getTransactionsByAlliance(int allianceId) {
+        String whereClause = "(sender_id = ? AND sender_type = 2) OR (receiver_id = ? AND receiver_type = 2)";
+        return select(new BankTransfer(), whereClause, ps -> {
+            ps.setInt(1, allianceId);
+            ps.setInt(2, allianceId);
+        });
+    }
+
+    public List<BankTransfer> getTransactionsByAlliance(Set<Integer> allianceIds) {
+        if (allianceIds.isEmpty()) return Collections.emptyList();
+        List<Integer> idsSorted = new ArrayList<>(allianceIds);
+        idsSorted.sort(Comparator.naturalOrder());
+        String whereClause = "(sender_id IN (" + String.join(",", Collections.nCopies(idsSorted.size(), "?")) + ") AND sender_type = 2) OR (receiver_id IN (" + String.join(",", Collections.nCopies(idsSorted.size(), "?")) + ") AND receiver_type = 2)";
+        return select(new BankTransfer(), whereClause, ps -> {
+            for (int i = 0; i < idsSorted.size(); i++) {
+                ps.setInt(i + 1, idsSorted.get(i));
+            }
+            for (int i = 0; i < idsSorted.size(); i++) {
+                ps.setInt(i + 1 + idsSorted.size(), idsSorted.get(i));
+            }
         });
     }
 }

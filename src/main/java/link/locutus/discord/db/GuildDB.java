@@ -286,6 +286,12 @@ public class GuildDB extends DBMainV2 implements NationOrAllianceOrGuild, GuildO
         return eventBus;
     }
 
+    public Map<ResourceType, Double> getPerInfraWarchest(DBNation ignore) {
+        Map<ResourceType, Double> val = GuildKey.WARCHEST_PER_INFRA.getOrNull(this);
+        if (val == null) val = Map.of(ResourceType.FUEL, 1d);
+        return val;
+    }
+
     public synchronized void setHandler(GuildHandler handler) {
         if (eventBus == null) {
             this.eventBus = new AsyncEventBus(getGuild().toString(), Runnable::run);
