@@ -2099,6 +2099,74 @@ public class WarCommands {
     }
 
     @RolePermission(value = {Roles.MILCOM, Roles.INTERNAL_AFFAIRS,Roles.ECON}, any=true)
+    @Command(desc = "Generate a sheet of nation military quality")
+    public String MilitaryQuality(@Me IMessageIO io, @Me GuildDB db, Set<DBNation> nations, @Switch("s") SpreadSheet sheet,
+                                  @Switch("f") boolean forceUpdate) throws GeneralSecurityException, IOException {
+        for (DBNation nation : nations) {
+            if (!db.isAllianceId(nation.getAlliance_id())) {
+                throw new IllegalArgumentException("Nation " + nation.getMarkdownUrl() + " is not in the guild's alliance: " + db.getAllianceIds());
+            }
+        }
+
+        if (sheet == null) sheet = SpreadSheet.create(db, SheetKey.MMR_SHEET);
+        List<Object> header = new ArrayList<>(Arrays.asList(
+                "nation",
+                "alliance",
+                "infra",
+                "land",
+                "score",
+                "army",
+                "air",
+                "navy"
+        ));
+        for (MilitaryUnit unit : MilitaryUnit.values) {
+            header.add(unit.name());
+        }
+        for (MilitaryUnitType type : MilitaryUnitType.values) {
+            header.add(type.name());
+        }
+
+        sheet.setHeader(header);
+
+        long now = System.currentTimeMillis() - (forceUpdate ? 0 : TimeUnit.HOURS.toMillis(1));
+        for (DBNation nation : nations) {
+            NationPrivate privateData = nation.getPrivateData();
+            System.out.println("Get buildings");
+            Map<Building, Integer> buildings = privateData.getBuildings(now, false);
+            Map<MilitaryUnit, Integer> military = privateData.getMilitary(now);
+            Map<MilitaryUnit, Double> quality = privateData.getMilitaryQuality(now);
+            Map<MilitaryUnitType, Integer> capacity = privateData.getMilitaryCapacity(now);
+
+            header.set(0, MarkupUtil.sheetUrl(nation.getNation(), DNS.getUrl(nation.getNation_id(), false)));
+            header.set(1, MarkupUtil.sheetUrl(nation.getAllianceName(), DNS.getUrl(nation.getAlliance_id(), true)));
+            header.set(2, nation.getInfra());
+            header.set(3, nation.getLand());
+            header.set(4, nation.getScore());
+            header.set(5, buildings.getOrDefault(Building.ARMY_BASES, 0) + "");
+            header.set(6, buildings.getOrDefault(Building.AIR_BASES, 0) + "");
+            header.set(7, buildings.getOrDefault(Building.NAVAL_BASES, 0) + "");
+
+            for (MilitaryUnit unit : MilitaryUnit.values) {
+                double qualityVal = quality.getOrDefault(unit, 0d);
+                header.set(8 + unit.ordinal(), MathMan.format(qualityVal));
+            }
+            for (MilitaryUnitType type : MilitaryUnitType.values) {
+                int capacityCap = capacity.getOrDefault(type, 0);
+                int capacityUsed = type.getUsedCapacity(military);
+                String capacityStr = capacityUsed + "/" + capacityCap;
+                header.set(8 + MilitaryUnit.values.length + type.ordinal(), capacityStr);
+            }
+            sheet.addRow(header);
+        }
+        sheet.updateClearCurrentTab();
+        sheet.updateWrite();
+        String response = "";
+        if (!forceUpdate) response += "\nNote: Results may be outdated, add `-f` to update.";
+        sheet.attach(io.create(), "mmr", response).send();
+        return null;
+    }
+
+    @RolePermission(value = {Roles.MILCOM, Roles.INTERNAL_AFFAIRS,Roles.ECON}, any=true)
     @Command(desc = "Generate a sheet of alliance/nation/city military unit and building counts (MMR)")
     public String MMRSheet(@Me IMessageIO io, @Me GuildDB db, Set<DBNation> nations, @Switch("s") SpreadSheet sheet,
                            @Switch("f") boolean forceUpdate) throws GeneralSecurityException, IOException {
@@ -2164,7 +2232,8 @@ public class WarCommands {
         sheet.updateClearCurrentTab();
         sheet.updateWrite();
         String response = "";
-        if (!forceUpdate) response += "\nNote: Results may be outdated, add `-f` to update.";
+        if (!forceUpdate) response += "\nNote: Results may be outdated, add `-f` to update.\n" +
+                "Unit cells are displayed in the format: `AMOUNTxQUALITY`";
         sheet.attach(io.create(), "mmr", response).send();
         return null;
     }

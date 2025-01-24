@@ -92,6 +92,8 @@ public enum MilitaryUnit {
     private final Function<AllianceMilitary, Integer> getAmount;
     private final Function<AllianceMilitary, Double> getQuality;
     private final double[] cost;
+    private final Map<Technology, Integer> requiredTech;
+    private final Map<Project, Integer> requiredProject;
 
     MilitaryUnit(CombatType combatType, double capacityUsage,
                  int baseDefense, double baseAttack, int baseMobility, MilitaryUnitType capacityType, double defensePerCapacity, double attackPerCapacity,
@@ -115,6 +117,8 @@ public enum MilitaryUnit {
         this.cost[ResourceType.PRODUCTION.ordinal()] = productionCost;
         this.cost[ResourceType.MINERALS.ordinal()] = mineralCost;
         this.cost[ResourceType.RARE_METALS.ordinal()] = rareMetalCost;
+        this.requiredTech = requiredTech;
+        this.requiredProject = requiredProject;
     }
 
     public double[] getCostArr() {

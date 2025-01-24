@@ -148,6 +148,12 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         return getPrivateData().getMilitary(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(15)).getOrDefault(unit, 0);
     }
 
+    @Command(desc = "Get the production quality of a military unit")
+    public double getQuality(@Me GuildDB db, MilitaryUnit unit) {
+        if (!db.isAllianceId(getAlliance_id())) throw new IllegalArgumentException("Not in alliance " + db.getAllianceIds() + " for " + db.getGuild());
+        return getPrivateData().getMilitaryQuality(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(15)).getOrDefault(unit, 0d);
+    }
+
     public Map<MilitaryUnit, Integer> getUnits(@Me GuildDB db) {
         if (!db.isAllianceId(getAlliance_id())) throw new IllegalArgumentException("Not in alliance " + db.getAllianceIds() + " for " + db.getGuild());
         return getPrivateData().getMilitary(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(15));

@@ -250,6 +250,28 @@ public class CommandManager2 {
 
     public CommandManager2 registerDefaults() {
         this.commands.registerCommandsWithMapping(CM.class, true);
+        getCommands().registerMethod(new UtilityCommands(), List.of("alliance"), "allianceCost", "cost");
+        getCommands().registerMethod(new StatCommands(), List.of("alliance", "stats"), "allianceAttributeRanking", "attribute_ranking");
+        getCommands().registerMethod(new StatCommands(), List.of("alliance", "stats"), "allianceRankingTime", "ranking_time");
+        getCommands().registerMethod(new StatCommands(), List.of("alliance", "stats"), "allianceMetricsByTurn", "metric_by_turn");
+        getCommands().registerMethod(new StatCommands(), List.of("nation", "stats"), "nationRanking", "ranking");
+        getCommands().registerMethod(new StatCommands(), List.of("stats_tier"), "attributeTierGraph", "attribute_tier_graph");
+        getCommands().registerMethod(new StatCommands(), List.of("alliance", "stats"), "allianceRanking", "ranking");
+        getCommands().registerMethod(new StatCommands(), List.of("alliance", "stats"), "allianceMetricsAB", "metrics_ab");
+        getCommands().registerMethod(new StatCommands(), List.of("stats_tier"), "scoreTierGraph", "score");
+        getCommands().registerMethod(new StatCommands(), List.of("stats_tier"), "strengthTierGraph", "strength");
+        getCommands().registerMethod(new StatCommands(), List.of("alliance", "stats"), "allianceMetricsCompareByTurn", "metrics_by_turn");
+
+        getCommands().registerMethod(new BankCommands(), List.of("project"), "ProjectSheet", "sheet");
+        getCommands().registerMethod(new BankCommands(), List.of("deposits"), "deposits", "check");
+        getCommands().registerMethod(new BankCommands(), List.of("sheets_econ"), "warchestSheet", "warchest");
+        getCommands().registerMethod(new BankCommands(), List.of("deposits"), "shiftDeposits", "shift");
+        getCommands().registerMethod(new BankCommands(), List.of("sheets_econ"), "revenueSheet", "revenue");
+        getCommands().registerMethod(new BankCommands(), List.of("deposits"), "resetDeposits", "reset");
+        getCommands().registerMethod(new BankCommands(), List.of("sheets_econ"), "stockpileSheet", "stockpile");
+        getCommands().registerMethod(new BankCommands(), List.of("deposits"), "depositSheet", "sheet");
+        getCommands().registerMethod(new BankCommands(), List.of("sheets_econ"), "depositSheet", "deposits");
+
         getCommands().registerMethod(new WarCommands(), List.of("sheets_ia"), "ActivitySheetDate", "activity_date");
         getCommands().registerMethod(new WarCommands(), List.of("sheets_ia"), "WarDecSheetDate", "declares_date");
         getCommands().registerMethod(new UtilityCommands(), List.of("nation"), "development", "development");
