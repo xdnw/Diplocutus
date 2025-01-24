@@ -790,6 +790,11 @@ public class DBAlliance implements NationList, NationOrAlliance, GuildOrAlliance
         return AllianceId == alliance.AllianceId;
     }
 
+    @Command(desc = "Google sheet named url")
+    public String getSheetUrl() {
+        return MarkupUtil.sheetUrl(getName(), getUrl());
+    }
+
     @Override
     public int hashCode() {
         return AllianceId;

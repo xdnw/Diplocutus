@@ -156,7 +156,7 @@ public class ConflictManager {
         boolean hasDirty = false;
         for (Conflict conflict : getActiveConflicts()) {
             if (conflict.isDirty()) {
-                conflict.push(this, null, false, false);
+                conflict.push(this, null, false);
                 hasDirty = true;
             }
         }
@@ -298,23 +298,6 @@ public class ConflictManager {
         long turn = TimeUtil.getHour(current.getDate());
         if (turn > lastTurn) initTurn();
         return applyConflicts(allowedConflictords, turn, current.getAttacker_aa(), current.getDefender_aa(), f -> f.updateWar(previous, current, turn));
-    }
-
-    @Subscribe
-    public void onHourChange(HourChangeTask event) {
-        if (!conflictsLoaded) return;
-        long turn = event.getCurrent();
-        List<Conflict> conflicts = getActiveConflicts();
-        if (!conflicts.isEmpty()) {
-            for (Conflict conflict : conflicts) {
-                conflict.getSide(true).updateHourChange(this, turn, true);
-                conflict.getSide(false).updateHourChange(this, turn, true);
-            }
-            for (Conflict conflict : conflicts) {
-                conflict.push(this, null, true, false);
-            }
-            pushIndex();
-        }
     }
 
     private void recreateConflictsByAlliance() {
@@ -528,26 +511,6 @@ public class ConflictManager {
                 if (!newSubTypes.isEmpty()) {
                     saveSubTypes(newSubTypes);
                 }
-            }
-
-            if (conflicts == null || conflicts.stream().anyMatch(f -> f.getId() != -1)) {
-                db.query("SELECT * FROM conflict_graphs2", stmt -> {
-                }, (ThrowingConsumer<ResultSet>) rs -> {
-                    while (rs.next()) {
-                        int conflictId = rs.getInt("conflict_id");
-                        boolean side = rs.getBoolean("side");
-                        int allianceId = rs.getInt("alliance_id");
-                        int metricOrd = rs.getInt("metric");
-                        long turnOrDay = rs.getLong("turn");
-                        int city = rs.getInt("city");
-                        int value = rs.getInt("value");
-                        Conflict conflict = conflictById.get(conflictId);
-                        if (conflict != null) {
-                            ConflictMetric metric = ConflictMetric.values[metricOrd];
-                            conflict.getSide(side).addGraphData(metric, allianceId, turnOrDay, city, value);
-                        }
-                    }
-                });
             }
             conflictsLoaded = true;
         } catch (Throwable e) {

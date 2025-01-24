@@ -1704,6 +1704,11 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         return null;
     }
 
+    @Command(desc = "Google sheet named url")
+    public String getSheetUrl() {
+        return MarkupUtil.sheetUrl(getName(), getUrl());
+    }
+
     @Command(desc = "Game url for nation")
     public String getUrl() {
         return "" + Settings.INSTANCE.DNS_URL() + "/nation/" + getNation_id();

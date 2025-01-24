@@ -273,8 +273,8 @@ public class Settings extends Config {
         public S3 S3;
 
         @Comment({"(Optional) Configure AWS S3 bucket for caching war stats",
-        "The access key, secret key and region must be set to be enabled",
-        "Leave blank to disable"})
+                "The access key, secret key and region must be set to be enabled",
+                "Leave blank to disable"})
         public static final class S3 {
             @Comment("Access key for AWS S3 - for storing binary data")
             public String ACCESS_KEY = "";
@@ -285,7 +285,7 @@ public class Settings extends Config {
             @Comment("Region of AWS S3 bucket (e.g. `ap-southeast-2`)")
             public String REGION = "";
 
-            @Comment("Name of AWS S3 bucket (e.g. `diplocutus`)")
+            @Comment("Name of AWS S3 bucket (e.g. `locutus`)")
             public String BUCKET = "";
 
             @Comment({
@@ -294,6 +294,42 @@ public class Settings extends Config {
             })
             public String SITE = "https://wars.locutus.link";
         }
+
+        @Comment("The cosmetic name of the web interface")
+        public String INTERFACE_NAME = "Locutus";
+
+        @Comment("The url/ip/hostname for the backend")
+        public String BACKEND_DOMAIN = "https://dns-api.locutus.link";
+
+        @Comment({"The url/ip/hostname for the front-end web interface",
+                "The frontend is not hosted by the bot, or configured here, and is external, and available on GitHub Pages",
+                "If the frontend has a nonstandard port, it should be included here",
+                "For testing/development, you may set it to localhost"})
+        public String FRONTEND_DOMAIN = "https://dns.locutus.link";
+
+        @Comment({"File location of the ssl certificate",
+                "- Locutus expects a privkey.pem and a fullchain.pem in the directory",
+                "- You can get a free certificate from e.g. https://zerossl.com/ or https://letsencrypt.org/",
+                "- Set to empty string to not use an ssl certificate",
+        })
+        public String CERT_PATH = "C:/Certbot/live/locutus.link/fullchain.pem";
+
+        public String PRIVKEY_PATH = "C:/Certbot/live/locutus.link/privkey.pem";
+        @Comment({"The password or passphrase for the certificate",
+                "Leave blank if there is none"})
+        public String PRIVKEY_PASSWORD = "";
+        @Comment({"Port used for listening. Set to 0 to disable",
+                "80 = default unsecure http",
+                "443 = default secure https"})
+        public int PORT = 444;
+        @Comment("If the port hosted on is SSL (recommended), else unsecure HTTP is used (not recommended)")
+        public boolean ENABLE_SSL = true;
+        @Comment("If set to true, web content is not compressed/minified")
+        public boolean MINIFY = true;
+
+        @Comment("How many days a session token is valid for before requiring re-authentication")
+        public int SESSION_TIMEOUT_DAYS = 30;
+
         @Comment("The port google sheets uses to validate your credentials")
         public int GOOGLE_SHEET_VALIDATION_PORT = 8889;
 

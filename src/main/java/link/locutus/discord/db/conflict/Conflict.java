@@ -295,54 +295,6 @@ public class Conflict {
 //        manager.addGraphData(entries);
 //    }
 
-    public List<ConflictMetric.Entry> getGraphEntries() {
-        List<ConflictMetric.Entry> entries = new ObjectArrayList<>();
-        entries.addAll(coalition1.getGraphEntries());
-        entries.addAll(coalition2.getGraphEntries());
-        return entries;
-    }
-
-    public synchronized byte[] getGraphPsonGzip(ConflictManager manager) {
-        Map<String, Object> root = new Object2ObjectLinkedOpenHashMap<>();
-        root.put("name", getName());
-        root.put("start", TimeUtil.getTimeFromHour(hourStart));
-        root.put("end", hourEnd == Long.MAX_VALUE ? -1 : TimeUtil.getTimeFromHour(hourEnd));
-
-        List<String> metricNames = new ObjectArrayList<>();
-
-        List<Integer> metricsDay = new IntArrayList();
-        List<Integer> metricsTurn = new IntArrayList();
-
-        for (ConflictMetric metric : ConflictMetric.values) {
-            (metric.isDay() ? metricsDay : metricsTurn).add(metricNames.size());
-            metricNames.add(metric.name().toLowerCase(Locale.ROOT));
-        }
-        Map<ConflictColumn, Function<DamageStatGroup, Object>> damageHeaders = DamageStatGroup.createRanking();
-        List<ConflictColumn> columns = new ObjectArrayList<>(damageHeaders.keySet());
-        List<Function<DamageStatGroup, Object>> valueFuncs = columns.stream().map(damageHeaders::get).toList();
-
-        int columnMetricOffset = metricNames.size();
-
-        for (ConflictColumn column : columns) {
-            metricsDay.add(metricNames.size());
-            String defPrefix = column.isCount() ? "def:" : "loss:";
-            metricNames.add(defPrefix + column.getName());
-            metricsDay.add(metricNames.size());
-            String attPrefix = column.isCount() ? "off:" : "dealt:";
-            metricNames.add(attPrefix + column.getName());
-        }
-        root.put("metric_names", metricNames);
-        root.put("metrics_turn", metricsTurn);
-        root.put("metrics_day", metricsDay);
-
-        List<Map<String, Object>> coalitions = new ObjectArrayList<>();
-        coalitions.add(coalition1.toGraphMap(manager, metricsTurn, metricsDay, valueFuncs, columnMetricOffset));
-        coalitions.add(coalition2.toGraphMap(manager, metricsTurn, metricsDay, valueFuncs, columnMetricOffset));
-
-        root.put("coalitions", coalitions);
-        return graphStatsGzip = JteUtil.compress(JteUtil.toBinary(root));
-    }
-
     private Map<String, Object> warsVsAllianceJson() {
         Map<ConflictColumn, Function<DamageStatGroup, Object>> combined = DamageStatGroup.createRanking();
         List<Map.Entry<ConflictColumn, Function<DamageStatGroup, Object>>> combinedList = new ObjectArrayList<>(combined.entrySet());
@@ -692,10 +644,9 @@ public class Conflict {
      * Pushes the conflict to the AWS S3 bucket
      * @param manager
      * @param webIdOrNull
-     * @param includeGraphs
      * @return List of URLs
      */
-    public List<String> push(ConflictManager manager, String webIdOrNull, boolean includeGraphs, boolean updateIndex) {
+    public List<String> push(ConflictManager manager, String webIdOrNull, boolean updateIndex) {
         AwsManager aws = manager.getAws();
         if (webIdOrNull == null) {
             if (getId() == -1) throw new IllegalArgumentException("Conflict has no id");
@@ -709,12 +660,6 @@ public class Conflict {
         List<String> urls = new ArrayList<>();
         urls.add(aws.getLink(key));
 
-        if (includeGraphs) {
-            String graphKey = "conflicts/graphs/" + webIdOrNull + ".gzip";
-            byte[] graphValue = getGraphPsonGzip(manager);
-            aws.putObject(graphKey, graphValue, ttl);
-            urls.add(aws.getLink(graphKey));
-        }
         if (updateIndex) {
             manager.pushIndex();
         }
