@@ -930,76 +930,66 @@ public class UtilityCommands {
     }
 
     // TODO FIXME :||remove alliance cost
-//    @Command(aliases = {"alliancecost", "aacost"}, desc = "Get the value of nations including their cities, projects and units")
-//    public String allianceCost(@Me IMessageIO channel, @Me GuildDB db,
-//                               NationList nations, @Switch("u") boolean update, @Switch("s") @Timestamp Long snapshotDate) {
-//        Set<DBNation> nationSet = DNS.getNationsSnapshot(nations.getNations(), nations.getFilter(), snapshotDate, db.getGuild(), false);
-//        double infraCost = 0;
-//        double landCost = 0;
-//        double cityCost = 0;
-//        Map<ResourceType, Double> projectCost = new HashMap<>();
-//        Map<ResourceType, Double> militaryCost = new HashMap<>();
-//        Map<ResourceType, Double> buildingCost = new HashMap<>();
-//        for (DBNation nation : nationSet) {
-//            Set<Project> projects = nation.getProjects();
-//            for (Project project : projects) {
-//                projectCost = ResourceType.addResourcesToA(projectCost, project.cost());
-//            }
-//            for (MilitaryUnit unit : MilitaryUnit.values) {
-//                int units = nation.getUnits(unit);
-//                militaryCost = ResourceType.addResourcesToA(militaryCost, ResourceType.resourcesToMap(unit.getCost(units)));
-//            }
-//            int cities = nation.getCities();
-//            for (int i = 1; i <= cities; i++) {
-//                boolean manifest = true;
-//                boolean cp = i > Projects.URBAN_PLANNING.requiredCities() && projects.contains(Projects.URBAN_PLANNING);
-//                boolean acp = i > Projects.ADVANCED_URBAN_PLANNING.requiredCities() && projects.contains(Projects.ADVANCED_URBAN_PLANNING);
-//                boolean mp = i > Projects.METROPOLITAN_PLANNING.requiredCities() && projects.contains(Projects.METROPOLITAN_PLANNING);
-//                boolean gsa = projects.contains(Projects.GOVERNMENT_SUPPORT_AGENCY);
-//                cityCost += DNS.City.nextCityCost(i, manifest, cp, acp, mp, gsa);
-//            }
-//            Map<Integer, JavaCity> cityMap = nation.getCityMap(update, update,false);
-//            for (Map.Entry<Integer, JavaCity> cityEntry : cityMap.entrySet()) {
-//                JavaCity city = cityEntry.getValue();
-//                {
-//                    double landFactor = 1;
-//                    double infraFactor = 0.95;
-//                    if (projects.contains(Projects.ARABLE_LAND_AGENCY)) landFactor *= 0.95;
-//                    if (projects.contains(Projects.CENTER_FOR_CIVIL_ENGINEERING)) infraFactor *= 0.95;
-//                    landCost += DNS.City.Land.calculateLand(DNS.City.Land.NEW_CITY_BASE, city.getLand()) * landFactor;
-//                    infraCost += DNS.City.Infra.calculateInfra(DNS.City.Infra.NEW_CITY_BASE, city.getInfra()) * infraFactor;
-//                }
-//                city = cityEntry.getValue();
-//                JavaCity empty = new JavaCity();
-//                empty.setLand(city.getLand());
-//                empty.setInfra(city.getInfra());
-//                double[] myBuildingCost = city.calculateCost(empty);
-//                buildingCost = ResourceType.addResourcesToA(buildingCost, ResourceType.resourcesToMap(myBuildingCost));
-//            }
-//        }
-//
-//        Map<ResourceType, Double> total = new HashMap<>();
-//        total.put(ResourceType.MONEY, total.getOrDefault(ResourceType.MONEY, 0d) + infraCost);
-//        total.put(ResourceType.MONEY, total.getOrDefault(ResourceType.MONEY, 0d) + landCost);
-//        total.put(ResourceType.MONEY, total.getOrDefault(ResourceType.MONEY, 0d) + cityCost);
-//        total = ResourceType.add(total, projectCost);
-//        total = ResourceType.add(total, militaryCost);
-//        total = ResourceType.add(total, buildingCost);
-//        double totalConverted = ResourceType.convertedTotal(total);
-//        String title = nationSet.size() + " nations worth ~$" + MathMan.format(totalConverted);
-//
-//        StringBuilder response = new StringBuilder();
-//        response.append("**Infra**: $" + MathMan.format(infraCost));
-//        response.append("\n").append("**Land**: $" + MathMan.format(landCost));
-//        response.append("\n").append("**Cities**: $" + MathMan.format(cityCost));
-//        response.append("\n").append("**Projects**: $" + MathMan.format(ResourceType.convertedTotal(projectCost)) + "\n`" + ResourceType.resourcesToString(projectCost) + "`");
-//        response.append("\n").append("**Military**: $" + MathMan.format(ResourceType.convertedTotal(militaryCost)) + "\n`" + ResourceType.resourcesToString(militaryCost) + "`");
-//        response.append("\n").append("**Buildings**: $" + MathMan.format(ResourceType.convertedTotal(buildingCost)) + "\n`" + ResourceType.resourcesToString(buildingCost) + "`");
-//        response.append("\n").append("**Total**: $" + MathMan.format(ResourceType.convertedTotal(total)) + "\n`" + ResourceType.resourcesToString(total) + "`");
-//
-//        channel.create().embed(title, response.toString()).send();
-//        return null;
-//    }
+    @Command(aliases = {"alliancecost", "aacost"}, desc = "Get the value of nations including their cities, projects and units")
+    public String allianceCost(@Me IMessageIO channel, @Me GuildDB db,
+                               NationList nations, @Switch("u") boolean update, @Switch("s") @Timestamp Long snapshotDate) {
+        Set<DBNation> nationSet = DNS.getNationsSnapshot(nations.getNations(), nations.getFilter(), snapshotDate, db.getGuild(), false);
+
+        Map<ResourceType, Double> projectCost = new HashMap<>();
+        Map<ResourceType, Double> militaryCost = new HashMap<>();
+        double buildingCost = 0;
+        double infraCost = 0;
+        double landCost = 0;
+
+        for (DBNation nation : nationSet) {
+            Map<Project, Integer> projects = nation.getProjects(db);
+            for (Map.Entry<Project, Integer> entry : projects.entrySet()) {
+                int amt = entry.getValue();
+                if (amt == 0) continue;
+                Map<ResourceType, Double> addCost = entry.getKey().getCost(0, amt, nation.getInfra(), nation.getLand());
+                projectCost = ResourceType.addResourcesToA(projectCost, addCost);
+            }
+            Map<MilitaryUnit, Integer> units = nation.getUnits(db);
+            for (Map.Entry<MilitaryUnit, Integer> entry : units.entrySet()) {
+                int amt = entry.getValue();
+                if (amt == 0) continue;
+                MilitaryUnit unit = entry.getKey();
+                militaryCost = ResourceType.addResourcesToA(militaryCost, unit.getCost(amt));
+            }
+            infraCost += DNS.Development.getCost(1, 0, nation.getLand(), nation.getInfra());
+            landCost += DNS.Land.getCost(1, 0, nation.getLand());
+
+            Map<Building, Integer> buildings = nation.getBuildings(db, false);
+            int slots = nation.getPrivateData().getTotalSlots(0);
+            for (Map.Entry<Building, Integer> entry : buildings.entrySet()) {
+                int amt = entry.getValue();
+                if (amt == 0) continue;
+                Building building = entry.getKey();
+                buildingCost += building.cost(0, amt, slots, 1);
+            }
+
+        }
+
+        Map<ResourceType, Double> total = new HashMap<>();
+        total.put(ResourceType.CASH, total.getOrDefault(ResourceType.CASH, 0d) + infraCost);
+        total.put(ResourceType.CASH, total.getOrDefault(ResourceType.CASH, 0d) + landCost);
+        total.put(ResourceType.CASH, total.getOrDefault(ResourceType.CASH, 0d) + buildingCost);
+        total = ResourceType.add(total, projectCost);
+        total = ResourceType.add(total, militaryCost);
+        double totalConverted = ResourceType.convertedTotal(total);
+        String title = nationSet.size() + " nations worth ~$" + MathMan.format(totalConverted);
+
+        StringBuilder response = new StringBuilder();
+        response.append("**Infra**: $" + MathMan.format(infraCost));
+        response.append("\n").append("**Land**: $" + MathMan.format(landCost));
+        response.append("\n").append("**Buildings**: $" + MathMan.format(buildingCost));
+        response.append("\n").append("**Projects**: $" + MathMan.format(ResourceType.convertedTotal(projectCost)) + "\n`" + ResourceType.resourcesToString(projectCost) + "`");
+        response.append("\n").append("**Military**: $" + MathMan.format(ResourceType.convertedTotal(militaryCost)) + "\n`" + ResourceType.resourcesToString(militaryCost) + "`");
+        response.append("\n").append("**Total**: $" + MathMan.format(ResourceType.convertedTotal(total)) + "\n`" + ResourceType.resourcesToString(total) + "`");
+
+        channel.create().embed(title, response.toString()).send();
+        return null;
+    }
 
     @Command(desc = "Add a watermark to a discord image\n" +
             "Use \\n to add a new line\n" +

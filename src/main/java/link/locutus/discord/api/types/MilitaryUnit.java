@@ -1,7 +1,9 @@
 package link.locutus.discord.api.types;
 
 import link.locutus.discord.api.generated.AllianceMilitary;
+import link.locutus.discord.api.generated.ResourceType;
 import link.locutus.discord.commands.manager.v2.binding.annotation.Command;
+import link.locutus.discord.util.DNS;
 
 import java.util.EnumMap;
 import java.util.Locale;
@@ -89,6 +91,9 @@ public enum MilitaryUnit {
     private final double attackPerCapacity;
     private final Function<AllianceMilitary, Integer> getAmount;
     private final Function<AllianceMilitary, Double> getQuality;
+    private final double[] cost;
+    private final Map<Technology, Integer> requiredTech;
+    private final Map<Project, Integer> requiredProject;
 
     MilitaryUnit(CombatType combatType, double capacityUsage,
                  int baseDefense, double baseAttack, int baseMobility, MilitaryUnitType capacityType, double defensePerCapacity, double attackPerCapacity,
@@ -108,6 +113,20 @@ public enum MilitaryUnit {
         this.attackPerCapacity = attackPerCapacity;
         this.getAmount = getAmount;
         this.getQuality = getQuality;
+        this.cost = ResourceType.getBuffer();
+        this.cost[ResourceType.PRODUCTION.ordinal()] = productionCost;
+        this.cost[ResourceType.MINERALS.ordinal()] = mineralCost;
+        this.cost[ResourceType.RARE_METALS.ordinal()] = rareMetalCost;
+        this.requiredTech = requiredTech;
+        this.requiredProject = requiredProject;
+    }
+
+    public double[] getCostArr() {
+        return cost;
+    }
+
+    public Map<ResourceType, Double> getCost(int amt) {
+        return ResourceType.resourcesToMap(DNS.multiply(cost, amt));
     }
 
     public static MilitaryUnit parse(String input) {

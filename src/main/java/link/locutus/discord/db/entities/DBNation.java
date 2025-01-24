@@ -142,16 +142,44 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         return getPrivateData().getTechnology(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(15)).getOrDefault(technology, 0);
     }
 
+    @Command(desc = "Get the amount of a military unit")
+    public int getMilitary(@Me GuildDB db, MilitaryUnit unit) {
+        if (!db.isAllianceId(getAlliance_id())) throw new IllegalArgumentException("Not in alliance " + db.getAllianceIds() + " for " + db.getGuild());
+        return getPrivateData().getMilitary(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(15)).getOrDefault(unit, 0);
+    }
+
+    @Command(desc = "Get the production quality of a military unit")
+    public double getQuality(@Me GuildDB db, MilitaryUnit unit) {
+        if (!db.isAllianceId(getAlliance_id())) throw new IllegalArgumentException("Not in alliance " + db.getAllianceIds() + " for " + db.getGuild());
+        return getPrivateData().getMilitaryQuality(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(15)).getOrDefault(unit, 0d);
+    }
+
+    public Map<MilitaryUnit, Integer> getUnits(@Me GuildDB db) {
+        if (!db.isAllianceId(getAlliance_id())) throw new IllegalArgumentException("Not in alliance " + db.getAllianceIds() + " for " + db.getGuild());
+        return getPrivateData().getMilitary(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(15));
+    }
+
+
     @Command(desc = "Get number of a project or investment")
     public int getProject(@Me GuildDB db, Project project) {
         if (!db.isAllianceId(getAlliance_id())) throw new IllegalArgumentException("Not in alliance " + db.getAllianceIds() + " for " + db.getGuild());
         return getPrivateData().getProjects(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(15)).getOrDefault(project, 0);
     }
 
+    public Map<Project, Integer> getProjects(@Me GuildDB db) {
+        if (!db.isAllianceId(getAlliance_id())) throw new IllegalArgumentException("Not in alliance " + db.getAllianceIds() + " for " + db.getGuild());
+        return getPrivateData().getProjects(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(15));
+    }
+
     @Command(desc = "Get number of a project or investment")
     public int getBuilding(@Me GuildDB db, Building building, @Switch("e") boolean includeEffects) {
         if (!db.isAllianceId(getAlliance_id())) throw new IllegalArgumentException("Not in alliance " + db.getAllianceIds() + " for " + db.getGuild());
         return getPrivateData().getBuildings(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(15), includeEffects).getOrDefault(building, 0);
+    }
+
+    public Map<Building, Integer> getBuildings(@Me GuildDB db, boolean includeEffects) {
+        if (!db.isAllianceId(getAlliance_id())) throw new IllegalArgumentException("Not in alliance " + db.getAllianceIds() + " for " + db.getGuild());
+        return getPrivateData().getBuildings(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(15), includeEffects);
     }
 
     public boolean update(NationDB db, Nation entity, Consumer<Event> eventConsumer) {
@@ -1167,7 +1195,7 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
         if (end == null) end = Long.MAX_VALUE;
         ScopedPlaceholderCache<DBNation> scoped = PlaceholderCache.getScoped(store, DBNation.class, "getDeposits");
         Set<Long> tracked = scoped.getGlobal(db::getTrackedBanks);
-        List<Map.Entry<Integer, Transaction2>> transactions = getTransactions(db, tracked, !ignoreOffsets, !ignoreOffsets, -1L, start);
+        List<Map.Entry<Integer, Transaction2>> transactions = getTransactions(db, tracked, !ignoreOffsets, -1L, start);
 //        if (filter != null) {
 //            transactions.removeIf(f -> !filter.test(f.getValue()));
 //        }
@@ -1203,10 +1231,6 @@ public class DBNation implements NationOrAlliance, DBEntity<Nation, DBNation> {
     }
 
     public List<Map.Entry<Integer, Transaction2>> getTransactions(GuildDB db, Set<Long> tracked, boolean offset, long updateThreshold, long cutOff) {
-        return getTransactions(db, tracked, true, offset, updateThreshold, cutOff);
-    }
-
-    public List<Map.Entry<Integer, Transaction2>> getTransactions(GuildDB db, Set<Long> tracked, boolean useTaxBase, boolean offset, long updateThreshold, long cutOff) {
         if (tracked == null) {
             tracked = db.getTrackedBanks();
 //        } else {

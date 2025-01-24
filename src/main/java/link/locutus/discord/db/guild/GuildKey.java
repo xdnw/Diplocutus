@@ -438,24 +438,24 @@ public class GuildKey {
         }
     }.setupRequirements(f -> f.requires(ALLIANCE_ID));
 
-//    public static GuildSetting<Map<ResourceType, Double>> WARCHEST_PER_CITY = new GuildResourceSetting(GuildSettingCategory.AUDIT) {
-//        @NoFormat
-//        @Command(descMethod = "help")
-//        @RolePermission(Roles.ADMIN)
-//        public String WARCHEST_PER_CITY(@Me GuildDB db, @Me User user, Map<ResourceType, Double> amount) {
-//            return WARCHEST_PER_CITY.setAndValidate(db, user, amount);
-//        }
-//
-//        @Override
-//        public String toReadableString(GuildDB db, Map<ResourceType, Double> value) {
-//            return ResourceType.resourcesToString(value);
-//        }
-//
-//        @Override
-//        public String help() {
-//            return "Amount of warchest to recommend per city in form `{steel=1234,aluminum=5678,gasoline=69,munitions=420}`";
-//        }
-//    }.setupRequirements(f -> f.requires(ALLIANCE_ID).requireValidAlliance().requires(API_KEY));
+    public static GuildSetting<Map<ResourceType, Double>> WARCHEST_PER_INFRA = new GuildResourceSetting(GuildSettingCategory.AUDIT) {
+        @NoFormat
+        @Command(descMethod = "help")
+        @RolePermission(Roles.ADMIN)
+        public String WARCHEST_PER_INFRA(@Me GuildDB db, @Me User user, Map<ResourceType, Double> amount) {
+            return WARCHEST_PER_INFRA.setAndValidate(db, user, amount);
+        }
+
+        @Override
+        public String toReadableString(GuildDB db, Map<ResourceType, Double> value) {
+            return ResourceType.resourcesToString(value);
+        }
+
+        @Override
+        public String help() {
+            return "Amount of warchest to recommend per infra in form `{fuel=1.0}`";
+        }
+    }.setupRequirements(f -> f.requires(ALLIANCE_ID).requireValidAlliance().requires(API_KEY));
     public static GuildSetting<Category> EMBASSY_CATEGORY = new GuildCategorySetting(GuildSettingCategory.FOREIGN_AFFAIRS) {
         @NoFormat
         @Command(descMethod = "help")

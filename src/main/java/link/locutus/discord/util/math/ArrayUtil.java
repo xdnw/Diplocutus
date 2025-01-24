@@ -1664,36 +1664,6 @@ public class ArrayUtil {
         return predicates.stream().reduce(Predicate::or).orElseThrow();
     }
 
-    public static void main(String[] args) {
-//        Function<String, LazyMathEntity> func = s -> {
-//            return new LazyMathEntity(s);
-//        };
-//        System.out.println(calculate("5+3>1?55:30", func));
-//        System.out.println("---");
-//        List<LazyMathEntity> result = (calculate("HYPERLINK(\"diplomacyandstrife.com/nation/{nation_id}\", \"{nation}\")", func));
-//        if (result.size() == 1) {
-//            System.out.println(result.get(0).resolve(null));
-//        } else {
-//            for (LazyMathEntity entity : result) {
-//                System.out.println(entity.resolve(null));
-//            }
-//        }
-
-        String input = StringMan.wrapHashFunctions("*,#tanks=0,(#aircraftpct<30|#active_m>11000)", f -> true);
-        // private static <T> ParseResult<T> parseTokens(String input, Function<String, Set<T>> parseSet2, Function<String, Predicate<T>> parseElemPredicate, Function<String, Predicate<T>> parseFilter) {
-        ParseResult<Object> test = parseTokens(input, null, new Function<String, Predicate<Object>>() {
-            @Override
-            public Predicate<Object> apply(String s) {
-                return f -> true;
-            }
-        }, new Function<String, Predicate<Object>>() {
-            @Override
-            public Predicate<Object> apply(String s) {
-                return f -> true;
-            }
-        });
-    }
-
     private static <T> ParseResult<T> parseTokens(String input, Function<String, Set<T>> parseSet2, Function<String, Predicate<T>> parseElemPredicate, Function<String, Predicate<T>> parseFilter) {
         if ((parseSet2 != null) == (parseElemPredicate != null)) {
             throw new IllegalArgumentException("Only one of parseSet2 and parseElemPredicate can be null");
