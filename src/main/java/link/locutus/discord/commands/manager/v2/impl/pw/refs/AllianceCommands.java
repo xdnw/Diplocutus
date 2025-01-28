@@ -53,6 +53,11 @@ public class AllianceCommands {
             public static final getDef cmd = new getDef();
 
         }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBAlliance.class,method="getExpectedWars")
+        public static class getExpectedWars extends CommandRef {
+            public static final getExpectedWars cmd = new getExpectedWars();
+
+        }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBAlliance.class,method="getId")
         public static class getId extends CommandRef {
             public static final getId cmd = new getId();
@@ -120,6 +125,11 @@ public class AllianceCommands {
         public getScore filter(String value) {
             return set("filter", value);
         }
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBAlliance.class,method="getSheetUrl")
+        public static class getSheetUrl extends CommandRef {
+            public static final getSheetUrl cmd = new getSheetUrl();
 
         }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBAlliance.class,method="getTotal")

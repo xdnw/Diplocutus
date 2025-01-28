@@ -2,6 +2,11 @@ package link.locutus.discord.commands.manager.v2.impl.pw.refs;
 import link.locutus.discord.commands.manager.v2.command.AutoRegister;
 import link.locutus.discord.commands.manager.v2.command.CommandRef;
 public class NationCommands {
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="active_m")
+        public static class active_m extends CommandRef {
+            public static final active_m cmd = new active_m();
+
+        }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="allianceSeniority")
         public static class allianceSeniority extends CommandRef {
             public static final allianceSeniority cmd = new allianceSeniority();
@@ -371,6 +376,11 @@ public class NationCommands {
             public static final getEnemyStrength cmd = new getEnemyStrength();
 
         }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getExpectedWars")
+        public static class getExpectedWars extends CommandRef {
+            public static final getExpectedWars cmd = new getExpectedWars();
+
+        }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getFighting")
         public static class getFighting extends CommandRef {
             public static final getFighting cmd = new getFighting();
@@ -422,6 +432,14 @@ public class NationCommands {
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getMaxOff")
         public static class getMaxOff extends CommandRef {
             public static final getMaxOff cmd = new getMaxOff();
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getMilitary")
+        public static class getMilitary extends CommandRef {
+            public static final getMilitary cmd = new getMilitary();
+        public getMilitary unit(String value) {
+            return set("unit", value);
+        }
 
         }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getMineralOutput")
@@ -556,6 +574,14 @@ public class NationCommands {
             public static final getProtectionRemainingMs cmd = new getProtectionRemainingMs();
 
         }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getQuality")
+        public static class getQuality extends CommandRef {
+            public static final getQuality cmd = new getQuality();
+        public getQuality unit(String value) {
+            return set("unit", value);
+        }
+
+        }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getRareMetalOutput")
         public static class getRareMetalOutput extends CommandRef {
             public static final getRareMetalOutput cmd = new getRareMetalOutput();
@@ -599,6 +625,11 @@ public class NationCommands {
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getScore")
         public static class getScore extends CommandRef {
             public static final getScore cmd = new getScore();
+
+        }
+        @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getSheetUrl")
+        public static class getSheetUrl extends CommandRef {
+            public static final getSheetUrl cmd = new getSheetUrl();
 
         }
         @AutoRegister(clazz=link.locutus.discord.db.entities.DBNation.class,method="getStabilityIndex")

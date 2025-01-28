@@ -272,6 +272,14 @@ public class CM {
                     public static final pojos cmd = new pojos();
 
                 }
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.AdminCommands.class,method="syncRequests")
+                public static class requests extends CommandRef {
+                    public static final requests cmd = new requests();
+                public requests alliance(String value) {
+                    return set("alliance", value);
+                }
+
+                }
                 @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.AdminCommands.class,method="syncBanks")
                 public static class syncBanks extends CommandRef {
                     public static final syncBanks cmd = new syncBanks();
@@ -443,6 +451,22 @@ public class CM {
             }
         }
         public static class alliance{
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.UtilityCommands.class,method="allianceCost")
+            public static class cost extends CommandRef {
+                public static final cost cmd = new cost();
+            public cost nations(String value) {
+                return set("nations", value);
+            }
+
+            public cost update(String value) {
+                return set("update", value);
+            }
+
+            public cost snapshotDate(String value) {
+                return set("snapshotDate", value);
+            }
+
+            }
             @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.UnsortedCommands.class,method="leftAA")
             public static class departures extends CommandRef {
                 public static final departures cmd = new departures();
@@ -500,11 +524,155 @@ public class CM {
 
             }
             public static class stats{
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.StatCommands.class,method="allianceAttributeRanking")
+                public static class attribute_ranking extends CommandRef {
+                    public static final attribute_ranking cmd = new attribute_ranking();
+                public attribute_ranking alliances(String value) {
+                    return set("alliances", value);
+                }
+
+                public attribute_ranking attribute(String value) {
+                    return set("attribute", value);
+                }
+
+                public attribute_ranking reverseOrder(String value) {
+                    return set("reverseOrder", value);
+                }
+
+                public attribute_ranking uploadFile(String value) {
+                    return set("uploadFile", value);
+                }
+
+                }
                 @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.StatCommands.class,method="counterStats")
                 public static class counterStats extends CommandRef {
                     public static final counterStats cmd = new counterStats();
                 public counterStats alliance(String value) {
                     return set("alliance", value);
+                }
+
+                }
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.StatCommands.class,method="allianceMetricsByTurn")
+                public static class metric_by_turn extends CommandRef {
+                    public static final metric_by_turn cmd = new metric_by_turn();
+                public metric_by_turn metric(String value) {
+                    return set("metric", value);
+                }
+
+                public metric_by_turn coalition(String value) {
+                    return set("coalition", value);
+                }
+
+                public metric_by_turn time(String value) {
+                    return set("time", value);
+                }
+
+                public metric_by_turn attachJson(String value) {
+                    return set("attachJson", value);
+                }
+
+                public metric_by_turn attachCsv(String value) {
+                    return set("attachCsv", value);
+                }
+
+                }
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.StatCommands.class,method="allianceMetricsAB")
+                public static class metrics_ab extends CommandRef {
+                    public static final metrics_ab cmd = new metrics_ab();
+                public metrics_ab metric(String value) {
+                    return set("metric", value);
+                }
+
+                public metrics_ab coalition1(String value) {
+                    return set("coalition1", value);
+                }
+
+                public metrics_ab coalition2(String value) {
+                    return set("coalition2", value);
+                }
+
+                public metrics_ab time(String value) {
+                    return set("time", value);
+                }
+
+                public metrics_ab attachJson(String value) {
+                    return set("attachJson", value);
+                }
+
+                public metrics_ab attachCsv(String value) {
+                    return set("attachCsv", value);
+                }
+
+                }
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.StatCommands.class,method="allianceMetricsCompareByTurn")
+                public static class metrics_by_turn extends CommandRef {
+                    public static final metrics_by_turn cmd = new metrics_by_turn();
+                public metrics_by_turn metric(String value) {
+                    return set("metric", value);
+                }
+
+                public metrics_by_turn alliances(String value) {
+                    return set("alliances", value);
+                }
+
+                public metrics_by_turn time(String value) {
+                    return set("time", value);
+                }
+
+                public metrics_by_turn attachJson(String value) {
+                    return set("attachJson", value);
+                }
+
+                public metrics_by_turn attachCsv(String value) {
+                    return set("attachCsv", value);
+                }
+
+                }
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.StatCommands.class,method="allianceRanking")
+                public static class ranking extends CommandRef {
+                    public static final ranking cmd = new ranking();
+                public ranking alliances(String value) {
+                    return set("alliances", value);
+                }
+
+                public ranking metric(String value) {
+                    return set("metric", value);
+                }
+
+                public ranking reverseOrder(String value) {
+                    return set("reverseOrder", value);
+                }
+
+                public ranking uploadFile(String value) {
+                    return set("uploadFile", value);
+                }
+
+                }
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.StatCommands.class,method="allianceRankingTime")
+                public static class ranking_time extends CommandRef {
+                    public static final ranking_time cmd = new ranking_time();
+                public ranking_time alliances(String value) {
+                    return set("alliances", value);
+                }
+
+                public ranking_time metric(String value) {
+                    return set("metric", value);
+                }
+
+                public ranking_time timeStart(String value) {
+                    return set("timeStart", value);
+                }
+
+                public ranking_time timeEnd(String value) {
+                    return set("timeEnd", value);
+                }
+
+                public ranking_time reverseOrder(String value) {
+                    return set("reverseOrder", value);
+                }
+
+                public ranking_time uploadFile(String value) {
+                    return set("uploadFile", value);
                 }
 
                 }
@@ -827,6 +995,46 @@ public class CM {
             }
 
             public cost force_update(String value) {
+                return set("force_update", value);
+            }
+
+            }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.BuildCommands.class,method="buildingCostBulk")
+            public static class cost_bulk extends CommandRef {
+                public static final cost_bulk cmd = new cost_bulk();
+            public cost_bulk buildTo(String value) {
+                return set("buildTo", value);
+            }
+
+            public cost_bulk total_slots(String value) {
+                return set("total_slots", value);
+            }
+
+            public cost_bulk nation(String value) {
+                return set("nation", value);
+            }
+
+            public cost_bulk buildingCostReduction(String value) {
+                return set("buildingCostReduction", value);
+            }
+
+            public cost_bulk force_update(String value) {
+                return set("force_update", value);
+            }
+
+            }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.BuildCommands.class,method="nextBuildingCost")
+            public static class costs extends CommandRef {
+                public static final costs cmd = new costs();
+            public costs nation(String value) {
+                return set("nation", value);
+            }
+
+            public costs buildingCostReduction(String value) {
+                return set("buildingCostReduction", value);
+            }
+
+            public costs force_update(String value) {
                 return set("force_update", value);
             }
 
@@ -1662,22 +1870,6 @@ public class CM {
                 }
 
                 }
-                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.ConflictCommands.class,method="importConflictData")
-                public static class multiple_sources extends CommandRef {
-                    public static final multiple_sources cmd = new multiple_sources();
-                public multiple_sources ctowned(String value) {
-                    return set("ctowned", value);
-                }
-
-                public multiple_sources graphData(String value) {
-                    return set("graphData", value);
-                }
-
-                public multiple_sources all(String value) {
-                    return set("all", value);
-                }
-
-                }
                 @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.ConflictCommands.class,method="recalculateGraphs")
                 public static class recalculate_graphs extends CommandRef {
                     public static final recalculate_graphs cmd = new recalculate_graphs();
@@ -1699,10 +1891,6 @@ public class CM {
                     public static final website cmd = new website();
                 public website conflicts(String value) {
                     return set("conflicts", value);
-                }
-
-                public website upload_graph(String value) {
-                    return set("upload_graph", value);
                 }
 
                 public website reinitialize_wars(String value) {
@@ -1808,6 +1996,46 @@ public class CM {
             }
 
             }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.BankCommands.class,method="deposits")
+            public static class check extends CommandRef {
+                public static final check cmd = new check();
+            public check nationOrAllianceOrGuild(String value) {
+                return set("nationOrAllianceOrGuild", value);
+            }
+
+            public check offshores(String value) {
+                return set("offshores", value);
+            }
+
+            public check timeCutoff(String value) {
+                return set("timeCutoff", value);
+            }
+
+            public check ignoreInternalOffsets(String value) {
+                return set("ignoreInternalOffsets", value);
+            }
+
+            public check showCategories(String value) {
+                return set("showCategories", value);
+            }
+
+            public check replyInDMs(String value) {
+                return set("replyInDMs", value);
+            }
+
+            public check includeExpired(String value) {
+                return set("includeExpired", value);
+            }
+
+            public check includeIgnored(String value) {
+                return set("includeIgnored", value);
+            }
+
+            public check allowCheckDeleted(String value) {
+                return set("allowCheckDeleted", value);
+            }
+
+            }
             @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.TestCommands.class,method="viewFlow")
             public static class flows extends CommandRef {
                 public static final flows cmd = new flows();
@@ -1833,6 +2061,110 @@ public class CM {
 
             public interest interestNegativePercent(String value) {
                 return set("interestNegativePercent", value);
+            }
+
+            }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.BankCommands.class,method="resetDeposits")
+            public static class reset extends CommandRef {
+                public static final reset cmd = new reset();
+            public reset nations(String value) {
+                return set("nations", value);
+            }
+
+            public reset ignoreGrants(String value) {
+                return set("ignoreGrants", value);
+            }
+
+            public reset ignoreLoans(String value) {
+                return set("ignoreLoans", value);
+            }
+
+            public reset ignoreTaxes(String value) {
+                return set("ignoreTaxes", value);
+            }
+
+            public reset ignoreBankDeposits(String value) {
+                return set("ignoreBankDeposits", value);
+            }
+
+            public reset force(String value) {
+                return set("force", value);
+            }
+
+            }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.BankCommands.class,method="depositSheet")
+            public static class sheet extends CommandRef {
+                public static final sheet cmd = new sheet();
+            public sheet nations(String value) {
+                return set("nations", value);
+            }
+
+            public sheet offshores(String value) {
+                return set("offshores", value);
+            }
+
+            public sheet ignoreOffsets(String value) {
+                return set("ignoreOffsets", value);
+            }
+
+            public sheet includeExpired(String value) {
+                return set("includeExpired", value);
+            }
+
+            public sheet includeIgnored(String value) {
+                return set("includeIgnored", value);
+            }
+
+            public sheet noTaxes(String value) {
+                return set("noTaxes", value);
+            }
+
+            public sheet noLoans(String value) {
+                return set("noLoans", value);
+            }
+
+            public sheet noGrants(String value) {
+                return set("noGrants", value);
+            }
+
+            public sheet noDeposits(String value) {
+                return set("noDeposits", value);
+            }
+
+            public sheet includePastDepositors(String value) {
+                return set("includePastDepositors", value);
+            }
+
+            public sheet useFlowNote(String value) {
+                return set("useFlowNote", value);
+            }
+
+            public sheet force(String value) {
+                return set("force", value);
+            }
+
+            }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.BankCommands.class,method="shiftDeposits")
+            public static class shift extends CommandRef {
+                public static final shift cmd = new shift();
+            public shift nation(String value) {
+                return set("nation", value);
+            }
+
+            public shift from(String value) {
+                return set("from", value);
+            }
+
+            public shift to(String value) {
+                return set("to", value);
+            }
+
+            public shift expireTime(String value) {
+                return set("expireTime", value);
+            }
+
+            public shift decayTime(String value) {
+                return set("decayTime", value);
             }
 
             }
@@ -2832,6 +3164,36 @@ public class CM {
 
                 }
             }
+            public static class stats{
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.StatCommands.class,method="nationRanking")
+                public static class ranking extends CommandRef {
+                    public static final ranking cmd = new ranking();
+                public ranking nations(String value) {
+                    return set("nations", value);
+                }
+
+                public ranking attribute(String value) {
+                    return set("attribute", value);
+                }
+
+                public ranking groupByAlliance(String value) {
+                    return set("groupByAlliance", value);
+                }
+
+                public ranking reverseOrder(String value) {
+                    return set("reverseOrder", value);
+                }
+
+                public ranking snapshotDate(String value) {
+                    return set("snapshotDate", value);
+                }
+
+                public ranking total(String value) {
+                    return set("total", value);
+                }
+
+                }
+            }
             @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.UnsortedCommands.class,method="stockpile")
             public static class stockpile extends CommandRef {
                 public static final stockpile cmd = new stockpile();
@@ -2927,6 +3289,22 @@ public class CM {
 
             public cost force_update(String value) {
                 return set("force_update", value);
+            }
+
+            }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.BankCommands.class,method="ProjectSheet")
+            public static class sheet extends CommandRef {
+                public static final sheet cmd = new sheet();
+            public sheet nations(String value) {
+                return set("nations", value);
+            }
+
+            public sheet sheet(String value) {
+                return set("sheet", value);
+            }
+
+            public sheet snapshotTime(String value) {
+                return set("snapshotTime", value);
             }
 
             }
@@ -3327,7 +3705,7 @@ public class CM {
         }
         public static class selection_alias{
             public static class add{
-                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.filter.PlaceholdersMap.class,method="addSelectionAlias", field="ALLIANCES")
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.filter.AlliancePlaceholders.class,method="addSelectionAlias")
                 public static class alliance extends CommandRef {
                     public static final alliance cmd = new alliance();
                 public alliance name(String value) {
@@ -3399,7 +3777,7 @@ public class CM {
                 }
 
                 }
-                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.filter.PlaceholdersMap.class,method="addSelectionAlias", field="NATIONS")
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.filter.NationPlaceholders.class,method="addSelectionAlias")
                 public static class nation extends CommandRef {
                     public static final nation cmd = new nation();
                 public nation name(String value) {
@@ -3706,6 +4084,14 @@ public class CM {
             }
 
             }
+            @AutoRegister(clazz=link.locutus.discord.db.guild.GuildKey.class,method="WARCHEST_PER_INFRA", field="WARCHEST_PER_INFRA")
+            public static class WARCHEST_PER_INFRA extends CommandRef {
+                public static final WARCHEST_PER_INFRA cmd = new WARCHEST_PER_INFRA();
+            public WARCHEST_PER_INFRA amount(String value) {
+                return set("amount", value);
+            }
+
+            }
             @AutoRegister(clazz=link.locutus.discord.db.guild.GuildKey.class,method="addRequiredMMR", field="REQUIRED_MMR")
             public static class addRequiredMMR extends CommandRef {
                 public static final addRequiredMMR cmd = new addRequiredMMR();
@@ -3749,6 +4135,22 @@ public class CM {
                 public static final DISPLAY_ITEMIZED_DEPOSITS cmd = new DISPLAY_ITEMIZED_DEPOSITS();
             public DISPLAY_ITEMIZED_DEPOSITS enabled(String value) {
                 return set("enabled", value);
+            }
+
+            }
+            @AutoRegister(clazz=link.locutus.discord.db.guild.GuildKey.class,method="GRANT_REQUEST_ALERTS", field="GRANT_REQUEST_ALERTS")
+            public static class GRANT_REQUEST_ALERTS extends CommandRef {
+                public static final GRANT_REQUEST_ALERTS cmd = new GRANT_REQUEST_ALERTS();
+            public GRANT_REQUEST_ALERTS channel(String value) {
+                return set("channel", value);
+            }
+
+            }
+            @AutoRegister(clazz=link.locutus.discord.db.guild.GuildKey.class,method="LOAN_REQUEST_ALERTS", field="LOAN_REQUEST_ALERTS")
+            public static class LOAN_REQUEST_ALERTS extends CommandRef {
+                public static final LOAN_REQUEST_ALERTS cmd = new LOAN_REQUEST_ALERTS();
+            public LOAN_REQUEST_ALERTS channel(String value) {
+                return set("channel", value);
             }
 
             }
@@ -4341,7 +4743,7 @@ public class CM {
         }
         public static class sheet_template{
             public static class add{
-                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.filter.PlaceholdersMap.class,method="addColumns", field="ALLIANCES")
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.filter.AlliancePlaceholders.class,method="addColumns")
                 public static class alliance extends CommandRef {
                     public static final alliance cmd = new alliance();
                 public alliance sheet(String value) {
@@ -4965,7 +5367,7 @@ public class CM {
                 }
 
                 }
-                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.filter.PlaceholdersMap.class,method="addColumns", field="NATIONS")
+                @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.filter.NationPlaceholders.class,method="addColumns")
                 public static class nation extends CommandRef {
                     public static final nation cmd = new nation();
                 public nation sheet(String value) {
@@ -6159,6 +6561,128 @@ public class CM {
 
             }
         }
+        public static class sheets_econ{
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.BankCommands.class,method="depositSheet")
+            public static class deposits extends CommandRef {
+                public static final deposits cmd = new deposits();
+            public deposits nations(String value) {
+                return set("nations", value);
+            }
+
+            public deposits offshores(String value) {
+                return set("offshores", value);
+            }
+
+            public deposits ignoreOffsets(String value) {
+                return set("ignoreOffsets", value);
+            }
+
+            public deposits includeExpired(String value) {
+                return set("includeExpired", value);
+            }
+
+            public deposits includeIgnored(String value) {
+                return set("includeIgnored", value);
+            }
+
+            public deposits noTaxes(String value) {
+                return set("noTaxes", value);
+            }
+
+            public deposits noLoans(String value) {
+                return set("noLoans", value);
+            }
+
+            public deposits noGrants(String value) {
+                return set("noGrants", value);
+            }
+
+            public deposits noDeposits(String value) {
+                return set("noDeposits", value);
+            }
+
+            public deposits includePastDepositors(String value) {
+                return set("includePastDepositors", value);
+            }
+
+            public deposits useFlowNote(String value) {
+                return set("useFlowNote", value);
+            }
+
+            public deposits force(String value) {
+                return set("force", value);
+            }
+
+            }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.BankCommands.class,method="revenueSheet")
+            public static class revenue extends CommandRef {
+                public static final revenue cmd = new revenue();
+            public revenue nations(String value) {
+                return set("nations", value);
+            }
+
+            public revenue sheet(String value) {
+                return set("sheet", value);
+            }
+
+            public revenue snapshotTime(String value) {
+                return set("snapshotTime", value);
+            }
+
+            }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.BankCommands.class,method="stockpileSheet")
+            public static class stockpile extends CommandRef {
+                public static final stockpile cmd = new stockpile();
+            public stockpile nationFilter(String value) {
+                return set("nationFilter", value);
+            }
+
+            public stockpile normalize(String value) {
+                return set("normalize", value);
+            }
+
+            public stockpile forceUpdate(String value) {
+                return set("forceUpdate", value);
+            }
+
+            }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.BankCommands.class,method="warchestSheet")
+            public static class warchest extends CommandRef {
+                public static final warchest cmd = new warchest();
+            public warchest nations(String value) {
+                return set("nations", value);
+            }
+
+            public warchest perInfraWarchest(String value) {
+                return set("perInfraWarchest", value);
+            }
+
+            public warchest includeGrants(String value) {
+                return set("includeGrants", value);
+            }
+
+            public warchest doNotNormalizeDeposits(String value) {
+                return set("doNotNormalizeDeposits", value);
+            }
+
+            public warchest includeDeposits(String value) {
+                return set("includeDeposits", value);
+            }
+
+            public warchest ignoreStockpileInExcess(String value) {
+                return set("ignoreStockpileInExcess", value);
+            }
+
+            public warchest includeRevenueDays(String value) {
+                return set("includeRevenueDays", value);
+            }
+
+            public warchest forceUpdate(String value) {
+                return set("forceUpdate", value);
+            }
+
+            }
+        }
         public static class sheets_ia{
             @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="ActivitySheet")
             public static class ActivitySheet extends CommandRef {
@@ -6314,6 +6838,22 @@ public class CM {
             }
 
             }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="MilitaryQuality")
+            public static class quality extends CommandRef {
+                public static final quality cmd = new quality();
+            public quality nations(String value) {
+                return set("nations", value);
+            }
+
+            public quality sheet(String value) {
+                return set("sheet", value);
+            }
+
+            public quality forceUpdate(String value) {
+                return set("forceUpdate", value);
+            }
+
+            }
             @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.WarCommands.class,method="warSheet")
             public static class war_sheet extends CommandRef {
                 public static final war_sheet cmd = new war_sheet();
@@ -6357,6 +6897,120 @@ public class CM {
 
             public recruitmentRankings uploadFile(String value) {
                 return set("uploadFile", value);
+            }
+
+            }
+        }
+        public static class stats_tier{
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.StatCommands.class,method="attributeTierGraph")
+            public static class attribute_tier_graph extends CommandRef {
+                public static final attribute_tier_graph cmd = new attribute_tier_graph();
+            public attribute_tier_graph metric(String value) {
+                return set("metric", value);
+            }
+
+            public attribute_tier_graph groupBy(String value) {
+                return set("groupBy", value);
+            }
+
+            public attribute_tier_graph coalition1(String value) {
+                return set("coalition1", value);
+            }
+
+            public attribute_tier_graph coalition2(String value) {
+                return set("coalition2", value);
+            }
+
+            public attribute_tier_graph includeInactives(String value) {
+                return set("includeInactives", value);
+            }
+
+            public attribute_tier_graph includeApplicants(String value) {
+                return set("includeApplicants", value);
+            }
+
+            public attribute_tier_graph total(String value) {
+                return set("total", value);
+            }
+
+            public attribute_tier_graph attachJson(String value) {
+                return set("attachJson", value);
+            }
+
+            public attribute_tier_graph attachCsv(String value) {
+                return set("attachCsv", value);
+            }
+
+            public attribute_tier_graph snapshotDate(String value) {
+                return set("snapshotDate", value);
+            }
+
+            }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.StatCommands.class,method="scoreTierGraph")
+            public static class score extends CommandRef {
+                public static final score cmd = new score();
+            public score coalition1(String value) {
+                return set("coalition1", value);
+            }
+
+            public score coalition2(String value) {
+                return set("coalition2", value);
+            }
+
+            public score includeInactives(String value) {
+                return set("includeInactives", value);
+            }
+
+            public score includeApplicants(String value) {
+                return set("includeApplicants", value);
+            }
+
+            public score snapshotDate(String value) {
+                return set("snapshotDate", value);
+            }
+
+            public score attachJson(String value) {
+                return set("attachJson", value);
+            }
+
+            public score attachCsv(String value) {
+                return set("attachCsv", value);
+            }
+
+            }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.StatCommands.class,method="strengthTierGraph")
+            public static class strength extends CommandRef {
+                public static final strength cmd = new strength();
+            public strength coalition1(String value) {
+                return set("coalition1", value);
+            }
+
+            public strength coalition2(String value) {
+                return set("coalition2", value);
+            }
+
+            public strength strength_metric(String value) {
+                return set("strength_metric", value);
+            }
+
+            public strength includeInactives(String value) {
+                return set("includeInactives", value);
+            }
+
+            public strength includeApplicants(String value) {
+                return set("includeApplicants", value);
+            }
+
+            public strength snapshotDate(String value) {
+                return set("snapshotDate", value);
+            }
+
+            public strength attachJson(String value) {
+                return set("attachJson", value);
+            }
+
+            public strength attachCsv(String value) {
+                return set("attachCsv", value);
             }
 
             }
