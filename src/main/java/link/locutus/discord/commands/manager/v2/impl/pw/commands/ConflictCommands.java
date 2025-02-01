@@ -399,7 +399,7 @@ public class ConflictCommands {
         manager.clearAllianceCache();
         return response.toString() +
                 "\nThen to initialize the stats and push to the site:\n"
-                + CM.conflict.sync.website.cmd.conflicts(conflict.getId() + "").upload_graph("true").reinitialize_graphs(reinitializeGraphsArg)
+                + CM.conflict.sync.website.cmd.conflicts(conflict.getId() + "").reinitialize_graphs(reinitializeGraphsArg)
                 ;
     }
 

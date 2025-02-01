@@ -697,6 +697,7 @@ public class StatCommands {
                                      NationAttributeDouble groupBy,
                                      NationList coalition1,
                                      NationList coalition2,
+                                     @Switch("f") Double factor,
                                      @Switch("i") boolean includeInactives,
                                      @Switch("a") boolean includeApplicants,
                                      @Arg("Compare the sum of each nation's attribute in the coalition instead of average")
@@ -704,6 +705,7 @@ public class StatCommands {
                                      @Switch("j") boolean attachJson,
                                      @Switch("v") boolean attachCsv,
                                      @Switch("s") @Timestamp Long snapshotDate) throws IOException {
+        if (factor == null) factor = 1d;
         Set<DBNation> coalition1Nations = DNS.getNationsSnapshot(coalition1.getNations(), coalition1.getFilter(), snapshotDate, db.getGuild(), false);
         Set<DBNation> coalition2Nations = DNS.getNationsSnapshot(coalition2.getNations(), coalition2.getFilter(), snapshotDate, db.getGuild(), false);
         int num1 = coalition1Nations.size();
@@ -729,11 +731,12 @@ public class StatCommands {
         Map<Integer, List<DBNation>> coalition1ByCity = new HashMap<>();
         Map<Integer, List<DBNation>> coalition2ByCity = new HashMap<>();
 
-        for (DBNation n : coalition1Nations) coalition1ByCity.computeIfAbsent((int) Math.round(groupBy.apply(n)), f -> new ArrayList<>()).add(n);
-        for (DBNation n : coalition2Nations) coalition2ByCity.computeIfAbsent((int) Math.round(groupBy.apply(n)), f -> new ArrayList<>()).add(n);
+        for (DBNation n : coalition1Nations) coalition1ByCity.computeIfAbsent((int) Math.floor(groupBy.apply(n) * factor), f -> new ArrayList<>()).add(n);
+        for (DBNation n : coalition2Nations) coalition2ByCity.computeIfAbsent((int) Math.floor(groupBy.apply(n) * factor), f -> new ArrayList<>()).add(n);
 
         int min = Math.min(Collections.min(coalition1ByCity.keySet()), Collections.min(coalition2ByCity.keySet()));
         int max = Math.max(Collections.max(coalition1ByCity.keySet()), Collections.max(coalition2ByCity.keySet()));
+        if (max - min > 1024) throw new IllegalArgumentException("Too many bars to graph (max - min = " + (max - min) + "; exceeds 1024)");
 
         DataTable data = new DataTable(Double.class, Double.class, String.class);
 
@@ -766,7 +769,7 @@ public class StatCommands {
         int segments = 1;
         // Create new bar plot
         BarPlot plot = new BarPlot(data);
-        plot.getTitle().setText((total ? "Total" : "Average") + " " + metric.getName() + " by " + groupBy.getName());
+        plot.getTitle().setText((total ? "Total" : "Average") + " " + metric.getName() + " by " + groupBy.getName() + (factor != 1 ? " (x" + factor + ")" : ""));
 
         // Format plot
         plot.setInsets(new Insets2D.Double(20.0, 100.0, 40.0, 0.0));
