@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 
 public class BankTransfer extends Transaction2 implements DBEntity<BankHistory, BankTransfer> {
     public BankType TypeTxt;
+
     @Override
     public String getTableName() {
         return "bank_history";

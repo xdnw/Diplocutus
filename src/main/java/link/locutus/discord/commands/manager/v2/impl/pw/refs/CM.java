@@ -685,6 +685,18 @@ public class CM {
             }
 
             }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.BankCommands.class,method="allianceTaxIncome")
+            public static class tax_income extends CommandRef {
+                public static final tax_income cmd = new tax_income();
+            public tax_income alliance(String value) {
+                return set("alliance", value);
+            }
+
+            public tax_income forceUpdate(String value) {
+                return set("forceUpdate", value);
+            }
+
+            }
             public static class treaty{
                 @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.FACommands.class,method="treaties")
                 public static class list extends CommandRef {
@@ -1036,6 +1048,26 @@ public class CM {
 
             public costs force_update(String value) {
                 return set("force_update", value);
+            }
+
+            }
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.BuildCommands.class,method="getBuildSheet")
+            public static class sheet extends CommandRef {
+                public static final sheet cmd = new sheet();
+            public sheet nations(String value) {
+                return set("nations", value);
+            }
+
+            public sheet sheet(String value) {
+                return set("sheet", value);
+            }
+
+            public sheet include_effect_buildings(String value) {
+                return set("include_effect_buildings", value);
+            }
+
+            public sheet update(String value) {
+                return set("update", value);
             }
 
             }
@@ -6921,6 +6953,10 @@ public class CM {
                 return set("coalition2", value);
             }
 
+            public attribute_tier_graph factor(String value) {
+                return set("factor", value);
+            }
+
             public attribute_tier_graph includeInactives(String value) {
                 return set("includeInactives", value);
             }
@@ -7065,6 +7101,20 @@ public class CM {
 
             public warRanking statuses(String value) {
                 return set("statuses", value);
+            }
+
+            }
+        }
+        public static class tax{
+            @AutoRegister(clazz=link.locutus.discord.commands.manager.v2.impl.pw.commands.BankCommands.class,method="allianceTaxIncome")
+            public static class income_alliance extends CommandRef {
+                public static final income_alliance cmd = new income_alliance();
+            public income_alliance alliance(String value) {
+                return set("alliance", value);
+            }
+
+            public income_alliance forceUpdate(String value) {
+                return set("forceUpdate", value);
             }
 
             }

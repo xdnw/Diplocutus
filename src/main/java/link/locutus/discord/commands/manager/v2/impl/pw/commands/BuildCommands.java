@@ -12,16 +12,22 @@ import link.locutus.discord.commands.manager.v2.binding.annotation.Command;
 import link.locutus.discord.commands.manager.v2.binding.annotation.Default;
 import link.locutus.discord.commands.manager.v2.binding.annotation.Me;
 import link.locutus.discord.commands.manager.v2.binding.annotation.Switch;
+import link.locutus.discord.commands.manager.v2.command.IMessageIO;
+import link.locutus.discord.commands.manager.v2.impl.discord.permission.IsAlliance;
 import link.locutus.discord.commands.manager.v2.impl.discord.permission.RolePermission;
 import link.locutus.discord.db.GuildDB;
 import link.locutus.discord.db.entities.DBNation;
 import link.locutus.discord.db.entities.components.NationPrivate;
+import link.locutus.discord.db.guild.SheetKey;
 import link.locutus.discord.user.Roles;
 import link.locutus.discord.util.DNS;
 import link.locutus.discord.util.MathMan;
 import link.locutus.discord.util.math.ArrayUtil;
+import link.locutus.discord.util.sheet.SpreadSheet;
 import net.dv8tion.jda.api.entities.User;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -69,6 +75,73 @@ public class BuildCommands {
             response.append("\n### From Effects:\n```json\n" + effectJson + "\n```");
         }
         return response.toString();
+    }
+
+    @Command(desc = "Get a nations build")
+    @IsAlliance
+    @RolePermission(value = {Roles.INTERNAL_AFFAIRS, Roles.INTERNAL_AFFAIRS_STAFF, Roles.ECON, Roles.ECON_STAFF, Roles.MILCOM}, any = true)
+    public String getBuildSheet(@Me GuildDB db, @Me IMessageIO io,
+                                @Default Set<DBNation> nations, @Switch("s")SpreadSheet sheet,
+                                @Switch("e") boolean include_effect_buildings,
+                                @Switch("u") boolean update) throws GeneralSecurityException, IOException {
+        if (nations == null) nations = db.getAllianceList().getNations(true, 0, true);
+        for (DBNation nation : nations) {
+            if (!db.isAllianceId(nation.getAlliance_id())) {
+                throw new IllegalArgumentException("Nation: " + nation.getMarkdownUrl() + " is not in an alliance registered to this guild");
+            }
+        }
+        if (sheet == null) {
+            sheet = SpreadSheet.create(db, SheetKey.BUILDINGS);
+        }
+        List<String> header = new ArrayList<>(Arrays.asList(
+                "nation",
+                "infra",
+                "land",
+                "slots",
+                "open_slots",
+                "buildings",
+                "effect_buildings",
+                "employed",
+                "effect_employed"
+        ));
+
+        for (Building b : Building.values) {
+            header.add(b.getName());
+        }
+        sheet.setHeader(header);
+
+        long now = System.currentTimeMillis() - (update ? 0 : TimeUnit.HOURS.toMillis(1));
+
+        for (DBNation nation : nations) {
+            NationPrivate data = nation.getPrivateData();
+            Map<Building, Integer> buildings = data.getBuildings(now, false);
+            Map<Building, Integer> effectBuildings = data.getEffectBuildings(now);
+
+            List<Object> row = new ArrayList<>();
+            row.add(nation.getName());
+            row.add(nation.getInfra());
+            row.add(nation.getLand());
+            row.add(data.getTotalSlots(now));
+            row.add(data.getOpenSlots(now));
+            row.add(buildings.values().stream().mapToInt(Integer::intValue).sum());
+            row.add(effectBuildings.values().stream().mapToInt(Integer::intValue).sum());
+            row.add(Building.getJobs(buildings));
+            row.add(Building.getJobs(effectBuildings));
+
+            for (Building b : Building.values) {
+                int count = buildings.getOrDefault(b, 0);
+                if (include_effect_buildings) {
+                    count += effectBuildings.getOrDefault(b, 0);
+                }
+                row.add(count);
+            }
+            sheet.addRow(row);
+        }
+        sheet.updateClearCurrentTab();
+        sheet.updateWrite();
+
+        sheet.attach(io.create(), "buildings").send();
+        return null;
     }
 
     @Command

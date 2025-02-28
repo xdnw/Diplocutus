@@ -162,7 +162,7 @@ public class GuildDB extends DBMainV2 implements NationOrAllianceOrGuild, GuildO
     @Override
     public Map<String, String> getTablesToSync() {
         Map<String, String> tableToColumn = new LinkedHashMap<>();
-        tableToColumn.put("INTERNAL_TRANSACTIONS2", "tx_datetime");
+        tableToColumn.put("bank_history", "tx_datetime");
         tableToColumn.put("NATION_META", "date_updated");
         tableToColumn.put("ROLES2", "date_updated");
         tableToColumn.put("INFO", "date_updated");
@@ -643,26 +643,6 @@ public class GuildDB extends DBMainV2 implements NationOrAllianceOrGuild, GuildO
             deleteInfo(key);
         }
     }
-    public void deleteExpire_bugFix() {
-        GuildDB delegate = getDelegateServer();
-        if (delegate != null) {
-            delegate.deleteExpire_bugFix();
-            return;
-        }
-        String query = "DELETE FROM INTERNAL_TRANSACTIONS2 WHERE lower(note) like \"%timestamp:%\"";
-        executeStmt(query);
-    }
-
-    public void updateNoteDate_bugFix() {
-        GuildDB delegate = getDelegateServer();
-        if (delegate != null) {
-            delegate.updateNoteDate_bugFix();
-            return;
-        }
-        long date = System.currentTimeMillis();
-        String query = "UPDATE INTERNAL_TRANSACTIONS2 set tx_datetime = " + date + " where lower(note) like \"%timestamp:%\"";
-        executeStmt(query);
-    }
 
     public List<BankTransfer> getDepositOffsetTransactions(long id) {
         long sender_id = Math.abs(id);
@@ -684,7 +664,7 @@ public class GuildDB extends DBMainV2 implements NationOrAllianceOrGuild, GuildO
     }
 
     public List<BankTransfer> getTransactionsById(long senderOrReceiverId, int type) {
-        String query = "select * FROM INTERNAL_TRANSACTIONS2 WHERE ((sender_id = ? AND sender_TYPE = ?) OR (receiver_id = ? AND receiver_type = ?))";
+        String query = "((sender_id = ? AND sender_TYPE = ?) OR (receiver_id = ? AND receiver_type = ?))";
         return getBankTransfer(query, stmt -> {
             stmt.setLong(1, senderOrReceiverId);
             stmt.setInt(2, type);
@@ -693,16 +673,16 @@ public class GuildDB extends DBMainV2 implements NationOrAllianceOrGuild, GuildO
         });
     }
 
-    private List<BankTransfer> getBankTransfer(String query, ThrowingConsumer<PreparedStatement> accept) {
+    private List<BankTransfer> getBankTransfer(String whereClause, ThrowingConsumer<PreparedStatement> accept) {
         GuildDB delegate = getDelegateServer();
         if (delegate != null) {
-            return delegate.getBankTransfer(query, accept);
+            return delegate.getBankTransfer(whereClause, accept);
         }
-        return select(new BankTransfer(), query, accept);
+        return select(new BankTransfer(), whereClause, accept);
     }
 
     public List<BankTransfer> getTransactions(long minDateMs, boolean desc) {
-        String query = "select * FROM INTERNAL_TRANSACTIONS2 WHERE tx_datetime > ? ORDER BY tx_id " + (desc ? "DESC" : "ASC");
+        String query = "tx_datetime > ? ORDER BY tx_id " + (desc ? "DESC" : "ASC");
         return getBankTransfer(query, stmt -> stmt.setLong(1, minDateMs));
     }
 
@@ -712,7 +692,7 @@ public class GuildDB extends DBMainV2 implements NationOrAllianceOrGuild, GuildO
             // TODO deposits
             // TODO equipment
 
-            StringBuilder query = new StringBuilder("CREATE TABLE IF NOT EXISTS `INTERNAL_TRANSACTIONS2` (" +
+            StringBuilder query = new StringBuilder("CREATE TABLE IF NOT EXISTS `bank_history` (" +
                     "`tx_id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "tx_datetime BIGINT NOT NULL, " +
                     "sender_id BIGINT NOT NULL, " +

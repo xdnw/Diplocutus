@@ -4,6 +4,7 @@ import link.locutus.discord.Locutus;
 import link.locutus.discord.api.endpoints.DnsApi;
 import link.locutus.discord.api.generated.AllianceBankValues;
 import link.locutus.discord.api.generated.AllianceMemberFunds;
+import link.locutus.discord.api.generated.AllianceTaxIncome;
 import link.locutus.discord.api.generated.ResourceType;
 import link.locutus.discord.api.types.*;
 import link.locutus.discord.db.SQLUtil;
@@ -15,6 +16,7 @@ import link.locutus.discord.util.MathMan;
 import link.locutus.discord.util.math.ArrayUtil;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +29,10 @@ public class AlliancePrivate implements DBEntity<Void, AlliancePrivate> {
 
     private final Map<ResourceType, Double> stockpile = new ConcurrentHashMap<>();
     private final Map<ResourceType, Double> memberDeposited = new ConcurrentHashMap<>();
+    private final Map<ResourceType, Double> taxIncome = new ConcurrentHashMap<>();
 
     private final AtomicLong outdatedStockpileAndDeposits = new AtomicLong(-1);
+    private final AtomicLong outdatedTaxIncome = new AtomicLong(-1);
 
     public AlliancePrivate() {
         this(0);
@@ -79,7 +83,9 @@ public class AlliancePrivate implements DBEntity<Void, AlliancePrivate> {
         result.put("alliance_id", int.class);
         result.put("stockpile", byte[].class);
         result.put("memberDeposited", byte[].class);
+        result.put("taxIncome", byte[].class);
         result.put("outdatedStockpileAndDeposits", long.class);
+        result.put("outdatedTaxIncome", long.class);
         return result;
     }
 
@@ -133,6 +139,35 @@ public class AlliancePrivate implements DBEntity<Void, AlliancePrivate> {
             }
             if (Math.round(existingMemberDeposited * 100) != Math.round(newMemberDeposited * 100)) {
                 this.memberDeposited.put(resource, newMemberDeposited);
+                dirty = true;
+            }
+        }
+        return dirty;
+    }
+
+    public Map<ResourceType, Double> getTaxIncome(long timestamp) {
+        return withApi(outdatedTaxIncome, timestamp, taxIncome, () -> {
+            DnsApi api = getAlliance().getApi(true);
+            if (api != null) {
+                List<AllianceTaxIncome> result = api.allianceTaxIncome().call();
+                if (result != null && !result.isEmpty()) {
+                    if (update(result.get(0))) {
+                        Locutus.imp().getNationDB().saveAlliancePrivate(this);
+                    }
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    public boolean update(AllianceTaxIncome taxIncome) {
+        boolean dirty = false;
+        for (ResourceType resource : ResourceType.values) {
+            double existingTaxIncome = this.taxIncome.getOrDefault(resource, 0.0);
+            double newTaxIncome = resource.getTax(taxIncome);
+            if (Math.round(existingTaxIncome * 100) != Math.round(newTaxIncome * 100)) {
+                this.taxIncome.put(resource, newTaxIncome);
                 dirty = true;
             }
         }

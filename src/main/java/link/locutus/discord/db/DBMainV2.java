@@ -64,7 +64,11 @@ public class DBMainV2 implements Closeable {
     }
 
     public <T extends DBEntity<?, T>> List<T> select(T dummy, String whereClause, ThrowingConsumer<PreparedStatement> accept) {
-        String tableName = dummy.getTableName();
+        return select(dummy, null, whereClause, accept);
+    }
+
+    public <T extends DBEntity<?, T>> List<T> select(T dummy, String table, String whereClause, ThrowingConsumer<PreparedStatement> accept) {
+        String tableName = table == null ? dummy.getTableName() : table;
         String query = "SELECT * FROM " + tableName + (whereClause.isEmpty() ? "" : " WHERE " + whereClause);
         List<T> list = new ArrayList<>();
         ThrowingFunction<ResultSet, T> loader = dummy.loader();

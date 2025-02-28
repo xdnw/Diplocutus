@@ -89,7 +89,8 @@ public class NationDB extends DBMainV2 implements SyncableDatabase {
         }
         executeStmt(SQLUtil.createTable(new AlliancePrivate()));
         {
-
+            executeStmt("ALTER TABLE " + new AlliancePrivate().getTableName() + " ADD COLUMN taxIncome BLOB", true);
+            executeStmt("ALTER TABLE " + new AlliancePrivate().getTableName() + " ADD COLUMN outdatedTaxIncome BIGINT", true);
         }
         {
             String query = "CREATE TABLE IF NOT EXISTS `BEIGE_REMINDERS` (`target` INT NOT NULL, `attacker` INT NOT NULL, `turn` BIGINT NOT NULL, PRIMARY KEY(target, attacker))";

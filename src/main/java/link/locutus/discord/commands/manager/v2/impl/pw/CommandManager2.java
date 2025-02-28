@@ -250,6 +250,8 @@ public class CommandManager2 {
 
     public CommandManager2 registerDefaults() {
         this.commands.registerCommandsWithMapping(CM.class, true);
+        getCommands().registerMethod(new BankCommands(), List.of("tax"), "allianceTaxIncome", "income_alliance");
+        getCommands().registerMethod(new BankCommands(), List.of("alliance"), "allianceTaxIncome", "tax_income");
         getCommands().registerMethod(new UtilityCommands(), List.of("alliance"), "allianceCost", "cost");
         getCommands().registerMethod(new StatCommands(), List.of("alliance", "stats"), "allianceAttributeRanking", "attribute_ranking");
         getCommands().registerMethod(new StatCommands(), List.of("alliance", "stats"), "allianceRankingTime", "ranking_time");
@@ -282,6 +284,7 @@ public class CommandManager2 {
         getCommands().registerMethod(new BuildCommands(), List.of("building"), "buildingCost", "cost");
         getCommands().registerMethod(new BuildCommands(), List.of("building"), "nextBuildingCost", "costs");
         getCommands().registerMethod(new BuildCommands(), List.of("building"), "buildingCostBulk", "cost_bulk");
+        getCommands().registerMethod(new BuildCommands(), List.of("building"), "getBuildSheet", "sheet");
 
         getCommands().registerMethod(new BuildCommands(), List.of("nation", "list"), "getBuild", "buildings");
         getCommands().registerMethod(new BuildCommands(), List.of("nation", "list"), "viewProjects", "projects");
@@ -303,6 +306,7 @@ public class CommandManager2 {
         getCommands().registerMethod(new UtilityCommands(), List.of("sheets_ia"), "AllianceSheet", "alliance_sheet");
 
         getCommands().registerMethod(new AdminCommands(), List.of("admin", "sync"), "syncRequests", "requests");
+
 
 
 //        getCommands().registerMethod(new GrantCommands(), List.of("grant"), "costBulk", "cost");

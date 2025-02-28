@@ -89,6 +89,21 @@ import static link.locutus.discord.api.generated.ResourceType.convertedTotal;
 import static link.locutus.discord.api.generated.ResourceType.resourcesToString;
 
 public class BankCommands {
+    @Command(desc = "View alliance tax income")
+    @RolePermission(value = {Roles.ECON, Roles.ECON_STAFF})
+    public String allianceTaxIncome(@Me IMessageIO io, @Me GuildDB db, DBAlliance alliance, @Switch("f") boolean forceUpdate) {
+        if (!db.isAllianceId(alliance.getAlliance_id())) {
+            throw new IllegalArgumentException("Alliance is not registered to this guild. See " + CM.register.cmd.toSlashMention());
+        }
+        long updateAfter = forceUpdate ? Long.MAX_VALUE : System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5);
+        Map<ResourceType, Double> taxes = alliance.getPrivateData().getTaxIncome(updateAfter);
+        if (taxes == null) {
+            return "No tax income data found";
+        }
+        String out = ResourceType.resourcesToFancyString(taxes);
+        io.create().embed(alliance.getName() + " tax income", out).send();
+        return null;
+    }
 //
 ///*
 //> `/deposit resources <amount> <raws-days> <warchest-per-city> <warchest-total> <unit-resources> <note> `

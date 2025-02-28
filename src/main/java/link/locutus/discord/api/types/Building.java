@@ -109,7 +109,7 @@ public enum Building {
     }
 
     public double cost(int levelStart, int levelEnd, int totalSlots, double costReduction) {
-        if (levelEnd > 1000) {
+        if (levelEnd > 10_000) {
             throw new IllegalArgumentException("Level end is too high (max: 1000, provided: " + levelEnd + ")");
         }
         double cost = 0;

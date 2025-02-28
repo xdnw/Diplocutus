@@ -26,26 +26,28 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public enum ResourceType {
-    CASH(f -> f.Cash, f -> f.AllianceCash, f -> f.AllianceBankCash),
-    TECHNOLOGY(f -> f.Tech, f -> f.AllianceTech, f -> f.AllianceBankTech),
-    PRODUCTION(f -> f.Production, f -> 0d, f -> 0d),
-    MINERALS(f -> f.Minerals, f -> f.AllianceMinerals, f -> f.AllianceBankMinerals),
-    URANIUM(f -> f.Uranium, f -> f.AllianceUranium, f -> f.AllianceBankUranium),
-    RARE_METALS(f -> f.RareMetals, f -> f.AllianceRareMetal, f -> f.AllianceBankRareMetal),
-    FUEL(f -> f.Fuel, f -> f.AllianceFuel, f -> f.AllianceBankFuel),
-    POLITICAL_SUPPORT(f -> f.PoliticalPower, f -> 0d, f -> 0d),
-    CRYPTO(f -> 0d, f -> 0d, f -> 0d)
+    CASH(f -> f.Cash, f -> f.AllianceCash, f -> f.AllianceBankCash, f -> f.AllianceTaxIncome),
+    TECHNOLOGY(f -> f.Tech, f -> f.AllianceTech, f -> f.AllianceBankTech, f -> f.AllianceTechTaxIncome),
+    PRODUCTION(f -> f.Production, f -> 0d, f -> 0d, f -> 0d),
+    MINERALS(f -> f.Minerals, f -> f.AllianceMinerals, f -> f.AllianceBankMinerals, f -> f.AllianceMineralTaxIncome),
+    URANIUM(f -> f.Uranium, f -> f.AllianceUranium, f -> f.AllianceBankUranium, f -> f.AllianceUraniumTaxIncome),
+    RARE_METALS(f -> f.RareMetals, f -> f.AllianceRareMetal, f -> f.AllianceBankRareMetal, f -> f.AllianceRareMetalTaxIncome),
+    FUEL(f -> f.Fuel, f -> f.AllianceFuel, f -> f.AllianceBankFuel, f -> f.AllianceFuelTaxIncome),
+    POLITICAL_SUPPORT(f -> f.PoliticalPower, f -> 0d, f -> 0d, f -> 0d),
+    CRYPTO(f -> 0d, f -> 0d, f -> 0d, f -> 0d)
 
     ;
 
     private final Function<AllianceMemberFunds, Double> getNation;
     private final Function<AllianceBankValues, Double> getAlliance;
     private final Function<AllianceBankValues, Double> getMember;
+    private final Function<AllianceTaxIncome, Double> getTax;
 
-    ResourceType(Function<AllianceMemberFunds, Double> getNation, Function<AllianceBankValues, Double> getAlliance, Function<AllianceBankValues, Double> getMember) {
+    ResourceType(Function<AllianceMemberFunds, Double> getNation, Function<AllianceBankValues, Double> getAlliance, Function<AllianceBankValues, Double> getMember, Function<AllianceTaxIncome, Double> getTax) {
         this.getNation = getNation;
         this.getAlliance = getAlliance;
         this.getMember = getMember;
+        this.getTax = getTax;
     }
 
     public static final ResourceType[] values = values();
@@ -62,6 +64,10 @@ public enum ResourceType {
 
     public double getAlliance(AllianceBankValues stockpile) {
         return getAlliance.apply(stockpile);
+    }
+
+    public double getTax(AllianceTaxIncome stockpile) {
+        return getTax.apply(stockpile);
     }
 
     public double getMember(AllianceBankValues stockpile) {

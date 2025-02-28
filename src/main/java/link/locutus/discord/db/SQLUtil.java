@@ -21,6 +21,7 @@ import java.util.function.Function;
 public class SQLUtil {
 
     public static long castLong(Object object) {
+        if (object == null) return 0;
         return ((Number) object).longValue();
     }
 
