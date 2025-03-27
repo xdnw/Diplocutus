@@ -579,14 +579,9 @@ public class UnsortedCommands {
             }
             throw new IllegalArgumentException("No nations provided");
         }
-        Map<ResourceType, Double> revenue = new HashMap<>();
-        if (snapshotDate == null) {
-            for (DBNation nation : filtered) {
-                if (nation.getAlliance_id() == 0) continue;
-            }
-        }
+        Map<ResourceType, Double> revenue = new LinkedHashMap<>();
         for (DBNation nation : filtered) {
-            ResourceType.add(revenue, nation.getRevenue());
+            revenue = ResourceType.add(revenue, nation.getRevenue());
         }
 
         double[] total = ResourceType.builder().add(revenue).build();
